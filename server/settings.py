@@ -26,14 +26,17 @@ SECRET_KEY = 'django-insecure-igq$1nv5es7+t(0vqyqyhb#r(^bf_&q-85tf1h4*+f@+j=p!yu
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:3000',
+    'http://localhost:3030']
+CORS_ALLOW_CREDENTIALS = False
 # Application definition
 
 INSTALLED_APPS = [
     'core',
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'core.CustomUser'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,14 +84,25 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cool_electives',                      
-        'USER': 'postgres',
-        'PASSWORD': '5203955',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'cool_electives',           # Название базы данных
+        'USER': 'postgres',            # Пользователь базы данных
+        'PASSWORD': '5203955',           # Пароль пользователя базы данных
+        'HOST': 'db',                  # Название сервиса контейнера базы данных в Docker Compose
+        'PORT': '5432',  
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'cool_electives',                      
+#         'USER': 'postgres',
+#         'PASSWORD': '5203955',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
