@@ -1,0 +1,111 @@
+
+
+label {
+  position: relative;
+}
+
+input {
+  padding-left: 142px;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 568px;
+  height: 124px;
+  flex-shrink: 0;
+  border-radius: 20px;
+  border-style: none;
+  background-color: rgba(217, 217, 217, 0.40);
+}
+
+input::placeholder {
+  color: #D3D3D3;
+}
+
+.container, .container *{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-container{
+  width: 1033px;
+  height: 429px;
+  flex-shrink: 0;
+}
+
+.login-form *{
+  gap: 60px;
+}
+
+.password-label::before, .login-label::before{
+  position: absolute;
+  top: 42px;
+  left: 44px;
+  content: "";
+  width: 35px;
+  height: 40px;
+}
+
+.login-label:before {
+  background: url("../../ystu-images/icons/user.svg") no-repeat;
+}
+
+.password-label:before {
+  background: url("../../ystu-images/icons/lock.svg") no-repeat;
+}
+
+.submit{
+  display: flex;
+  justify-content: center;
+  border-radius: 20px;
+  padding: 0;
+  background: #0A62C4;
+  width: 806px;
+  height: 162px;
+  color: #FFF;
+  font-size: 60px;
+  transition: 0.5s;;
+}
+
+.submit:hover{
+  transform: scale(1.05);
+}
+
+/* LoginPage.css */
+
+/* Контейнер для анимации */
+.error-message-wrapper {
+  position:absolute;
+  top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px 0px 15px 0px;
+
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Стиль самого сообщения об ошибке */
+.error-message {
+  font-size: 40px;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 1px solid #f5c6cb;
+  width: fit-content;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Анимация плавного появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
