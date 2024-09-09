@@ -8,18 +8,20 @@ from .serializers import *
 @api_view(['GET'])
 def get_user_role(request):
     user = request.user  
-
-    try:
-        teacher = Teacher.objects.get(user=user)
-        return Response({'role': 'teacher'})
-    except Teacher.DoesNotExist:
-        return Response({'error': 'Role not found'})
     
     try:
         student = Student.objects.get(user=user)
         return Response({'role': 'student'})
     except Student.DoesNotExist:
-        return Response({'error': 'Role not found'})
+        pass  
+
+    try:
+        teacher = Teacher.objects.get(user=user)
+        return Response({'role': 'teacher'})
+    except Teacher.DoesNotExist:
+        pass  
+
+    return Response({'error': 'Role not found'})
         
 @api_view(['GET'])
 def teacher_cabinet(request):
@@ -39,4 +41,11 @@ def student_cabinet(request):
         serializer = StudentSerializer(student)
         return Response(serializer.data)
     except Student.DoesNotExist:
-        return Respose({'error': 'Student not found'})
+        return Response({'error': 'Student not found'})
+        
+@api_view(['GET'])
+def all_electives(request):
+    electives = Elective.objects.all()
+    serializer = ElectiveSerializer(electives, many=True)
+    
+    return Response(serializer.data)

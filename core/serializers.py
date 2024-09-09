@@ -57,3 +57,16 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ('last_name', 'first_name', 'middle_name', 'year_of_study', 'group', 'average_grade', 'profile', 'health')
+
+class StatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Status
+        fileds = ('name',)
+        
+class ElectiveSerializer(serializers.ModelSerializer):
+    health = HealthSerializer()
+    form = FormSerializer()
+    status = StatusSerializer()
+    class Meta:
+        model = Elective
+        fields = ('__all__')

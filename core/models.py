@@ -101,3 +101,36 @@ class Student(models.Model):
         db_table = "Student"
         verbose_name_plural = "Студенты"
         verbose_name = "Студент"
+        
+class Status(models.Model):
+    name = models.CharField('Статус элективного курса')
+    def __str__(self):
+        return self.name
+    class Meta:
+        db_table = "Status"
+        
+class Elective(models.Model):
+    name = models.CharField('Название', max_length=100, null=True, blank=True)
+    describe = models.TextField('Описание',  null=True)
+    place = models.IntegerField('Количество мест', null=True)
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, null=True)
+    volume = models.IntegerField('Объем', null=True)
+    date_registration = models.DateField(null=True)
+    date_start = models.DateField(null=True)
+    date_finish = models.DateField(null=True)
+    marks = models.FloatField('Минимальный балл', null=True)
+    health = models.ForeignKey(Health, on_delete=models.CASCADE, null=True)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True)
+    registration_closed = models.BooleanField('Регистрация закрыта', default=False)
+    
+    def __str__(self):
+        return f'{self.name}'
+    class Meta:
+        db_table = "Elective"
+        verbose_name_plural = "Элективы"
+        verbose_name = "Электив"
+    
+    
+class TeacherElective(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, verbose_name='Преподаватель')
+    elective = models.ForeignKey(Elective, on_delete=models.CASCADE, null=True, verbose_name='Элективный курс')
