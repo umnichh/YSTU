@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from datetime import date
 
 class CustomUser(AbstractUser):
     pass
@@ -115,7 +116,7 @@ class Elective(models.Model):
     place = models.IntegerField('Количество мест', null=True)
     form = models.ForeignKey(Form, on_delete=models.CASCADE, null=True)
     volume = models.IntegerField('Объем', null=True)
-    date_registration = models.DateField(null=True)
+    date_registration = models.DateField(default=date.today)
     date_start = models.DateField(null=True)
     date_finish = models.DateField(null=True)
     marks = models.FloatField('Минимальный балл', null=True)
@@ -134,3 +135,9 @@ class Elective(models.Model):
 class TeacherElective(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, verbose_name='Преподаватель')
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE, null=True, verbose_name='Элективный курс')
+    def __str__(self):
+        return f'{self.teacher.last_name} -  {self.elective.name}'
+    class Meta:
+        db_table = "TeacherElective"
+        verbose_name_plural = "Преподаватели в элективе"
+        verbose_name = "Преподаватель в элективе"
