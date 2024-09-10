@@ -141,3 +141,15 @@ class TeacherElective(models.Model):
         db_table = "TeacherElective"
         verbose_name_plural = "Преподаватели в элективе"
         verbose_name = "Преподаватель в элективе"
+
+class StudentElective(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE,  null=True, verbose_name='Студент')
+    elective = models.ForeignKey(Elective, on_delete=models.CASCADE,  null=True, verbose_name='Электив')
+
+    def __str__(self):
+        return f'{self.student.last_name} -  {self.elective.name}'
+    
+    class Meta:
+        db_table = "StudentElective"
+        verbose_name_plural = "Студенты в элективе"
+        verbose_name = "Студент в элективе"

@@ -22,7 +22,7 @@ class UserRoleView(APIView):
         except Teacher.DoesNotExist:
             pass
 
-        return Response({'error': 'Role not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'Роль не найдена'}, status=status.HTTP_404_NOT_FOUND)
 
 
 # View for Teacher's cabinet
@@ -35,7 +35,7 @@ class TeacherCabinetView(APIView):
             serializer = TeacherSerializer(teacher)
             return Response(serializer.data)
         except Teacher.DoesNotExist:
-            return Response({'error': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Преподаватель не найден'}, status=status.HTTP_404_NOT_FOUND)
 
 
 # View for Student's cabinet
@@ -48,7 +48,7 @@ class StudentCabinetView(APIView):
             serializer = StudentSerializer(student)
             return Response(serializer.data)
         except Student.DoesNotExist:
-            return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Студент не найден'}, status=status.HTTP_404_NOT_FOUND)
 
 
 # View for all electives
@@ -87,7 +87,7 @@ class ElectiveView(APIView):
         if serializer.is_valid():
             elective = serializer.save()
             return Response({
-                'message': 'Elective created',
+                'message': 'Электив создан',
                 'elective': ElectiveSerializer(elective).data
             }, status=status.HTTP_201_CREATED)
 
@@ -101,4 +101,73 @@ class ElectiveDetailView(APIView):
             serializer = ElectiveSerializer(elective)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Elective.DoesNotExist:
-            return Response({'error': 'Elective not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Электив не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class EnrollElectiveView(APIView):
+    def post(self, request, id):
+        try:
+            student = Student.objects.get(user=request.user)
+            elective = Elective.objects.get(id=id)
+            if StudentElective.objects.filter(student=student, elective=elective).exists():
+                return Response({'error' : 'Студент уже записан'}, status=status.HTTP_400_BAD_REQUEST)
+        
+            StudentElective.objects.create(student=student, elective=elective)
+            return Response({'message': 'Студент записался'}, status=status.HTTP_201_CREATED)
+        except Student.DoesNotExist:
+            return Response({'error': 'Студент не найден!'}, status=status.HTTP_404_NOT_FOUND)
+        except Elective.DoesNotExist:
+                return Response({'error': 'Электив не найден'}, status=status.HTTP_404_NOT_FOUND)
+        
+    def delete(self, request, id):
+        try:
+            student = Student.objects.get(user=request.user)
+            elective = Elective.objects.get(id=id)
+            studentelective = StudentElective.objects.get(student=student, elective=elective)
+            studentelective.delete()
+            return Response({'Success' : 'Запись студента отменена'}, status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            return Response({'error': 'Студент не найден!'}, status=status.HTTP_404_NOT_FOUND)
+        except Elective.DoesNotExist:
+                return Response({'error': 'Электив не найден'}, status=status.HTTP_404_NOT_FOUND)
+        except StudentElective.DoesNotExist:
+            return Response({'error': 'Студент не записан на этот электив'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class ElectiveAvaliableStudentView(APIView):
+    
+    def get(self, request):
+        try:
+            user = request.user
+            student = Student.objects.get(user=user)
+            all_electives = Elective.objects.all()
+            enrolled_electives = StudentElective.objects.filter(student=student).values_list('elective_id', flat=True)
+            available_electives = all_electives.exclude(id__in=enrolled_electives)
+            serializer = ElectiveSerializer(available_electives, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            return Response({'error': 'Студент не найден'}, status=status.HTTP_404_NOT_FOUND)
+        
+class StudentElectiveView(APIView):
+    def get(self, request):
+        try:
+            user = request.user
+            student = Student.objects.get(user=user)
+            enrolled_electives = Elective.objects.filter(studentelective__student=student)
+            serializer = ElectiveSerializer(enrolled_electives, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except Student.DoesNotExist:
+            return Response({'error': 'Студент не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+class TeacherElectivView(APIView):
+    def get(self, request):
+        try:
+            user = request.user
+            teacher = Teacher.objects.get(user=user)
+            electives = Elective.objects.filter(teacherelective__teacher=teacher)
+            serializer = ElectiveSerializer(electives, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            return Response({'error': 'Преподаватель не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+            

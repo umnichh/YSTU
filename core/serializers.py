@@ -95,3 +95,4 @@ class ElectiveCreateSerializer(serializers.ModelSerializer):
             TeacherElective.objects.create(elective=elective, teacher=teacher)
 
         return elective
+
