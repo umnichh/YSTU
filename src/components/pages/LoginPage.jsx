@@ -1,18 +1,11 @@
-// Импортируем CSS файл для стилизации страницы входа
-import './LoginPage.css';
-
-// Импортируем логотип для отображения на странице
-import logo from './../../ystu-images/images/image 1.jpg';
-
-// Импортируем необходимые хуки из React
+import logo from './../../ystu-images/logo.jpg';
 import React, { useState, useEffect, useCallback } from 'react';
-
-// Импортируем хук для навигации между страницами
 import { useNavigate } from 'react-router-dom';
 
 // Функция для обновления access токена с помощью refresh токена
 const refreshAccessToken = async () => {
   // Получаем refresh токен из localStorage
+  
   const refreshToken = localStorage.getItem('refresh_token');
   
   // Если refresh токен не найден, выводим ошибку в консоль и возвращаем null
@@ -50,6 +43,7 @@ const refreshAccessToken = async () => {
   }
 };
 
+
 // Компонент страницы входа
 function LoginPage() {
   // Локальные состояния для управления логином, паролем и токеном
@@ -60,7 +54,6 @@ function LoginPage() {
 
   // Хук для навигации по маршрутам
   const navigate = useNavigate();
-
   // Функция для обработки авторизации
   const handleLogin = async (e) => {
     e.preventDefault(); // Предотвращаем перезагрузку страницы
@@ -82,8 +75,8 @@ function LoginPage() {
       if (response.ok) {
         localStorage.setItem('access_token', data.access);
         localStorage.setItem('refresh_token', data.refresh);
+ 
         setToken(data.access);
-        alert('Login successful');
       } else {
         // Выводим сообщение об ошибке авторизации
         setErrorMessage(data.message || 'Неверный логин или пароль'); // Устанавливаем сообщение об ошибке
@@ -108,9 +101,10 @@ function LoginPage() {
       }
     }
   
+    // Если токен удалось получить, пытаемся получить данные пользователя 
     try {
       // Отправляем запрос для получения данных пользователя
-      const response = await fetch('http://212.67.13.70:8000/api/student/', {
+      const response = await fetch('http://212.67.13.70:8000/api/user-role/', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${currentToken}`,
@@ -123,7 +117,29 @@ function LoginPage() {
         const data = await response.json(); 
         // Асинхронно получаем данные из ответа в формате JSON
         // Выводим данные пользователя в консоль для отладки
-        navigate('/home', {state : { data}});
+        console.log(data)
+        
+        if (data.role === 'student') {
+
+
+          navigate('/student');
+   
+        } 
+        
+        if (data.role === 'teacher') {
+
+          const response = await fetch('http://212.67.13.70:8000/api/teacher/', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${currentToken}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const teacherData = await response.json();
+          navigate('/teacher', {state : { teacherData}});
+        } 
+      
       } else {
         const errorText = await response.text(); 
         // Асинхронно получаем текст ответа для отладки ошибки
@@ -142,10 +158,8 @@ function LoginPage() {
 
       useEffect(() => { 
         // Используем хук useEffect для выполнения побочных эффектов
-        
         if (token) { 
           // Если существует токен, запускаем функцию для получения данных пользователя
-      
           fetchUserData(); 
           // Вызываем функцию fetchUserData для получения данных пользователя
         }
@@ -156,7 +170,7 @@ function LoginPage() {
   return (
     <div className="login">
       <div className='container'>
-        <div className='logo-container'>
+        <div className='bigLogo'>
           <img src={logo} alt="logo" />
         </div>
         
@@ -188,7 +202,6 @@ function LoginPage() {
                 placeholder='Пароль'/>
                 
             </label>
-
             <button className='submit' type='submit'>Войти</button>
           </form>
         </div>
