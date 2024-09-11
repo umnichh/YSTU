@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/electives/available/', ElectiveAvaliableStudentView.as_view(), name='available_electives'), #POST: элективы доступные студенту
     path('api/electives/student/', StudentElectiveView.as_view(), name='available_electives'), #GET: элективы на которые студент записан
     path('api/electives/teacher/', TeacherElectivView.as_view(), name='available_electives'), #GET: элективы которые ведёт преподаватель
+    path('api/electives/upload/', UploadInstitutesView.as_view(), name='upload_electives'), #POST: ЗАГРУЗКА ИНСТИТУТОВ/СПЕЦИАЛЬНОСТЕЙ/ПРОФИЛЕЙ ИЗ ЭКСЕЛЬ-ФАЙЛА
 ]

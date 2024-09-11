@@ -3,6 +3,9 @@ from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
+import pandas as pd
+
 
 # View to get user role
 class UserRoleView(APIView):
@@ -169,5 +172,35 @@ class TeacherElectivView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Student.DoesNotExist:
             return Response({'error': 'Преподаватель не найден'}, status=status.HTTP_404_NOT_FOUND)
+        
+class UploadInstitutesView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
 
+    def post(self, request, *args, **kwargs):
+        if 'document' not in request.FILES:
+            return Response({'error': 'Файл отсутствует'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            uploaded_file = request.FILES['document']
+
+            data = pd.read_excel(uploaded_file)
+
+            for index, row in data.iterrows():
+                institute_name = row['Институт']
+                form_of_study = row['Форма обучения']
+                faculty_name = row['Специальность']
+                profile_name = row['Профиль']
+
+                form = Form.objects.filter(name=form_of_study.capitalize()).first()
+                institute, created = Institute.objects.get_or_create(name=institute_name)
+                faculty, created = Facultet.objects.get_or_create(name=faculty_name, institute=institute)
+
+                if not pd.isnull(profile_name):
+                    profile, created = Profile.objects.get_or_create(name=profile_name, facultet=faculty, form=form)
+
+            return Response({'message': 'Всё норм загружены'}, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            print(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
