@@ -204,3 +204,78 @@ class UploadInstitutesView(APIView):
             print(e)
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
+class AddInstituteToElective(APIView):
+    def get(self, request, id):
+        institutes = Institute.objects.all()
+        facultets = Facultet.objects.all()
+        profiles = Profile.objects.all()
+
+        instituteSerializer = InstituteSerializer(institutes, many=True)
+        facultetSerializer = FacultetSerializer(facultets, many=True)
+        profileSerializer = ProfileSerializer(profiles, many=True)
+        data = {
+            'institutes': instituteSerializer.data,
+            'facultets': facultetSerializer.data,
+            'profile': profileSerializer.data
+        }
+        return Response(data)
+    
+    def post(self, request, elective_id):
+        elective = Elective.objects.get(id=elective_id)
+        data = request.data
+
+        institutes = data.get('institutes', [])
+        facultets = data.get('facultets', [])
+        profiles = data.get('profiles', [])
+
+        for institute_data in institutes:
+            institute_id = institute_data.get('id')
+            course = institute_data.get('course', None)
+            assign_all_courses = institute_data.get('assign_all_courses', False)
+
+            try:
+                institute = Institute.objects.get(id=institute_id)
+                ElectiveInstitute.objects.create(
+                    elective=elective,
+                    institute=institute,
+                    course=course if not assign_all_courses else None,
+                    assign_all_courses=assign_all_courses
+                )
+            except Institute.DoesNotExist:
+                return Response({'error': f'Институт с айди {institute_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+        for facultet_data in facultets:
+            facultet_id = facultet_data.get('id')
+            course = facultet_data.get('course', None)
+            assign_all_courses = facultet_data.get('assign_all_courses', False)
+
+            try:
+                facultet = Facultet.objects.get(id=facultet_id)
+                ElectiveFacultet.objects.create(
+                    elective=elective,
+                    facultet=facultet,
+                    course=course if not assign_all_courses else None,
+                    assign_all_courses=assign_all_courses
+                )
+            except Facultet.DoesNotExist:
+                return Response({'error': f'Факультет с айди {facultet_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+        for profile_data in profiles:
+            profile_id = profile_data.get('id')
+            course = profile_data.get('course', None)
+            assign_all_courses = profile_data.get('assign_all_courses', False)
+
+            try:
+                profile = Profile.objects.get(id=profile_id)
+                ElectiveProfile.objects.create(
+                    elective=elective,
+                    profile=profile,
+                    course=course if not assign_all_courses else None,
+                    assign_all_courses=assign_all_courses
+                )
+            except Profile.DoesNotExist:
+                return Response({'error': f'Профиль с айди {profile_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'всякое назначено'}, status=status.HTTP_201_CREATED)
+
+    

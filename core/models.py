@@ -153,3 +153,46 @@ class StudentElective(models.Model):
         db_table = "StudentElective"
         verbose_name_plural = "Студенты в элективе"
         verbose_name = "Студент в элективе"
+
+class ElectiveInstitute(models.Model):
+    elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
+    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
+    course = models.PositiveIntegerField(null=True, blank=True)  
+    assign_all_courses = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.elective.name} -  {self.institute.name}'
+    
+    class Meta:
+        db_table = "ElectiveInstitute"
+        verbose_name_plural = "Институты в элективе"
+        verbose_name = "Институт в элективе"
+
+class ElectiveFacultet(models.Model):
+    elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
+    facultet = models.ForeignKey(Facultet, on_delete=models.CASCADE)
+    course = models.PositiveIntegerField(null=True, blank=True)  
+    assign_all_courses = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.elective.name} -  {self.facultet.name}'
+    
+    class Meta:
+        db_table = "ElectiveFacultet"
+        verbose_name_plural = "Направления подготовки в элективе"
+        verbose_name = "Направления подготовки в элективе"
+
+
+class ElectiveProfile(models.Model):
+    elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    course = models.PositiveIntegerField(null=True, blank=True)  # курс обучения
+    assign_all_courses = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.elective.name} -  {self.profile.name}'
+    
+    class Meta:
+        db_table = "ElectiveProfile"
+        verbose_name_plural = "Профили подготовки в элективе"
+        verbose_name = "Профили подготовки в элективе"
