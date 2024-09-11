@@ -1,0 +1,152 @@
+
+
+.login-page-container *{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-page-container {
+  margin-top: 30px;
+  width: 60%;
+  padding: 30px;
+  border-radius: 20px;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.login-page-container-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+.ystu-logo-big {
+  width: 650px;
+  height: 270px;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin-top: 50px;
+  margin-bottom: 70px;
+  box-shadow: 35px -16px rgb(239, 127, 27);
+}
+
+.login-form *{
+  gap: 40px;  
+}
+
+
+/* Иконки перед input */
+.icon-container{
+  position: relative;
+}
+
+.icon-container::before{
+  position: absolute;
+  top: 17px;
+  left: 22px;
+  content: "";
+  width: 35px;
+  height: 40px;
+  transform: scale(0.7);
+}
+
+.login-container:before {
+  background: url("../../ystu-images/icons/user.svg") no-repeat;
+}
+
+.password-container:before {
+  background: url("../../ystu-images/icons/lock.svg") no-repeat;
+}
+
+/* Инпуты */
+.login-form_input {
+  padding-left: 80px;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  background-color: rgba(217, 217, 217, 0.40);
+  width: 300px;
+  height: 75px;
+  border-radius: 20px;
+  border: 1px solid #a6a6a6;
+  transition: 0.02s;
+}
+
+.login-form_input:focus{
+  outline: #0A62C4 solid 2px;
+}
+
+.login-form_input:-webkit-autofill::first-line {font-size: 20px}
+
+.login-form_input::placeholder {
+  color: #D3D3D3;
+}
+
+.login-form_button{
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  border-radius: 10px;
+  border-style: none;
+  background: #0A62C4;
+  width: 450px;
+  height: 90px;
+  color: #FFF;
+  font-size: 35px;
+  transition: 0.2s;
+  margin-bottom: 30px;
+}
+
+.login-form_button:hover{
+  scale: 1.03;
+}
+
+/* Ошибки в инпутах */
+.input-error {
+  outline: 2px solid red;
+}
+
+.error-message-wrapper {
+  position:absolute;
+  top: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInOut 3s ease-in-out forwards;
+}
+
+/* Стиль самого сообщения об ошибке */
+.error-message {
+  font-size: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #f5c6cb;
+  width: fit-content;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Анимация плавного появления и исчезновения */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+

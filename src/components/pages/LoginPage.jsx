@@ -2,63 +2,60 @@ import logo from './../../ystu-images/logo.jpg';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Функция для обновления access токена с помощью refresh токена
-const refreshAccessToken = async () => {
-  // Получаем refresh токен из localStorage
-  
-  const refreshToken = localStorage.getItem('refresh_token');
-  
-  // Если refresh токен не найден, выводим ошибку в консоль и возвращаем null
-  if (!refreshToken) {
-    console.error('Refresh token not found');
-    return null;
-  }
-
-  try {
-    // Отправляем запрос на обновление access токена
-    const response = await fetch('http://212.67.13.70:8000/api/token/refresh/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ refresh: refreshToken }),
-    });
-
-    // Получаем данные из ответа
-    const data = await response.json();
-
-    // Если запрос успешен, сохраняем новый access токен и возвращаем его
-    if (response.ok) {
-      localStorage.setItem('access_token', data.access);
-      return data.access;
-    } else {
-      // Если запрос неуспешен, выводим ошибку
-      console.error('Failed to refresh token:', data);
-      return null;
-    }
-  } catch (error) {
-    // Обрабатываем возможные ошибки при запросе
-    console.error('Error refreshing token:', error);
-    return null;
-  }
-};
-
-
 // Компонент страницы входа
 function LoginPage() {
-  // Локальные состояния для управления логином, паролем и токеном
+  // Локальные состояния для управления логином, паролем, токеном, ошибками ввода
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [token, setToken] = useState(localStorage.getItem('access_token'));
+  const [accessToken, setAccessToken] = useState(localStorage.getItem('access_token'));
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Хук для навигации по маршрутам
+  // Навигация
   const navigate = useNavigate();
+
+  // Функция для проверки ввода имени пользователя и пароля
+  const checkInputs = () => {
+    setErrorMessage(''); // Сбрасываем старое сообщение об ошибке
+    let error;
+    let loginInput = document.getElementById('login');
+    let passwordInput = document.getElementById('password');
+
+    // Уведомления об ошибках ввода 
+    // Сбрасываем старое сообщение об ошибке и стили
+    loginInput.classList.remove('input-error');
+    passwordInput.classList.remove('input-error');
+
+    // Проверка наличия имени пользователя и пароля 
+    if (!username && !password) {
+      error = 'Введите имя пользователя и пароль';
+      loginInput.classList.add('input-error');
+      passwordInput.classList.add('input-error');
+    } else if (!username) {
+      error = 'Введите имя пользователя';
+      loginInput.classList.add('input-error');
+    } else if (!password) {
+      error = 'Введите пароль';
+      passwordInput.classList.add('input-error');
+    }
+
+    if (error) {
+      setErrorMessage(error);
+      return false;
+    } else {
+      return true;
+    }
+
+  }
   // Функция для обработки авторизации
   const handleLogin = async (e) => {
-    e.preventDefault(); // Предотвращаем перезагрузку страницы
-    const credentials = { username, password }; // Собираем данные для авторизации
+    // Предотвращаем перезагрузку страницы
+    e.preventDefault(); 
+    if (!checkInputs()){
+      return;
+    }
 
+    // Собираем данные для авторизации
+    const credentials = { username, password }; 
     try {
       // Отправляем запрос на получение токена по введенным логину и паролю
       const response = await fetch('http://212.67.13.70:8000/api/token/', {
@@ -69,17 +66,19 @@ function LoginPage() {
         body: JSON.stringify(credentials),
       });
 
+      // Получаем данные из ответа
       const data = await response.json();
 
       // Если запрос успешен, сохраняем токены и обновляем состояние
       if (response.ok) {
         localStorage.setItem('access_token', data.access);
         localStorage.setItem('refresh_token', data.refresh);
- 
-        setToken(data.access);
+        setAccessToken(data.access);
+
       } else {
         // Выводим сообщение об ошибке авторизации
         setErrorMessage(data.message || 'Неверный логин или пароль'); // Устанавливаем сообщение об ошибке
+
       }
     } catch (error) {
       // Обрабатываем ошибки, связанные с запросом
@@ -91,16 +90,13 @@ function LoginPage() {
   // Функция для получения данных пользователя, обернутая в useCallback
   const fetchUserData = useCallback(async () => {
     let currentToken = localStorage.getItem('access_token');
-  
-    // Если токен не найден, пытаемся его обновить с помощью refresh токена
+
+    // Перенаправляем на страницу логина, если токен не удалось получить
     if (!currentToken) {
-      currentToken = await refreshAccessToken();
-      if (!currentToken) {
-        navigate('/login'); // Перенаправляем на страницу логина, если токен не удалось получить
-        return;
-      }
+      navigate('/login'); 
+      return;
     }
-  
+    
     // Если токен удалось получить, пытаемся получить данные пользователя 
     try {
       // Отправляем запрос для получения данных пользователя
@@ -113,67 +109,41 @@ function LoginPage() {
       });
   
       if (response.ok) { 
-        // Если ответ от сервера успешный (статус 200-299), то:
         const data = await response.json(); 
-        // Асинхронно получаем данные из ответа в формате JSON
-        // Выводим данные пользователя в консоль для отладки
-        console.log(data)
-        
+
+        // Если роль получена перенаправляем на соответствующую страницу
         if (data.role === 'student') {
+          navigate('/student-profile');
+        } else if (data.role === 'teacher') {
+          navigate('/teacher-profile');
+        } else {
+          return;
+        }
 
-
-          navigate('/student');
-   
-        } 
-        
-        if (data.role === 'teacher') {
-
-          const response = await fetch('http://212.67.13.70:8000/api/teacher/', {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${currentToken}`,
-              'Content-Type': 'application/json',
-            },
-          });
-
-          const teacherData = await response.json();
-          navigate('/teacher', {state : { teacherData}});
-        } 
-      
       } else {
         const errorText = await response.text(); 
-        // Асинхронно получаем текст ответа для отладки ошибки
         console.error(`Failed to fetch user data: ${response.status} ${response.statusText}`, errorText); 
-        // Выводим в консоль статус ошибки и текст ответа для отладки
       }
       
       } catch (error) {
-        // Если произошла ошибка в процессе запроса (например, проблемы с сетью)
         console.error('Error fetching user data:', error); 
-        // Логируем ошибку в консоль для отладки
       }
-      
-      }, [navigate]); 
-      // Добавляем navigate в зависимости, чтобы эффект перезапускался при изменении навигации
+    // Добавляем navigate в зависимости, чтобы эффект перезапускался при изменении навигации
+    }, [navigate]); 
 
+      // Хук useEffect срабатывает при изменении accessToken или функции fetchUserData
       useEffect(() => { 
-        // Используем хук useEffect для выполнения побочных эффектов
-        if (token) { 
-          // Если существует токен, запускаем функцию для получения данных пользователя
+        if (accessToken) { 
           fetchUserData(); 
-          // Вызываем функцию fetchUserData для получения данных пользователя
         }
-        
-      }, [token, fetchUserData]); 
-      // Хук useEffect срабатывает при изменении токена или функции fetchUserData
-       
+      }, [accessToken, fetchUserData]); 
+
   return (
-    <div className="login">
-      <div className='container'>
-        <div className='bigLogo'>
-          <img src={logo} alt="logo" />
+    <div className='login-page-container-center'>
+      <div className='login-page-container'>
+        <div className='logo-container'>
+          <img src={logo} className = 'ystu-logo-big' alt="YSTU" />
         </div>
-        
         <div className='login-form'>
           {errorMessage && (
           <div className="error-message-wrapper">
@@ -183,26 +153,29 @@ function LoginPage() {
           </div>
           )}
           <form onSubmit={handleLogin}>
-            <label className='login-label'>
+            <div className='icon-container login-container'>
               <input 
-                className="login" 
+                className="login-form_input" 
+                id = 'login'
                 type="text" 
                 name="login" 
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
+                autoComplete='off'
                 placeholder='Имя пользователя'/>
-            </label>
-            <label className='password-label'>
+            </div>
+            <div className='icon-container password-container'>
               <input 
-                className="password" 
+                className="login-form_input" 
+                id = 'password'
                 type="password" 
                 name="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
+                autoComplete='off'
                 placeholder='Пароль'/>
-                
-            </label>
-            <button className='submit' type='submit'>Войти</button>
+            </div>
+            <button className='login-form_button' type='submit'>Войти</button>
           </form>
         </div>
       </div>
