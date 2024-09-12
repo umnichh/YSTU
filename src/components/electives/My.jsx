@@ -7,30 +7,44 @@ import electiveImage from '../../ystu-images/elective.jpg';
 function StudentElectives(){
   const navigate = useNavigate();
   const [electives, setElectives] = useState([]);
+  const [pathToElectives, setPath] = useState('');
   
   useEffect(() => {
-    const fetchElectives = async () => {
-      const currentToken = localStorage.getItem('access_token');
-      const response = await fetch('http://212.67.13.70:8000/api/electives/student/', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${currentToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-    
-      if (response.ok) {
-        const data = await response.json();
-        setElectives(data); // Сохраняем элективы в состояние
-      }
-    };
-    
-    fetchElectives();
-    }, []);
-    
+    const role = localStorage.getItem('role'); // Получаем роль из localStorage
+  
+    if (role === 'student') {
+      setPath('api/electives/student/');
+    } else if (role === 'teacher') {
+      setPath('api/electives/teacher/');
+    }
+  }, []);
+
+  useEffect(() => {
+  const fetchElectives = async () => {
+    if (!pathToElectives) return; // Не делаем запрос, если путь не установлен
+
+    const currentToken = localStorage.getItem('access_token');
+    const response = await fetch(`http://212.67.13.70:8000/${pathToElectives}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${currentToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setElectives(data); // Сохраняем элективы в состояние
+    } else {
+      console.error('Ошибка получения элективов:', response.status); // Логируем ошибку
+    }
+  };
+
+  fetchElectives();
+}, [pathToElectives]); // Запрос выполняется при изменении pathToElectives
 
   const handleClick = (elective) => {
-    navigate('/elective-page', { state:{ elective: {elective} }});
+    navigate('/elective/info', { state:{ elective: elective }});
   };
   
   const signUp = (elective) => {
@@ -120,6 +134,7 @@ function StudentElectives(){
           ))} 
         </div>
       </div>
+      
     </div>
   );
 }

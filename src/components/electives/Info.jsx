@@ -3,24 +3,21 @@ import Navbar from '../service/Navbar';
 import electiveImage from '../../ystu-images/elective.jpg';
 import '../styles/elective-info.css';
 import Footer from '../service/Footer';
-function ElectivePage() {
+function Info() {
   const location = useLocation();
   const { state } = location;
   const elective = state?.elective || {}; // Если состояние или elective отсутствует, используем пустой объект
   
   const {
     date_finish = '',
-    date_registration = '',
     date_start = '',
     describe = 'Описания нет',
     form = {},  // Вложенный объект
     health = {}, // Вложенный объект
-    id = 'Не указана',
     marks = 'Минимального порога нет',
     name = 'Название не указано',
     place = 'Количество мест не указано',
     volume = 'Объем не указан',
-    teachers = {} // Вложенный объект
   } = elective;
 
   console.log(elective)
@@ -78,4 +75,4 @@ function ElectivePage() {
 
 }
 
-export default ElectivePage;
+export default Info;

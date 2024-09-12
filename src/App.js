@@ -1,37 +1,52 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './components/pages/LoginPage';
-import StudentPage from './components/pages/StudentPage';
-import StudentElectives from './components/pages/StudentElectives';
 
+// authorization
+import LoginPage from './components/authorization/Login';
 
+// profiles
+import Student from './components/profiles/Student';
+import Teacher from './components/profiles/Teacher';
 
-import TeacherPage from './components/pages/TeacherPage';
-import NotFoundPage from './components/pages/NotFoundPage';
-import ElectivePage from './components/pages/ElectivePage';
-// import MyElectives from './components/pages/MyElectives';
-import TeacherElectives from './components/pages/TeacherElectives';
-import ProtectedRoute from './components/service/ProtectedRoute';
+// electives
+import All from './components/electives/All';
+import Info from './components/electives/Info';
+import My from './components/electives/My';
+import Create from './components/electives/Create';
+import Made from './components/electives/Made'
 
+// routing
+import NotFoundPage from './components/routing/NotFoundPage';
+import ProtectedRoute from './components/routing/ProtectedRoute';
 
+// styles
 import './components/styles/common.css';
 import './components/styles/login.css';
 import './components/styles/student-profile.css';
 import './components/styles/student-electives.css';
-import MyElectives from './components/pages/MyElectives';
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/* authoriation */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/student-profile" element={<ProtectedRoute element={StudentPage} allowedRoles={['student']} />} />
-        <Route path="/student-electives" element={<ProtectedRoute element={StudentElectives} allowedRoles={['student']} />} />
-        <Route path="/student-planned" element={<ProtectedRoute element={MyElectives} allowedRoles={['student']} />} />
-        <Route path="/elective-page" element={<ProtectedRoute element={ElectivePage} allowedRoles={['student']} />} />
 
-        <Route path="/teacher-profile" element={<ProtectedRoute element={TeacherPage} allowedRoles={['teacher']} />} />
-        <Route path="/teacher-electives" element={<ProtectedRoute element={TeacherElectives} allowedRoles={['teacher']} />} />
+        {/* profiles */}  
+        <Route path="/profile/student" element={<ProtectedRoute element={Student} allowedRoles={['student']} />} />
+        <Route path="/profile/teacher" element={<ProtectedRoute element={Teacher} allowedRoles={['teacher']} />} />
+
+        {/* electives */}
+        <Route path="/elective/all" element={<ProtectedRoute element={All} allowedRoles={['student', 'teacher']} />} />
+        <Route path="/elective/my" element={<ProtectedRoute element={My} allowedRoles={['student', 'teacher']} />} />
+        <Route path="/elective/info" element={<ProtectedRoute element={Info} allowedRoles={['student', 'teacher']} />} />
+        <Route path="/elective/made" element={<ProtectedRoute element={Made} allowedRoles={['teacher']} />} />
+
+        {/* create electives */}
+        <Route path="/elective/create" element={<ProtectedRoute element={Create} allowedRoles={['teacher']} />} />
+        
+
+        {/* not found */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>

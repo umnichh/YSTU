@@ -113,9 +113,11 @@ function LoginPage() {
 
         // Если роль получена перенаправляем на соответствующую страницу
         if (data.role === 'student') {
-          navigate('/student-profile');
+          localStorage.setItem('role', data.role);
+          navigate('/profile/student');
         } else if (data.role === 'teacher') {
-          navigate('/teacher-profile');
+          navigate('/profile/teacher');
+          localStorage.setItem('role', data.role);
         } else {
           return;
         }
