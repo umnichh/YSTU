@@ -10,7 +10,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class InstituteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institute
-        fields = ('name',)
+        fields = ('id', 'name',)
 
 
 class FacultetSerializer(serializers.ModelSerializer):
@@ -18,13 +18,13 @@ class FacultetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Facultet
-        fields = ('name', 'institute')
+        fields = ('id', 'name', 'institute')
 
 
 class FormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Form
-        fields = ('name',)
+        fields = ('id', 'name',)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -33,13 +33,13 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('name', 'facultet', 'form')
+        fields = ('id', 'name', 'facultet', 'form')
 
 
 class HealthSerializer(serializers.ModelSerializer):
     class Meta:
         model = Health
-        fields = ('name',)
+        fields = ('id', 'name',)
 
 
 class TeacherSerializer(serializers.ModelSerializer):
@@ -56,7 +56,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('last_name', 'first_name', 'middle_name', 'year_of_study', 'group', 'average_grade', 'profile', 'health')
+        fields = ('id', 'last_name', 'first_name', 'middle_name', 'year_of_study', 'group', 'average_grade', 'profile', 'health')
 
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,35 +64,57 @@ class StatusSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class ElectiveSerializer(serializers.ModelSerializer):
-    health = HealthSerializer()
-    form = FormSerializer()
-    status = StatusSerializer()
+    status = StatusSerializer(read_only=True)  # read-only, так как создаем его отдельно
     teachers = serializers.SerializerMethodField()
+    health = HealthSerializer(read_only=True)          # Для отправки полного объекта
+    form = FormSerializer(read_only=True) 
+    made_by = TeacherSerializer(read_only=True)
+
     class Meta:
         model = Elective
-        fields = ('__all__')
-        
+        fields = ['id', 'name', 'describe', 'place', 'form', 'volume', 'date_start', 'date_finish', 'marks', 'health', 'status', 'registration_closed', 'teachers', 'made_by']
+
+    def validate(self, data):
+        required_fields = ['name', 'describe', 'place', 'volume', 'date_start', 'date_finish', 'marks']
+        for field in required_fields:
+            if not data.get(field):
+                raise serializers.ValidationError(f"{field} поле не указано")
+
+        date_start = data.get('date_start')
+        date_finish = data.get('date_finish')
+
+        if date_start and date_finish:
+            if date_start > date_finish:
+                raise serializers.ValidationError("Дата начала не может быть позже даты окончания")
+
+        volume = data.get('volume')
+        if volume and not isinstance(volume, int):
+            raise serializers.ValidationError("Объём должен быть числом")
+
+        return data   
+
     def get_teachers(self, obj):
         teacher_electives = TeacherElective.objects.filter(elective=obj)
         teachers = [teacher_elective.teacher for teacher_elective in teacher_electives]
         return TeacherSerializer(teachers, many=True).data
-        
-class ElectiveCreateSerializer(serializers.ModelSerializer):
-    teacher_ids = serializers.ListField(write_only=True)
-
+ 
+class ElectiveInstituteSerializer(serializers.ModelSerializer):
+    institute = InstituteSerializer(read_only=True)
+    elective = ElectiveSerializer(read_only=True)
     class Meta:
-        model = Elective
-        fields = ['name', 'describe', 'place', 'form', 'volume', 'date_registration', 'date_start', 'date_finish', 'marks', 'health', 'status', 'registration_closed',  'teacher_ids'] 
+        model = ElectiveInstitute
+        fields = '__all__'
 
-    def create(self, validated_data):
-        teacher_ids = validated_data.pop('teacher_ids', [])
-        validated_data['date_registration'] = date.today()
-        elective = Elective.objects.create(**validated_data)
+class ElectiveFacultetSerializer(serializers.ModelSerializer):
+    facultet = FacultetSerializer(read_only=True)
+    elective = ElectiveSerializer(read_only=True)
+    class Meta:
+        model = ElectiveFacultet
+        fields = '__all__'
 
-        # Создаем связи с преподавателями
-        for teacher_id in teacher_ids:
-            teacher = Teacher.objects.get(id=teacher_id)
-            TeacherElective.objects.create(elective=elective, teacher=teacher)
-
-        return elective
-
+class ElectiveProfileSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(read_only=True)
+    elective = ElectiveSerializer(read_only=True)
+    class Meta:
+        model = ElectiveProfile
+        fields = '__all__'

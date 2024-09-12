@@ -76,7 +76,7 @@ class Profile(models.Model):
     facultet = models.ForeignKey(Facultet, on_delete=models.CASCADE, verbose_name="Направление подготовки")
     form = models.ForeignKey(Form, on_delete=models.CASCADE, verbose_name="Форма обучения")
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.form.name}"
     
     class Meta:
         db_table = "Profile"
@@ -123,6 +123,7 @@ class Elective(models.Model):
     health = models.ForeignKey(Health, on_delete=models.CASCADE, null=True)
     status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True)
     registration_closed = models.BooleanField('Регистрация закрыта', default=False)
+    made_by = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
     
     def __str__(self):
         return f'{self.name}'
@@ -157,8 +158,8 @@ class StudentElective(models.Model):
 class ElectiveInstitute(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
-    course = models.PositiveIntegerField(null=True, blank=True)  
-    assign_all_courses = models.BooleanField(default=False)
+    semestr = models.PositiveIntegerField(null=True, blank=True)  
+    assign_all_semestrs = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.elective.name} -  {self.institute.name}'
@@ -171,8 +172,8 @@ class ElectiveInstitute(models.Model):
 class ElectiveFacultet(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     facultet = models.ForeignKey(Facultet, on_delete=models.CASCADE)
-    course = models.PositiveIntegerField(null=True, blank=True)  
-    assign_all_courses = models.BooleanField(default=False)
+    semestr = models.PositiveIntegerField(null=True, blank=True)  
+    assign_all_semestrs = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.elective.name} -  {self.facultet.name}'
@@ -186,8 +187,8 @@ class ElectiveFacultet(models.Model):
 class ElectiveProfile(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    course = models.PositiveIntegerField(null=True, blank=True)  # курс обучения
-    assign_all_courses = models.BooleanField(default=False)
+    semestr = models.PositiveIntegerField(null=True, blank=True)  # курс обучения
+    assign_all_semestrs = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.elective.name} -  {self.profile.name}'
