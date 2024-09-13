@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+CELERY_BEAT_SCHEDULE = {
+    'clear-expired-tokens': {
+        'task': 'core.tasks.clear_expired_tokens',
+        'schedule': crontab(hour=0, minute=0),  # Каждый день в полночь
+    },
+}
 
 AUTH_USER_MODEL = 'core.CustomUser'
 
