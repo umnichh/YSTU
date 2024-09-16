@@ -50,7 +50,7 @@ INSTALLED_APPS = [
 CELERY_BEAT_SCHEDULE = {
     'clear-expired-tokens': {
         'task': 'core.tasks.clear_expired_tokens',
-        'schedule': crontab(hour=0, minute=0),  # Каждый день в полночь
+        'schedule': crontab(hour=19, minute=55),  # Каждый день в полночь
     },
 }
 

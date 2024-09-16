@@ -158,6 +158,7 @@ class StudentElective(models.Model):
 class ElectiveInstitute(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
+    course = models.PositiveIntegerField(null=True, blank=True)  
     semestr = models.PositiveIntegerField(null=True, blank=True)  
     assign_all_semestrs = models.BooleanField(default=False)
 
@@ -172,6 +173,7 @@ class ElectiveInstitute(models.Model):
 class ElectiveFacultet(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     facultet = models.ForeignKey(Facultet, on_delete=models.CASCADE)
+    course = models.PositiveIntegerField(null=True, blank=True)  
     semestr = models.PositiveIntegerField(null=True, blank=True)  
     assign_all_semestrs = models.BooleanField(default=False)
 
@@ -187,7 +189,8 @@ class ElectiveFacultet(models.Model):
 class ElectiveProfile(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    semestr = models.PositiveIntegerField(null=True, blank=True)  # курс обучения
+    course = models.PositiveIntegerField(null=True, blank=True)  
+    semestr = models.PositiveIntegerField(null=True, blank=True) 
     assign_all_semestrs = models.BooleanField(default=False)
 
     def __str__(self):

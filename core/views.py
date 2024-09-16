@@ -16,7 +16,7 @@ class UserRoleView(APIView):
 
     def get(self, request):
         user = request.user
-
+        print(request.data)
         try:
             student = Student.objects.get(user=user)
             return Response({'role': 'student'})
@@ -28,7 +28,7 @@ class UserRoleView(APIView):
             return Response({'role': 'teacher'})
         except Teacher.DoesNotExist:
             pass
-
+    
         return Response({'error': 'Роль не найдена'}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -90,17 +90,20 @@ class ElectiveView(APIView):
     def post(self, request):
         data = request.data
         teacher = Teacher.objects.get(user=request.user)
-        # Use ElectiveSerializer to validate data
+        
+        # Validate Elective data with serializer
         serializer = ElectiveSerializer(data=data)
         if serializer.is_valid():
             validated_data = serializer.validated_data
 
-            # Extract IDs and create the elective
+            # Extract IDs for health and form
             health_id = data.get('health')
             form_id = data.get('form')
             health = Health.objects.get(id=health_id)
             form = Form.objects.get(id=form_id)
+            status_first = Status.objects.filter(name='Скоро начнётся').first()
 
+            # Create Elective
             elective = Elective.objects.create(
                 name=validated_data['name'],
                 describe=validated_data['describe'],
@@ -111,7 +114,7 @@ class ElectiveView(APIView):
                 date_finish=validated_data['date_finish'],
                 marks=validated_data['marks'],
                 health=health,
-                status=validated_data.get('status'),
+                status=status_first,
                 made_by=teacher
             )
 
@@ -121,13 +124,62 @@ class ElectiveView(APIView):
                 teacher = Teacher.objects.get(id=teacher_id)
                 TeacherElective.objects.create(elective=elective, teacher=teacher)
 
-            # Return the newly created elective
+            # Add institute, facultet, profile relationships
+            institutes = data.get('institute_ids', [])
+            facultets = data.get('facultet_ids', [])
+            profiles = data.get('profile_ids', [])
+            course = data.get('course', None)
+            semestr = data.get('semestr', None)
+            assign_all_semestrs = data.get('assign_all_semestrs', False)
+            for institute_id in institutes:
+
+                try:
+                    institute = Institute.objects.get(id=institute_id)
+                    ElectiveInstitute.objects.create(
+                        elective=elective,
+                        institute=institute,
+                        course=course,
+                        semestr=semestr if not assign_all_semestrs else None,
+                        assign_all_semestrs=assign_all_semestrs
+                    )
+                except Institute.DoesNotExist:
+                    return Response({'error': f'Институт с айди {institute_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+            for facultet_id in facultets:
+
+                try:
+                    facultet = Facultet.objects.get(id=facultet_id)
+                    ElectiveFacultet.objects.create(
+                        elective=elective,
+                        facultet=facultet,
+                        course=course,
+                        semestr=semestr if not assign_all_semestrs else None,
+                        assign_all_semestrs=assign_all_semestrs
+                    )
+                except Facultet.DoesNotExist:
+                    return Response({'error': f'Факультет с айди {facultet_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+            for profile_id in profiles:
+                try:
+                    profile = Profile.objects.get(id=profile_id)
+                    ElectiveProfile.objects.create(
+                        elective=elective,
+                        profile=profile,
+                        course=course,
+                        semestr=semestr if not assign_all_semestrs else None,
+                        assign_all_semestrs=assign_all_semestrs
+                    )
+                except Profile.DoesNotExist:
+                    return Response({'error': f'Профиль с айди {profile_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Return the newly created elective with related data
             return Response({
                 'message': 'Elective created',
                 'elective': ElectiveSerializer(elective).data
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         
 class ElectiveDetailView(APIView):
     
@@ -259,64 +311,64 @@ class AllInstitutes(APIView):
         return Response(data)
     
 
-class AddInstituteElective(APIView):  
-    def post(self, request, elective_id): 
-        elective = Elective.objects.get(id=elective_id)
-        data = request.data
+# class AddInstituteElective(APIView):  
+#     def post(self, request, elective_id): 
+#         elective = Elective.objects.get(id=elective_id)
+#         data = request.data
 
-        institutes = data.get('institutes', [])
-        facultets = data.get('facultets', [])
-        profiles = data.get('profiles', [])
+#         institutes = data.get('institutes', [])
+#         facultets = data.get('facultets', [])
+#         profiles = data.get('profiles', [])
 
-        for institute_data in institutes:
-            institute_id = institute_data.get('id')
-            semestr = institute_data.get('semestr', None)
-            assign_all_semestrs = institute_data.get('assign_all_semestrs', False)
+#         for institute_data in institutes:
+#             institute_id = institute_data.get('id')
+#             semestr = institute_data.get('semestr', None)
+#             assign_all_semestrs = institute_data.get('assign_all_semestrs', False)
 
-            try:
-                institute = Institute.objects.get(id=institute_id)
-                ElectiveInstitute.objects.create(
-                    elective=elective,
-                    institute=institute,
-                    semestr=semestr if not assign_all_semestrs else None,
-                    assign_all_semestrs=assign_all_semestrs
-                )
-            except Institute.DoesNotExist:
-                return Response({'error': f'Институт с айди {institute_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+#             try:
+#                 institute = Institute.objects.get(id=institute_id)
+#                 ElectiveInstitute.objects.create(
+#                     elective=elective,
+#                     institute=institute,
+#                     semestr=semestr if not assign_all_semestrs else None,
+#                     assign_all_semestrs=assign_all_semestrs
+#                 )
+#             except Institute.DoesNotExist:
+#                 return Response({'error': f'Институт с айди {institute_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
 
-        for facultet_data in facultets:
-            facultet_id = facultet_data.get('id')
-            semestr = facultet_data.get('semestr', None)
-            assign_all_semestrs = facultet_data.get('assign_all_semestrs', False)
+#         for facultet_data in facultets:
+#             facultet_id = facultet_data.get('id')
+#             semestr = facultet_data.get('semestr', None)
+#             assign_all_semestrs = facultet_data.get('assign_all_semestrs', False)
 
-            try:
-                facultet = Facultet.objects.get(id=facultet_id)
-                ElectiveFacultet.objects.create(
-                    elective=elective,
-                    facultet=facultet,
-                    semestr=semestr if not assign_all_semestrs else None,
-                    assign_all_semestrs=assign_all_semestrs
-                )
-            except Facultet.DoesNotExist:
-                return Response({'error': f'Факультет с айди {facultet_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+#             try:
+#                 facultet = Facultet.objects.get(id=facultet_id)
+#                 ElectiveFacultet.objects.create(
+#                     elective=elective,
+#                     facultet=facultet,
+#                     semestr=semestr if not assign_all_semestrs else None,
+#                     assign_all_semestrs=assign_all_semestrs
+#                 )
+#             except Facultet.DoesNotExist:
+#                 return Response({'error': f'Факультет с айди {facultet_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
 
-        for profile_data in profiles:
-            profile_id = profile_data.get('id')
-            semestr = profile_data.get('semestr', None)
-            assign_all_semestrs = profile_data.get('assign_all_semestrs', False)
+#         for profile_data in profiles:
+#             profile_id = profile_data.get('id')
+#             semestr = profile_data.get('semestr', None)
+#             assign_all_semestrs = profile_data.get('assign_all_semestrs', False)
 
-            try:
-                profile = Profile.objects.get(id=profile_id)
-                ElectiveProfile.objects.create(
-                    elective=elective,
-                    profile=profile,
-                    semestr=semestr if not assign_all_semestrs else None,
-                    assign_all_semestrs=assign_all_semestrs
-                )
-            except Profile.DoesNotExist:
-                return Response({'error': f'Профиль с айди {profile_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+#             try:
+#                 profile = Profile.objects.get(id=profile_id)
+#                 ElectiveProfile.objects.create(
+#                     elective=elective,
+#                     profile=profile,
+#                     semestr=semestr if not assign_all_semestrs else None,
+#                     assign_all_semestrs=assign_all_semestrs
+#                 )
+#             except Profile.DoesNotExist:
+#                 return Response({'error': f'Профиль с айди {profile_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({'message': 'всякое назначено'}, status=status.HTTP_201_CREATED)
+#         return Response({'message': 'всякое назначено'}, status=status.HTTP_201_CREATED)
 
     
 class ElectivesMadeByTeacher(APIView):

@@ -12,22 +12,33 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain'),  # POST: Получить JWT токен (login)
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # POST: Обновить JWT токен
-    path('api/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),  # POST: Добавить токен в черный список (logout)
-    path('api/user-role/', UserRoleView.as_view(), name='get_user_role'),  # GET: Возвращает роль пользователя (student или teacher)
-    path('api/teacher/', TeacherCabinetView.as_view(), name='teacher_cabinet'),  # GET: Данные кабинета преподавателя
-    path('api/student/', StudentCabinetView.as_view(), name='student_cabinet'),  # GET: Данные кабинета студента
+   # JWT ГОВН
+    path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain'),  # POST: Получить JWT токен (login)
+    path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # POST: Обновить JWT токен
+    path('api/auth/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),  # POST: Добавить токен в черный список (logout) не используем
+ 
+    # После лоигна
+    path('api/auth/user-role/', UserRoleView.as_view(), name='get_user_role'),  # GET: Возвращает роль пользователя (student или teacher)
+ 
+    # Кабинеты препода/студента
+    path('api/teacher/cabinet/', TeacherCabinetView.as_view(), name='teacher_cabinet'),  # GET: Данные кабинета преподавателя
+    path('api/student/cabinet/', StudentCabinetView.as_view(), name='student_cabinet'),  # GET: Данные кабинета студента
+ 
+    # Элективы()
     path('api/electives/', AllElectivesView.as_view(), name='all_electives'),  # GET: Возвращает все элективы
-    path('api/create-elective/', ElectiveView.as_view(), name='create_elective'),  # GET: Получить данные для создания электива, POST: Создать новый электив
-    path('api/elective/<int:id>/', ElectiveDetailView.as_view(), name='elective_detail'), #GET: #ГАНДОН НА ИЛЬЕ #delete : удаление электива
-    path('api/elective/<int:id>/enroll', EnrollElectiveView.as_view(), name='enroll_elective'), # POST: ЗАПИСЬ НА ЭЛЕКТИВ # DELETE: ОТПИСКА ОТ ЭЛЕКТИВА
-    path('api/electives/available/', ElectiveAvaliableStudentView.as_view(), name='available_electives'), #POST: элективы доступные студенту
-    path('api/electives/student/', StudentElectiveView.as_view(), name='available_electives'), #GET: элективы на которые студент записан
-    path('api/electives/teacher/', TeacherElectivView.as_view(), name='available_electives'), #GET: элективы которые ведёт преподаватель
-    path('api/electives/upload/', UploadInstitutesView.as_view(), name='upload_electives'), #POST: ЗАГРУЗКА ИНСТИТУТОВ/СПЕЦИАЛЬНОСТЕЙ/ПРОФИЛЕЙ ИЗ ЭКСЕЛЬ-ФАЙЛА
-    path('api/all-institutes/', AllInstitutes.as_view(), name='all_institutes'), #GET - СПИСОК ВСЕХ ИНСТИТУТОВНАПРАВЛЕНИЙПРОФИЛЕЙ
-    path('api/electives_made_by_teacher/', ElectivesMadeByTeacher.as_view(), name='ElectivesMadeByTeacher'), #GET - список элективов созданных преподавателем
-    path('api/elective/<int:id>/', EnrollElectiveView.as_view(), name='delete_elective'), # DELETE: ОТПИСКА ОТ ЭЛЕКТИВА
-    path('api/elective/<int:id>/addinstitute', AddInstituteElective.as_view(), name='AddInstituteElective'), # DELETE: ОТПИСКА ОТ ЭЛЕКТИВА
+    path('api/electives/create/', ElectiveView.as_view(), name='create_elective'),  # POST: Создать новый электив
+    path('api/electives/<int:id>/', ElectiveDetailView.as_view(), name='elective_detail'),  # GET: Получить детали электива, DELETE: Удалить электив
+    path('api/electives/<int:id>/enroll/', EnrollElectiveView.as_view(), name='enroll_elective'),  # POST: Записаться на электив, DELETE: Отписаться от электива
+ 
+    # Элективы у стдента
+    path('api/electives/choice/', ElectiveAvaliableStudentView.as_view(), name='available_electives'),  # GET:  элективы доступные студенту
+    path('api/electives/student/', StudentElectiveView.as_view(), name='student_electives'),  # GET: Элективы, на которые студент записан
+ 
+    # Элективы у препода
+    path('api/electives/teacher/', TeacherElectivView.as_view(), name='teacher_electives'),  # GET: Элективы, которые ведет преподаватель
+    path('api/electives/created/', ElectivesMadeByTeacher.as_view(), name='teacher_created_electives'),  # GET: Список элективов, созданных преподавателем
+ 
+    # говно
+    path('api/institutes/upload/', UploadInstitutesView.as_view(), name='upload_institutes'),  # POST: Загрузка институтов/факультетов/профилей из эксель-файла
+    path('api/institutes/', AllInstitutes.as_view(), name='all_institutes'),  # GET: Список всех институтов/направлений/профилей
 ]

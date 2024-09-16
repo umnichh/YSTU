@@ -114,22 +114,22 @@ class ElectiveSerializer(serializers.ModelSerializer):
         return ElectiveProfileSerializer(elective_profiles, many=True).data
  
 class ElectiveInstituteSerializer(serializers.ModelSerializer):
-    institute = InstituteSerializer(read_only=True)
-    elective = ElectiveSerializer(read_only=True)
+    institute = serializers.PrimaryKeyRelatedField(read_only=True)
+    elective = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = ElectiveInstitute
         fields = '__all__'
 
 class ElectiveFacultetSerializer(serializers.ModelSerializer):
-    facultet = FacultetSerializer(read_only=True)
-    elective = ElectiveSerializer(read_only=True)
+    facultet = serializers.PrimaryKeyRelatedField(read_only=True)
+    elective = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = ElectiveFacultet
         fields = '__all__'
 
 class ElectiveProfileSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(read_only=True)
-    elective = ElectiveSerializer(read_only=True)
+    profile = serializers.PrimaryKeyRelatedField(read_only=True)
+    elective = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = ElectiveProfile
         fields = '__all__'
