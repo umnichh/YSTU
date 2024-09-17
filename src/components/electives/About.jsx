@@ -1,32 +1,27 @@
-import { useLocation } from 'react-router-dom';
-import Navbar from '../service/Navbar';
+import React, { useLocation } from 'react-router-dom';
 import electiveImage from '../../ystu-images/elective.jpg';
-import '../styles/elective-info.css';
-import Footer from '../service/Footer';
-function Info() {
+
+function About() {
   const location = useLocation();
   const { state } = location;
-  const elective = state?.elective || {}; // Если состояние или elective отсутствует, используем пустой объект
-  
+  const elective = state?.elective || {}; 
+
   const {
     date_finish = '',
     date_start = '',
     describe = 'Описания нет',
-    form = {},  // Вложенный объект
-    health = {}, // Вложенный объект
+    form = {}, 
+    health = {},
     marks = 'Минимального порога нет',
     name = 'Название не указано',
     place = 'Количество мест не указано',
     volume = 'Объем не указан',
   } = elective;
 
-  console.log(elective)
-
-  // Деструктурируем вложенные объекты
+  console.log(elective);
   return(
     <>
-      <div className="student-page-container">
-      <Navbar /> 
+      <div className="container">
         <div className='elective-info-container'>
           <div className='elective-info-header'>
             {name}
@@ -54,7 +49,7 @@ function Info() {
               <span>{marks}</span>
               {elective.teachers.length > 0 ? (
                 elective.teachers.map((teacher) => (
-                  <div>
+                  <div key={teacher.id}>
                     {teacher.last_name} {teacher.first_name} {teacher.middle_name} 
                   </div>
                 ))
@@ -67,7 +62,7 @@ function Info() {
         <div className='describe-container'>
         {describe}
         </div>
-        <Footer />
+
       </div>
      
     </>
@@ -75,4 +70,4 @@ function Info() {
 
 }
 
-export default Info;
+export default About;

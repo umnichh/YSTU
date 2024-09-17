@@ -1,32 +1,35 @@
 import student from '../../ystu-images/student.jpg';
 import { useEffect, useState } from 'react';
-import Navbar from '../service/Navbar.jsx';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
+import React from 'react';
 
 function StudentPage() {
   const [studentData, setStudentData] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const currentToken = localStorage.getItem('access_token');
-      const response = await fetch('http://212.67.13.70:8000/api/student/', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${currentToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setStudentData(data);
+    async function getProfile() {
+      try{
+        const response = await fetch('http://212.67.13.70:8000/api/student/cabinet/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        })
+        if (response.ok) {
+          const data = await response.json();
+          setStudentData(data);
+        }
       }
-    };
-  fetchUserData();
-  }, []);
+      catch (error) {
+        console.log(error);
+    }
+  }
+  getProfile();
+}, [])
 
   if (!studentData) {
-    return <div></div>; 
+    return null; 
   }
 
   const {
@@ -41,19 +44,17 @@ function StudentPage() {
   } = studentData;
 
   const fullName = `${last_name} ${first_name} ${middle_name}`;
-  const program = profile.facultet?.name || 'Не указано';
+  const program = profile.facultet.name || 'Не указано';
   const healthGroup = health.name || 'Не указана';
   
   return (
-    <div className="student-page-container">
-      <Navbar/>
-
-      <div className='student-profile'>
-        <img className='student-image' src={student} alt='student'/>
-        <div className='student-info'>
-          <div className='fullname'>{fullName}</div>
-          <div className='student-parameters'>
-            <div className='student-properties'>
+    <div className="container">
+      <div className='profile'>
+        <img className='profile-image' src={student} alt='student'/>
+        <div className='profile-info'>
+          <div className='profile-fullname'>{fullName}</div>
+          <div className='profile-parameters'>
+            <div className='profile-properties'>
               <span>Направление:</span>
               <span>Статус:</span>
               <span>Курс:</span>
@@ -61,7 +62,7 @@ function StudentPage() {
               <span>Успеваемость:</span>
               <span>Группа здоровья:</span>
             </div>
-            <div className='student-values'>
+            <div className='profile-values'>
               <span>{program}</span>
               <span>"Студенты"</span>
               <span>{year_of_study}</span>

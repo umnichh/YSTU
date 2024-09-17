@@ -1,0 +1,942 @@
+
+body {
+  font-family: Arial;
+  margin: 0px 350px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  overflow-y: scroll;
+  background: linear-gradient(1000deg, rgb(145, 216, 246), rgb(252, 239, 228));
+}
+
+.container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container * {
+  display: flex;
+}
+
+/* NAVBAR */
+/* Навигационный блок */
+.nav-container{
+  position: sticky;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 10px;
+  height: 80px;
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+}
+
+.nav-container {
+  transition: height 0.5s ease;
+}
+
+.nav-container.is-pinned * {
+  background-color: red;
+} 
+
+.nav-logo-container *{
+  display: flex;
+  align-items: center; 
+  width: auto;  
+  height: 80px; 
+  border: 1px solid black;
+  border-right: none;
+  border-radius: 10px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.nav-links-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  gap: 30px;
+  border: 1px solid black;
+  border-radius: 10px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  background: linear-gradient(350deg, #4d91ff, #19337c);
+}
+
+.nav-links-container :first-child{
+  padding-left: 10px;
+}
+
+.nav-links-container :last-child{
+  padding-right: 15px;
+}
+
+.nav-links-container *{
+  font-size: 16px;
+  color: white;
+  border-style: none;
+  text-decoration: none;
+  background-color: transparent;
+  transition: 0.1s ease-in-out;
+  white-space: nowrap;
+}
+
+.nav-links-container *:hover{
+  opacity: 0.7;
+}
+
+
+
+
+
+/* LOGIN */
+/* Логин */
+.login-form *{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  padding: 30px;
+  border-radius: 20px;
+  background-color: white;
+  border: 1px solid black;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.ystu-logo-big {
+  width: 650px;
+  height: 270px;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin-top: 50px;
+  margin-bottom: 70px;
+  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+.login-form *{
+  gap: 40px;  
+}
+
+/* Иконки перед input */
+.icon-container{
+  position: relative;
+}
+
+.icon-container::before{
+  position: absolute;
+  top: 17px;
+  left: 22px;
+  content: "";
+  width: 35px;
+  height: 40px;
+  transform: scale(0.7);
+
+}
+
+.login-container:before {
+  background: url("./ystu-images/icons/user.svg") no-repeat;
+
+}
+
+.password-container:before {
+  background: url("./ystu-images/icons/lock.svg") no-repeat;
+}
+
+/* Инпуты */
+.login-form_input {
+  padding-left: 80px;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  background-color: rgba(217, 217, 217, 0.40);
+  width: 300px;
+  height: 75px;
+  border-radius: 20px;
+  border: 1px solid #a6a6a6;
+  transition: 0.2s;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.login-form_input:focus{
+  box-shadow: rgb(22, 86, 155) 10px 10px;
+  outline: #ffaf1b solid 3px;
+}
+
+.login-form_input:-webkit-autofill::first-line {font-size: 20px}
+
+.login-form_input::placeholder {
+  color: #9b9b9b;
+}
+
+.login-form_button{
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  border-radius: 10px;
+  border-style: none;
+  background: rgb(22, 86, 155);
+  width: 450px;
+  height: 90px;
+  color: #FFF;
+  font-size: 35px;
+  transition: 0.2s;
+  margin-bottom: 30px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.login-form_button:hover{
+  scale: 1.03;
+  box-shadow: rgb(239, 127, 27) 10px 10px;
+}
+
+/* Ошибки в инпутах */
+.input-error {
+  outline: 2px solid red;
+}
+
+.error-message-wrapper {
+  position:absolute;
+  top: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInOut 3s ease-in-out forwards;
+}
+
+/* Стиль самого сообщения об ошибке */
+.error-message {
+  font-size: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #f5c6cb;
+  width: fit-content;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Анимация плавного появления и исчезновения */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+
+
+
+/* PROFILES */
+/* Профиль студента и преподавателя */
+.profile{
+  display: flex;
+  background: white;
+  margin: 50px 50px 0px 50px;
+  padding: 50px;
+  border-radius: 10px;
+  outline: 1px solid black;
+}
+
+.profile-image{
+  width: 250px;
+  height: 250px;
+}
+.profile-fullname{
+  font-size: 32px;
+  white-space: nowrap;
+  margin-left: 20px;
+  padding-right: 100%;
+  border-bottom: 1px solid black;
+  margin-bottom: 20px;
+}
+.profile-properties{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.profile-parameters{
+  margin-left: 50px;
+  font-size: 20px;
+}
+
+.profile-parameters *{
+  margin-bottom: 5px;
+}
+
+.profile-values{
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+}
+
+.profile-info{
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.title {
+  margin-top: 50px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  width: 1000px
+}
+
+.elective-info-container{
+  display: flex;
+  flex-direction: row ;
+  border: 1px solid black;
+  align-items: center;
+  margin-top: 50px;
+  background-color: white;
+  padding: 30px;
+  width: 80%;
+  border-radius: 10px;
+}
+.elective-info-info * {
+  gap: 10px;
+  margin-left: 30px;
+  
+}
+.elective-info-header{
+  font-size: 32px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column ;
+}
+.elective-info-properties{
+  font-size: 20px;
+  display: flex;
+  flex-direction: column ;
+  align-items: flex-end;
+  white-space: nowrap;
+}
+
+.elective-info-properties *{
+  white-space: nowrap;
+  
+}
+.elective-info-values{
+  margin-left: 0px;
+  font-size: 20px;
+  display: flex;
+  flex-direction: column ;
+  white-space: nowrap;
+}
+
+.elective-image-info{
+  width: 360px
+}
+
+.describe-container{
+  display: flex;
+  flex-direction: row ;
+  font-size: 20px;
+  border: 1px solid black;
+  align-items: center;
+  margin-top: 10px;
+  background-color: rgb(251, 251, 251);
+  padding: 30px;
+  width: 80%;
+  border-radius: 10px;
+  text-align: justify;
+  margin-bottom: 20px;
+  font-size: 20px;
+  white-space: pre-line; 
+  white-space: pre-wrap;
+}
+
+
+.footer  {
+  background-color: #f0f0f0; /* Светло-серый фон */
+  width: 100%;
+  margin-top: 30px;
+  text-align: center;
+  color: #333; /* Тёмно-серый цвет текста */
+  padding: 7px 0;
+  font-size: 16px;
+  border-top: 1px solid #ccc; 
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); 
+  justify-content: center;
+}
+
+
+.elective-info-info{
+  display: flex;
+  flex-direction: row;
+}
+
+
+
+
+.createForm {
+  width: 80%;
+  margin-top: 50px;
+  margin-bottom: 30px;
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  box-shadow: 0px 0px 10px 0px rgb(32, 32, 32);
+}
+
+.createForm *{
+  display: flex;
+  flex-direction: column;
+}
+
+.titleStep{
+  margin-left: 10px;
+  font-size: 32px;
+  font-weight: 700;
+  padding-top: 10px;
+  padding-bottom: 20px;
+
+  text-decoration: underline 2px;
+  text-underline-offset: 10px;
+}
+
+.electiveForm input:hover,
+
+.selectProperty:hover{
+  border-color: #80bdff;
+  outline: none;
+  box-shadow: 0 0 0 1px #80bdff;
+}
+.electiveForm label{
+  margin: 20px 0px 5px 0px;
+  font-size: 24px;
+}
+
+.electiveForm input{
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid black;
+  background-color: #f9f9f9; 
+  transition: 0.03s ease-in-out;
+  
+}
+
+.electiveForm input:focus{
+  border-color: #80bdff;
+  outline: none;
+  box-shadow: 0 0 0 1px #80bdff;
+}
+/* Файл SelectStyles.css */
+
+/* Стили для контрола (основного блока) */
+
+
+
+/* Стили для самого select */
+.selectProperty {
+  width: 100%;               /* Заполнить ширину родителя */
+  padding: 10px;              /* Внутренний отступ */
+  border: 1px solid black;     /* Рамка */
+  border-radius: 10px;         /* Скругленные углы */
+  background-color: #f9f9f9;  /* Цвет фона */
+  font-size: 20px;            /* Размер шрифта */
+  color: #333;                /* Цвет текста */
+  appearance: none;           /* Отключить стандартную стрелку браузера */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Ctitle%3Edown-arrow%3C%2Ftitle%3E%3Cg%20fill%3D%22%23000000%22%3E%3Cpath%20d%3D%22M10.293%2C3.293%2C6%2C7.586%2C1.707%2C3.293A1%2C1%2C0%2C0%2C0%2C.293%2C4.707l5%2C5a1%2C1%2C0%2C0%2C0%2C1.414%2C0l5-5a1%2C1%2C0%2C1%2C0-1.414-1.414Z%22%20fill%3D%22%23000000%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E'); /* Своя стрелка (иконка) */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+.selectProperty * {
+  border-radius: 0px;
+}
+
+/* Стили при фокусе */
+.custom-select:focus {
+  border-color: #80bdff;
+  outline: none;
+  box-shadow: 0 0 0 1px #80bdff;
+}
+
+/* Стили для опций внутри select */
+.custom-select option {
+  padding: 10px;
+  background-color: #fff;
+}
+
+
+
+
+
+
+
+.selectTeacher__control * {
+  max-width: 100%; /* Ограничивает ширину выпадающего списка */
+
+}
+
+
+.teacherLabel{
+  margin: 20px 0px 5px 0px;
+  font-size: 24px;
+}
+
+.selectTeacher__control{
+  border: 1px solid black;
+  width: 100%;
+}
+
+
+.selectTeacher__value-container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+
+  background-color: white;  
+  font-size: 20px;      
+  align-self: start; 
+}
+
+.selectTeacher__value-container--is-multi {
+  background-color: white;  
+}
+
+.selectTeacher__multi-value {
+  display: flex;
+  background-color: white;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;      
+}
+.selectTeacher__multi-value__remove{
+  text-align: center;
+  transition: 0.2s;
+  padding: 2px 0px;
+}
+
+.selectTeacher__indicators {
+  display: flex;
+  flex-direction: row;
+}
+
+
+.nextStepButton{
+  margin-top: 30px;
+  font-size: 20px;
+  align-items: center;
+  padding: 10px;
+  background-color: #0A62C4;
+  border-style: none;
+  border-radius: 10px;
+  color: white;
+}
+
+.electiveDescription{
+  font-size: 20px;
+  white-space: pre-line; 
+  white-space: pre-wrap;
+}
+
+.formNavigation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.nextStepButton{
+  background-color: rgb(115, 201, 145);
+  margin-top: 50px;
+  padding: 15px;
+  border: 1px solid black;
+  width: 100%;
+  flex-direction: row;
+  justify-content: center;
+}
+
+
+.nextStepButton:hover{
+  opacity: 0.85;
+}
+
+.nextStepButtonRed{
+  width: 30%;
+  background-color: rgb(255, 143, 143);
+}
+
+
+.step1{
+  display:  block;
+}
+
+.step2{
+  display:  none;
+}
+
+.step3{
+  display:  none;
+}
+
+.ipfInfo{
+
+  padding: 10px;
+  border-radius: 5px;
+}
+.ifpContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed black;
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: row;
+  gap: 10px; /* Расстояние между радио-кнопками */
+  margin-bottom: 6px;
+}
+
+label {
+  margin-right: 10px; /* Отступ между факультетом и радио-кнопками */
+}
+
+.settings{
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.formSettings, .courseSettings, .semestrSettings{
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed black;
+}
+.settingsContainer select{
+  margin-top: 5px;
+}
+
+.settingsContainer{
+  display: flex;
+  flex-direction: row;
+}
+
+
+.titleLow{
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.block{
+  margin-top: 5px;
+  box-shadow: 0px 0px 10px 3px #80bdff;;
+  border-radius: 10px;
+  margin-top: 20px;
+  padding: 10px;
+
+}
+
+.orange{
+  box-shadow: 0px 0px 10px 3px #ffdb80;;
+}
+
+.green{
+  box-shadow: 0px 0px 10px 3px #80bdff;
+
+}
+
+.mainForm select{
+  padding: 3px;
+  font-size: 16px;
+}
+
+.mainForm label{
+  font-size: 20px;
+}
+
+
+
+.search-electives{
+  border-radius: 20px;
+  border: 2px solid white;
+  background: rgba(217, 217, 217, 0.40);
+  font-size: 24px;
+  width: 50vw;
+  height: 50px;
+  padding-left: 40px;
+  flex-shrink: 0;
+  margin: 41px 0px 0px 0px;
+
+}
+
+
+.search-electives:focus{
+  outline: 1px solid white;
+}
+
+.elective-container{
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  gap: 20px;
+
+  border-radius: 20px;
+}
+.electives{
+  display: flex;
+  justify-content: center;
+}
+.elective{
+  padding: 30px;
+  background-color: white;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+}
+.elective-image{
+  width: 210px;
+  height: 210px;
+}
+.elective-info{
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+}
+.elective-info * {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}
+.elective-name{
+  font-size: 32px;
+  margin-left: 20px;
+  white-space: nowrap;
+}
+
+.elective-properties div:nth-child(4) {
+  display: inline;
+  flex-direction: row;
+}
+
+
+
+.elective-properties{
+  margin-top: 10px;
+  font-size: 16px;
+  padding-left: 30px;
+  white-space: nowrap;
+}
+
+.elective-info_button{
+  font-size: 16px;
+  background-color: transparent;
+  border: none;
+  text-decoration: underline;
+}
+
+.elective-info_button:hover{
+  opacity: 0.75;
+}
+
+.elective-signIn{
+  width: 200px;
+  height: 50px;
+  border-radius: 10px;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+
+.sign{
+  display: block;
+  border-style: none;
+  border: 1px solid black;
+
+  background-color: rgb(10, 98, 196);
+
+  color: white;
+}
+
+.unsign{
+  display: none;
+  border-style: none;
+  border: 1px solid black;
+  color: black;
+  background-color: rgb(241, 241, 241);
+}
+
+.elective-signIn:hover{
+  opacity: 0.9;
+
+}
+
+.elective-buttons{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+
+
+
+
+
+
+
+.form-student * {
+  display: flex;
+  flex-direction: column;
+}
+
+.deleteElective{
+  background-color: rgb(255, 110, 110);
+  color: white;
+}
+
+.step1{
+  display:  block;
+}
+
+.step2{
+  display:  none;
+}
+
+
+/* Стили для контрола (основного блока) */
+.custom-select__control {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  min-height: 40px;
+  border-radius: 5px;
+  box-shadow: none;
+}
+
+/* Стили при фокусе */
+.custom-select__control--is-focused {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 1px #80bdff;
+}
+
+/* Стили для выпадающего меню */
+.custom-select__menu {
+  background-color: #ffffff;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+  z-index: 1000;  /* Убедитесь, что меню отображается поверх других элементов */
+}
+
+/* Стили для опций в меню */
+.custom-select__option {
+  background-color: #fff;
+  color: #333;
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Стили для опций при наведении */
+.custom-select__option--is-focused {
+  background-color: #f1f1f1;
+}
+
+/* Стили для выбранных опций */
+.custom-select__option--is-selected {
+  background-color: #d3d3d3;
+  color: #333;
+}
+
+/* Стили для выбранных элементов в мультивыборе */
+.custom-select__multi-value {
+  background-color: #d3d3d3;
+  border-radius: 3px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+/* Текст внутри выбранных элементов */
+.custom-select__multi-value__label {
+  color: #333;
+  margin-right: 5px;
+}
+
+/* Кнопка удаления выбранных элементов */
+.custom-select__multi-value__remove {
+  color: #333;
+  cursor: pointer;
+}
+
+.custom-select__multi-value__remove:hover {
+  background-color: #ff6666;
+  color: white;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Файл SelectStyles.css */
+

@@ -1,29 +1,30 @@
 import teacher from '../../ystu-images/teacher.jpg';
-import { useEffect, useState } from 'react';
-import Navbar from '../service/Navbar.jsx';
-
+import React, { useEffect, useState } from 'react';
 
 function TeacherPage() {
-
   const [teacherData, setTeacherData] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const currentToken = localStorage.getItem('access_token');
-      const response = await fetch('http://212.67.13.70:8000/api/teacher/', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${currentToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.ok) {
-        const teacherData = await response.json();
-        setTeacherData(teacherData);
+    async function getProfile() {
+      try{
+        const response = await fetch('http://212.67.13.70:8000/api/teacher/cabinet/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        })
+        if (response.ok) {
+          const data = await response.json();
+          setTeacherData(data);
+        }
       }
-    };
-  fetchUserData();
-  }, []);
+      catch (error) {
+        console.log(error);
+    }
+  }
+  getProfile();
+}, [])
 
   const {
     last_name = '',
@@ -34,25 +35,21 @@ function TeacherPage() {
   const fullName = `${last_name} ${first_name} ${middle_name}`;
 
   return (
-    <div className="student-page-container">
-    <Navbar/>
-
-    <div className='student-profile'>
-      <img className='student-image' src={teacher} alt='student'/>
-      <div className='student-info'>
-        <div className='fullname'>{fullName}</div>
-        <div className='student-parameters'>
-          <div className='student-properties'>
-            <span>Статус:</span>
-          </div>
-          <div className='student-values'>
-            <span>"Преподаватели"</span>
+    <div className="container">
+      <div className='profile'>
+        <img className='profile-image' src={teacher} alt='teacher'/>
+        <div className='profile-info'>
+          <div className='profile-fullname'>{fullName}</div>
+          <div className='profile-parameters'>
+            <div className='profile-properties'>
+              <span>Статус:</span>
+            </div>
+            <div className='profile-values'>
+              <span>"Преподаватели"</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-
     </div>
   );
 }
