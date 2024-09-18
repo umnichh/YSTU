@@ -41,4 +41,6 @@ urlpatterns = [
     # говно
     path('api/institutes/upload/', UploadInstitutesView.as_view(), name='upload_institutes'),  # POST: Загрузка институтов/факультетов/профилей из эксель-файла
     path('api/institutes/', AllInstitutes.as_view(), name='all_institutes'),  # GET: Список всех институтов/направлений/профилей
+
+    path('api/create/info/', AllDataView.as_view(), name='all_data'),  # GET: all data
 ]

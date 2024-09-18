@@ -16,7 +16,6 @@ class UserRoleView(APIView):
 
     def get(self, request):
         user = request.user
-        print(request.data)
         try:
             student = Student.objects.get(user=user)
             return Response({'role': 'student'})
@@ -64,7 +63,7 @@ class AllElectivesView(APIView):
     def get(self, request):
         electives = Elective.objects.all()
         serializer = ElectiveSerializer(electives, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # Elective view to handle both GET and POST requests
@@ -91,19 +90,16 @@ class ElectiveView(APIView):
         data = request.data
         teacher = Teacher.objects.get(user=request.user)
         
-        # Validate Elective data with serializer
         serializer = ElectiveSerializer(data=data)
         if serializer.is_valid():
             validated_data = serializer.validated_data
 
-            # Extract IDs for health and form
             health_id = data.get('health')
             form_id = data.get('form')
             health = Health.objects.get(id=health_id)
             form = Form.objects.get(id=form_id)
             status_first = Status.objects.filter(name='Скоро начнётся').first()
 
-            # Create Elective
             elective = Elective.objects.create(
                 name=validated_data['name'],
                 describe=validated_data['describe'],
@@ -118,19 +114,19 @@ class ElectiveView(APIView):
                 made_by=teacher
             )
 
-            # Add teacher relationships
-            teacher_ids = data.get('teacher_ids', [])
+            teacher_ids = data.get('selectedTeachers', [])
             for teacher_id in teacher_ids:
-                teacher = Teacher.objects.get(id=teacher_id)
-                TeacherElective.objects.create(elective=elective, teacher=teacher)
 
-            # Add institute, facultet, profile relationships
+                teacher = Teacher.objects.get(id=teacher_id['value'])
+                TeacherElective.objects.create(elective=elective, teacher=teacher)
+        
             institutes = data.get('institute_ids', [])
             facultets = data.get('facultet_ids', [])
             profiles = data.get('profile_ids', [])
             course = data.get('course', None)
             semestr = data.get('semestr', None)
             assign_all_semestrs = data.get('assign_all_semestrs', False)
+            
             for institute_id in institutes:
 
                 try:
@@ -177,7 +173,7 @@ class ElectiveView(APIView):
                 'message': 'Elective created',
                 'elective': ElectiveSerializer(elective).data
             }, status=status.HTTP_201_CREATED)
-
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         
@@ -299,16 +295,31 @@ class AllInstitutes(APIView):
         institutes = Institute.objects.all()
         facultets = Facultet.objects.all()
         profiles = Profile.objects.all()
-
+        courses = Course.objects.all()
+        semesters = Semester.objects.all()
         instituteSerializer = InstituteSerializer(institutes, many=True)
         facultetSerializer = FacultetSerializer(facultets, many=True)
         profileSerializer = ProfileSerializer(profiles, many=True)
+        courseSerializer = CourseSerializer(courses, many=True)
+        semesterSerializer = SemesterSerializer(semesters, many=True)
         data = {
             'institutes': instituteSerializer.data,
             'facultets': facultetSerializer.data,
-            'profiles': profileSerializer.data
+            'profiles': profileSerializer.data,
+            'courses' : courseSerializer.data,
+            'semesters' : semesterSerializer.data
         }
         return Response(data)
+
+class StudentElectivesFitler(APIView):
+    def get(self, request):
+        try:
+            student = Student.objects.get(user=request.user)
+            electives = Elective.objects.filter(
+                electiveinstitute__institute = student.institute
+            )
+        except Student.DoesNotExist:
+            return Response({'error' : 'Студент не найден'})
     
 
 # class AddInstituteElective(APIView):  
@@ -379,3 +390,34 @@ class ElectivesMadeByTeacher(APIView):
         return Response(electiveseriazier.data)
 
 
+class AllDataView(APIView):
+    def get(self, request):
+        institutes = Institute.objects.all()
+        facultets = Facultet.objects.all()
+        profiles = Profile.objects.all()
+        teachers = Teacher.objects.all()
+        forms = Form.objects.all()
+        healths = Health.objects.all()
+        courses = Course.objects.all()
+        semesters = Semester.objects.all()
+
+        instituteSerializer = InstituteSerializer(institutes, many=True)
+        facultetSerializer = FacultetSerializer(facultets, many=True)
+        profileSerializer = ProfileSerializer(profiles, many=True)
+        formSerializer = FormSerializer(forms, many=True)
+        teacherSerializer = TeacherSerializer(teachers, many=True)
+        healthSerializer = HealthSerializer(healths, many=True)
+        courseSerializer = CourseSerializer(courses, many=True)
+        semesterSerializer = SemesterSerializer(semesters, many=True)
+
+        data = {
+            'institutes': instituteSerializer.data,
+            'facultets': facultetSerializer.data,
+            'profiles': profileSerializer.data,
+            'forms' : formSerializer.data,
+            'teachers' : teacherSerializer.data,
+            'healths' : healthSerializer.data,
+            'courses' : courseSerializer.data,
+            'semesters' : semesterSerializer.data
+        }
+        return Response(data)
