@@ -33,7 +33,7 @@ function App() {
     <Router> 
       <Routes>
         {/* authoriation */}
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
 
         <Route exact path ='/' element={<Layout />}>
           {/* profiles */}  

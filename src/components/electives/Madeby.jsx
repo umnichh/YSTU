@@ -68,7 +68,7 @@ function Madeby(){
   }
   
   return (
-    <div className="student-page-container">
+    <div className="container">
 
       <form>
         <div className='search-container'>

@@ -44,7 +44,7 @@ const ProtectedRoute = ({ element: Element, allowedRoles }) => {
     return <div></div>; 
   }
 
-  return allowedRoles.includes(role) ? <Element /> : <Navigate to="/login" />;
+  return allowedRoles.includes(role) ? <Element /> : <Navigate to="/" />;
 };
 
 export default ProtectedRoute;

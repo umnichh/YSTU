@@ -1,7 +1,7 @@
 
 body {
   font-family: Arial;
-  margin: 0px 350px;
+  margin: 0px 300px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
@@ -300,7 +300,286 @@ body {
   flex-direction: column;
 }
 
+/* CREATEFORM */
+/* Создание электива */
 
+
+.create-form {
+  width: 82%;
+  margin-top: 50px;
+  margin-bottom: 30px;
+  background-color: white;
+  padding: 30px 40px;
+  border-radius: 10px;
+  border: 1px solid black;
+  box-shadow: 0px 0px 10px 0px rgb(32, 32, 32);
+}
+
+.create-form *{
+  display: flex;
+  flex-direction: column;
+}
+
+.create-form-title{
+  font-size: 32px;
+  font-weight: 700;
+  padding:  40px 0px 0px 0px;
+  text-decoration: underline 2px;
+  text-underline-offset: 10px;
+}
+
+.first-title{
+  padding-top: 20px;
+}
+
+.selectProperty:hover, .electiveForm input:hover, .electiveForm input:focus, .electiveDescription:focus{
+  border-color: #80bdff;
+  outline: none;
+  box-shadow: 0 0 0 1px #80bdff;
+}
+
+.electiveForm label{
+  margin: 25px 0px 5px 0px;
+  font-size: 20px;
+}
+
+.electiveForm {
+  width: 100%;
+}
+
+.electiveForm input{
+  font-size: 16px;
+  padding: 7px;
+  border-radius: 5px;
+  border: 1px solid rgb(172, 172, 172);
+  background-color: #f9f9f9; 
+  transition: 0.03s ease-in-out;
+}
+
+.selectProperty {
+  width: 100%;              
+  padding: 10px;             
+  border: 1px solid rgb(172, 172, 172);
+  border-radius: 10px;         
+  background-color: #f9f9f9;  
+  font-size: 16px;          
+  color: #333;                
+  appearance: none;        
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Ctitle%3Edown-arrow%3C%2Ftitle%3E%3Cg%20fill%3D%22%23000000%22%3E%3Cpath%20d%3D%22M10.293%2C3.293%2C6%2C7.586%2C1.707%2C3.293A1%2C1%2C0%2C0%2C0%2C.293%2C4.707l5%2C5a1%2C1%2C0%2C0%2C0%2C1.414%2C0l5-5a1%2C1%2C0%2C1%2C0-1.414-1.414Z%22%20fill%3D%22%23000000%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E'); /* Своя стрелка (иконка) */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+.selectProperty * {
+  border-radius: 0px;
+}
+
+.custom-select:focus {
+  border-color: #80bdff;
+  outline: none;
+  box-shadow: 0 0 0 1px #80bdff;
+}
+
+.custom-select option {
+  padding: 10px;
+  background-color: #fff;
+}
+
+
+
+.filterRadios {
+	display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+	margin-right: 10px;
+}
+.filterRadios input[type=radio] {
+	display: none;
+}
+.filterRadios label {
+	display: inline-block;
+	cursor: pointer;
+	padding: 0px 15px;
+	line-height: 34px;
+	border: 1px solid black;
+	user-select: none;
+  width: 100%;
+  text-align: center;
+}
+ 
+/* Checked */
+.filterRadios input[type=radio]:checked + label {
+	background: rgb(255, 150, 58);
+  color: white;
+  
+}
+ 
+/* Hover */
+.filterRadios label:hover {
+	opacity: 0.85;
+}
+ 
+/* Disabled */
+.filterRadios input[type=radio]:disabled + label {
+	background: #efefef;
+	color: #666;
+}
+
+
+
+
+
+
+.selectTeacher__control * {
+  max-width: 100%; /* Ограничивает ширину выпадающего списка */
+
+}
+
+
+.label{
+  font-size: 20px;
+}
+
+.selectTeacher__control{
+  border: 1px solid black;
+  width: 100%;
+}
+
+
+.selectTeacher__value-container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  background-color: white;  
+  font-size: 20px;      
+  align-self: start; 
+}
+
+.selectTeacher__value-container--is-multi {
+  background-color: white;  
+}
+
+.selectTeacher__multi-value {
+  display: flex;
+  background-color: white;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;      
+}
+.selectTeacher__multi-value__remove{
+  text-align: center;
+  transition: 0.2s;
+  padding: 2px 0px;
+}
+
+.selectTeacher__indicators {
+  display: flex;
+  flex-direction: row;
+}
+
+
+
+.electiveDescription{
+  font-size: 16px;
+  border: 1px solid rgb(172, 172, 172);
+  white-space: pre-line; 
+  white-space: pre-wrap;
+}
+
+.formNavigation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.nextStepButton{
+  background-color: rgb(22, 86, 155);
+  font-size: 20px;
+  color: white;
+  margin-top: 50px;
+  padding: 15px;
+  border: 1px solid black;
+  width: 100%;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.nextStepButton:hover{
+  opacity: 0.85;
+}
+
+.step1{
+  display:  block;
+}
+
+.step2{
+  display:  none;
+}
+
+.step3{
+  display:  none;
+}
+
+.ipfInfo{
+  border-radius: 5px;
+}
+.ifpContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed black;
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: row;
+  gap: 10px; /* Расстояние между радио-кнопками */
+  margin-bottom: 6px;
+
+}
+
+label {
+  margin-right: 10px; /* Отступ между факультетом и радио-кнопками */
+}
+
+.settingsContainer select{
+  margin-top: 5px;
+
+}
+
+.settingsContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.semestersSettings {
+ width: 100%;
+  height:200px;
+}
+
+.titleLow{
+  margin-top: 20px;
+  font-size: 24px;
+  border-bottom: 1px solid black;
+}
+
+.mainForm select{
+  padding: 3px;
+  font-size: 16px;
+}
+
+.notSelected{
+  margin-top: 10px;
+}
 
 
 
@@ -411,297 +690,6 @@ body {
 }
 
 
-
-
-.createForm {
-  width: 80%;
-  margin-top: 50px;
-  margin-bottom: 30px;
-  background-color: white;
-  padding: 30px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid black;
-  box-shadow: 0px 0px 10px 0px rgb(32, 32, 32);
-}
-
-.createForm *{
-  display: flex;
-  flex-direction: column;
-}
-
-.titleStep{
-  margin-left: 10px;
-  font-size: 32px;
-  font-weight: 700;
-  padding-top: 10px;
-  padding-bottom: 20px;
-
-  text-decoration: underline 2px;
-  text-underline-offset: 10px;
-}
-
-.electiveForm input:hover,
-
-.selectProperty:hover{
-  border-color: #80bdff;
-  outline: none;
-  box-shadow: 0 0 0 1px #80bdff;
-}
-.electiveForm label{
-  margin: 20px 0px 5px 0px;
-  font-size: 24px;
-}
-
-.electiveForm input{
-  font-size: 20px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid black;
-  background-color: #f9f9f9; 
-  transition: 0.03s ease-in-out;
-  
-}
-
-.electiveForm input:focus{
-  border-color: #80bdff;
-  outline: none;
-  box-shadow: 0 0 0 1px #80bdff;
-}
-/* Файл SelectStyles.css */
-
-/* Стили для контрола (основного блока) */
-
-
-
-/* Стили для самого select */
-.selectProperty {
-  width: 100%;               /* Заполнить ширину родителя */
-  padding: 10px;              /* Внутренний отступ */
-  border: 1px solid black;     /* Рамка */
-  border-radius: 10px;         /* Скругленные углы */
-  background-color: #f9f9f9;  /* Цвет фона */
-  font-size: 20px;            /* Размер шрифта */
-  color: #333;                /* Цвет текста */
-  appearance: none;           /* Отключить стандартную стрелку браузера */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Ctitle%3Edown-arrow%3C%2Ftitle%3E%3Cg%20fill%3D%22%23000000%22%3E%3Cpath%20d%3D%22M10.293%2C3.293%2C6%2C7.586%2C1.707%2C3.293A1%2C1%2C0%2C0%2C0%2C.293%2C4.707l5%2C5a1%2C1%2C0%2C0%2C0%2C1.414%2C0l5-5a1%2C1%2C0%2C1%2C0-1.414-1.414Z%22%20fill%3D%22%23000000%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E'); /* Своя стрелка (иконка) */
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-}
-
-.selectProperty * {
-  border-radius: 0px;
-}
-
-/* Стили при фокусе */
-.custom-select:focus {
-  border-color: #80bdff;
-  outline: none;
-  box-shadow: 0 0 0 1px #80bdff;
-}
-
-/* Стили для опций внутри select */
-.custom-select option {
-  padding: 10px;
-  background-color: #fff;
-}
-
-
-
-
-
-
-
-.selectTeacher__control * {
-  max-width: 100%; /* Ограничивает ширину выпадающего списка */
-
-}
-
-
-.teacherLabel{
-  margin: 20px 0px 5px 0px;
-  font-size: 24px;
-}
-
-.selectTeacher__control{
-  border: 1px solid black;
-  width: 100%;
-}
-
-
-.selectTeacher__value-container {
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-
-  background-color: white;  
-  font-size: 20px;      
-  align-self: start; 
-}
-
-.selectTeacher__value-container--is-multi {
-  background-color: white;  
-}
-
-.selectTeacher__multi-value {
-  display: flex;
-  background-color: white;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;      
-}
-.selectTeacher__multi-value__remove{
-  text-align: center;
-  transition: 0.2s;
-  padding: 2px 0px;
-}
-
-.selectTeacher__indicators {
-  display: flex;
-  flex-direction: row;
-}
-
-
-.nextStepButton{
-  margin-top: 30px;
-  font-size: 20px;
-  align-items: center;
-  padding: 10px;
-  background-color: #0A62C4;
-  border-style: none;
-  border-radius: 10px;
-  color: white;
-}
-
-.electiveDescription{
-  font-size: 20px;
-  white-space: pre-line; 
-  white-space: pre-wrap;
-}
-
-.formNavigation {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.nextStepButton{
-  background-color: rgb(115, 201, 145);
-  margin-top: 50px;
-  padding: 15px;
-  border: 1px solid black;
-  width: 100%;
-  flex-direction: row;
-  justify-content: center;
-}
-
-
-.nextStepButton:hover{
-  opacity: 0.85;
-}
-
-.nextStepButtonRed{
-  width: 30%;
-  background-color: rgb(255, 143, 143);
-}
-
-
-.step1{
-  display:  block;
-}
-
-.step2{
-  display:  none;
-}
-
-.step3{
-  display:  none;
-}
-
-.ipfInfo{
-
-  padding: 10px;
-  border-radius: 5px;
-}
-.ifpContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 1px dashed black;
-}
-
-.radioGroup {
-  display: flex;
-  flex-direction: row;
-  gap: 10px; /* Расстояние между радио-кнопками */
-  margin-bottom: 6px;
-}
-
-label {
-  margin-right: 10px; /* Отступ между факультетом и радио-кнопками */
-}
-
-.settings{
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-.formSettings, .courseSettings, .semestrSettings{
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 1px dashed black;
-}
-.settingsContainer select{
-  margin-top: 5px;
-}
-
-.settingsContainer{
-  display: flex;
-  flex-direction: row;
-}
-
-
-.titleLow{
-  margin-bottom: 20px;
-  font-size: 28px;
-}
-
-.block{
-  margin-top: 5px;
-  box-shadow: 0px 0px 10px 3px #80bdff;;
-  border-radius: 10px;
-  margin-top: 20px;
-  padding: 10px;
-
-}
-
-.orange{
-  box-shadow: 0px 0px 10px 3px #ffdb80;;
-}
-
-.green{
-  box-shadow: 0px 0px 10px 3px #80bdff;
-
-}
-
-.mainForm select{
-  padding: 3px;
-  font-size: 16px;
-}
-
-.mainForm label{
-  font-size: 20px;
-}
 
 
 
@@ -940,3 +928,6 @@ label {
 
 /* Файл SelectStyles.css */
 
+label{
+  white-space: nowrap;
+}

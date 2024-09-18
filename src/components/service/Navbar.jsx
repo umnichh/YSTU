@@ -11,7 +11,7 @@ function Navbar(){
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('role');
-    navigate('/login');
+    navigate('/');
   }     
 
   return(
