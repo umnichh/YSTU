@@ -32,11 +32,12 @@ function About() {
               <span>Количество мест:</span>
               <span>Объем:</span>
               <span>Дата начала:</span>
-              <span>Дата конца:</span>
+              <span>Дата окончания:</span>
               <span>Форма прохождения:</span>
               <span>Группа здоровья:</span>
               <span>Оценка:</span>
               <span>Преподаватели:</span>
+              <span>Институты:</span>
             </div>
             <div className='elective-info-values'>
 
@@ -55,6 +56,15 @@ function About() {
                 ))
               ) : (
                 <span> Не указаны</span>
+              )}
+              {elective.institutes.length > 0 ? (
+                elective.institutes.map((institute) => (
+                  <div key={institute.id}>
+                    {institute.name} 
+                  </div>
+                ))
+              ) : (
+                <span>Электив для всех направлений</span>
               )}
             </div>
           </div>

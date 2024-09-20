@@ -31,12 +31,11 @@ function Electives(){
           },
         })
         if (response.ok) {
-
           const data = await response.json();
           setElectives(data);
         }
       } catch (error) {
-          console.log(error);
+          console.log(response.text());
       }
   }
   getElectives();
@@ -61,6 +60,7 @@ function Electives(){
       })
       if (response.ok) {
         if (method === 'POST') {
+          
           alert('Вы записались на электив');
           document.getElementById(`${'sign' + id}`).style.display = 'none';
           document.getElementById(`${'unsign' + id}`).style.display = 'block';
@@ -81,17 +81,33 @@ function Electives(){
     navigate('/elective/about', { state: { elective: elective } });
   };
   
+
   return (
     <div className="container">
-      <form>
-        <div className='search-container'>
-          <input className='search-electives' type="text" placeholder="Поиск элективов"/>
-        </div>
-      </form>
+
       <div className='electives'>
         <div className='elective-container'>
+          <div className="searchSettings">
+            <form>
+              <div className='search-container'>
+                <input className='search-electives' type="text" placeholder="Поиск элективов"/>
+              </div>
+            </form>
+            {/* <div className="searchRadios">
+            <div className='searchRadio'>
+                  <input type="radio" id='facultativeRadio' name='facultative' defaultChecked='checked' onChange={() => setFacultative(1)} />
+                  <label htmlFor="facultativeRadio">Электив</label>
+                </div>
+                <div className='searchRadio'>
+                  <input type="radio" id='electiveRadio' name='facultative' onChange={() => setFacultative(2)} />
+                  <label htmlFor="electiveRadio">Факультатив</label>
+                </div>
+            </div> */}
+
+          </div>
+
           {electives.map((elective) => (
-            <div key={elective.id} className='elective'>
+            <div key={elective.id} className='elective' onClick={() => handleClick(elective)}>
               <img src={electiveImage} alt="elective" className="elective-image"/>
               <div className="elective-info">
                 <div className='elective-name'>{elective.name}</div>
@@ -109,6 +125,18 @@ function Electives(){
                       ))
                     ) : (
                       <span> Не указаны</span>
+                    )}
+                  </div>
+                  <div className='elective-institutes'>
+                    Институты: 
+                    {elective.institutes.length > 0 ? (
+                      elective.institutes.map((institute) => (
+                        <div key={institute.id}>
+                        • {institute.name} 
+                        </div>
+                      ))
+                    ) : (
+                      <span>Электив для всех направлений</span>
                     )}
                   </div>
                 </div>

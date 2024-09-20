@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // authorization
 import LoginPage from './components/authorization/Login';
@@ -27,7 +27,33 @@ import Layout from './components/service/Layout';
 // styles
 import './styles.css';
 function App() {
-
+  useEffect(() => {
+    function refreshTokens() {
+      if (localStorage.getItem('refresh_token')) {
+        fetch('http://212.67.13.70:8000/api/auth/token/refresh/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            refresh: localStorage.getItem('refresh_token'),
+          }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            localStorage.setItem('access_token', data.access);
+          })
+          .catch(error => console.error('Error refreshing tokens:', error));
+      }
+    }
+  
+    const minute = 60 * 1000;
+    refreshTokens();
+    const intervalId = setInterval(refreshTokens, minute * 5); // Исправлено
+  
+    return () => clearInterval(intervalId); // Очистка интервала при размонтировании компонента
+  }, []);
+  
 
   return (
     <Router> 

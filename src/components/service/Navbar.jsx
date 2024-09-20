@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../ystu-images/logo.jpg';
+import logo from '../../ystu-images/logoWithoutText.jpg';
 import { useNavigate, Link} from 'react-router-dom';
 
 function Navbar(){
@@ -27,15 +27,15 @@ function Navbar(){
             </>
           ) : localStorage.getItem('role') === 'teacher' ? (
             <>
-              <Link to={teacherProfile}><i className="fas fa-user"></i>Мой профиль</Link>
+              <Link to={teacherProfile}><i className="fas fa-user"></i>Профиль</Link>
               <Link to='/elective/create'><i className="fas fa-plus"></i>Создать электив</Link>
-              <Link to='/elective/created'><i className="fas fa-bookmark"></i>Созданные</Link>
+              <Link to='/elective/created'><i className="fas fa-check"></i>Созданные</Link>
             </>
           ) : null
         }
+        <Link to='/elective/enrolled'><i className="fas fa-bookmark "></i>Мои элективы</Link>
         <Link to='/elective/all'><i className="fas fa-book"></i>Элективы</Link>
-        <Link to='/elective/enrolled'><i className="fas fa-bookmark"></i>Мои элективы</Link>
-        <Link to='/elective/finished'><i className="fas fa-check"></i>Архив</Link>
+        {/* <Link to='/elective/finished'><i className="fas fa-check"></i>Архив</Link> */}
         <button type='button'  onClick={handleLogout}><i className="fas fa-sign-out-alt"></i>Выйти</button>
       </div>
     </nav>

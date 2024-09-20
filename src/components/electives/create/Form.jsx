@@ -1,43 +1,32 @@
 import React, { useState, useEffect} from 'react';
 import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
+import CheckboxTree from 'react-checkbox-tree';
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
 function Create() {
   const currentToken = localStorage.getItem('access_token');
   const navigate = useNavigate();
   // Состояния справочников
   const [forms, setForms] = useState([]);
-  const [facultets, setFacultets] = useState([]);
   const [institutes, setInstitutes] = useState([]);
+  const [ugsns, setUgsn] = useState([]);
+  const [facultets, setFacultets] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [profiles, setProfiles] = useState([]);
   const [healths, setHealths] = useState([]);
+  const [checked, setChecked] = useState([]);
+  const [expanded, setExpanded] = useState([]);
+  const [facultativeState, setFacultative] = useState(1);
   const [courses, setCourses] = useState([]);
   const [semesters, setSemesters] = useState([]);
 
-  
+
+
+
   // Выбранные значения
-  const [selectedInstitutes, setSelectedInstitutes] = useState([]);
-  const [selectedFacultets, setSelectedFacultets] = useState([]);
-  const [selectedProfiles, setSelectedProfiles] = useState([]);
   const [selectedTeachers, setSelectedTeachers] = useState([]);
-  const [selectedForms, setSelectedForms] = useState([]);
-  const [selectedCourses, setSelectedCourses] = useState([]);  
-  const [selectedSemesters, setSelectedSemesters] = useState([]);
-      
 
-
-  // Режимы фильтрации направлений
-  const [filterStatus, setFilterStatus] = useState(0);
-  const [filterSettings, setFilterSettings] = useState(0);
-
-  function handleStatus(value) {
-    setFilterStatus(value);
-  }
-
-  function handleSettings(value) {
-    setFilterSettings(value);
-  }
   // Получение справочной информации
   useEffect(() => {
     async function fetchInfo(){
@@ -59,6 +48,8 @@ function Create() {
           setHealths(data.healths);
           setCourses(data.courses);
           setSemesters(data.semesters);
+          setUgsn(data.ugsns);
+          console.log(data)
         }
       } catch(error) {
         console.error(error);
@@ -66,8 +57,6 @@ function Create() {
     }
     fetchInfo();
   }, []);
-  
-
 
   // Маппинг
   const mapOptions = (items, labelFormatter = item => item.name) =>
@@ -76,45 +65,24 @@ function Create() {
       label: labelFormatter(item),
     }));
 
-    const selectCourse = courses.map(course => ({
-      value: course.id,
-      label: +course.name
-    }))
-  
-    const selectSemesters = semesters.map(semester => ({
-      value: semester.id,
-      label: +semester.name
-    }))
-
-
-
   // Опции для маппинга
-  const selectForms = mapOptions(forms);
   const selectTeacher = mapOptions(teachers, teacher => `${teacher.last_name} ${teacher.first_name} ${teacher.middle_name}`);
-  const selectInstitute = mapOptions(institutes);
-  const selectFacultet = mapOptions(facultets);
-  const selectProfile = mapOptions(profiles, profile => `${profile.name} — ${profile.form.name}`);
 
   // Отправка формы
   const sendElective = async (event) => {
     event.preventDefault();
-
     const formData = new FormData(event.target);
     const formObject = Object.fromEntries(formData.entries());
     const teacherIds = selectedTeachers.map((teacher) => teacher.value);
-    const instituteIds = selectedInstitutes.map((institute) => institute.value);
-    const facultetIds = selectedFacultets.map((facultet) => facultet.value);
-    const profileIds = selectedProfiles.map((profile) => profile.value);
 
     const elective = {
+      facultativeState,
+      checked,
       ...formObject,
-      teacher_ids: teacherIds,
-      institute_ids: instituteIds,
-      facultet_ids: facultetIds,
-      profile_ids: profileIds,
+      selectedTeachers: teacherIds,
     };
-    console.log(elective);
-    const response = await fetch('http://212.67.13.70:8000/api/electives/create/', {
+    console.log(elective)
+    await fetch('http://212.67.13.70:8000/api/electives/create/', {
       method: 'POST',
       body: JSON.stringify(elective),
       headers: {
@@ -122,20 +90,76 @@ function Create() {
         'Content-Type': 'application/json',
       },
     });
-    const data = await response.json();
-    navigate('/elective/created');
+    // navigate('/elective/created');
   };
 
+  // Вытаскиваем значения из справочников и возвращаем в один объект
+  const combinedData = institutes.map(institute => {
+    const relatedUgsns = ugsns
+      .filter(ugsn => ugsn.institute.id === institute.id)
+      .map(ugsn => {
+        const relatedFaculties = facultets
+          .filter(faculty => faculty.ugsn.id === ugsn.id)
+          .map(faculty => {
+            const relatedProfiles = profiles.filter(profile => profile.facultet.id === faculty.id);
+            return {
+              ...faculty,
+              profiles: relatedProfiles,
+            };
+          });
+        return {
+          ...ugsn,
+          facultets: relatedFaculties,
+        };
+      });
+  
+    return {
+      ...institute,
+      ugsns: relatedUgsns,
+    };
+  });
+  
+  console.log(combinedData)
+  // Создает дерево
+  const treeData = combinedData.map(institute => ({
+    label: institute.name,
+    value: `institute-${institute.id}`,
+    children: institute.ugsns.map(ugsn => ({
+      label: ugsn.name,
+      value: ugsn.id,
+      children: ugsn.facultets.map(faculty => ({
+        label: faculty.name,
+        value: `faculty-${faculty.id}`,
+          children:  faculty.profiles.map(profile => ({
+          label: profile.name,
+          value: profile.id
+        })),
+      })),
+    })),
+  }));
+  
   if (!forms || !facultets || !institutes || !teachers || !profiles || !healths) {
     return <div>Загрузка...</div>;
   }
 
   return (
+    
     <div className='container'>
         <div className='create-form'>
           {(
             <form  className = "electiveForm" onSubmit={sendElective}>
               <span className='create-form-title first-title'>Информация об элективе</span>
+              <label>Создать:</label>
+              <div className='facultativeRadio'>
+                <div className='facultativeContainer'>
+                  <input type="radio" id='facultativeRadio' name='facultative' defaultChecked='checked' onChange={() => setFacultative(1)} />
+                  <label htmlFor="facultativeRadio">Электив</label>
+                </div>
+                <div className='electiveContainer'>
+                  <input type="radio" id='electiveRadio' name='facultative' onChange={() => setFacultative(2)} />
+                  <label htmlFor="electiveRadio">Факультатив</label>
+                </div>
+              </div>
               <label className='teacherLabel'>Преподаватели:</label>
                   <Select
                     options={selectTeacher}
@@ -194,381 +218,38 @@ function Create() {
                 <label>Описание:</label>
                 <textarea className='electiveDescription  ' name="describe" rows="5" cols="33"></textarea>
               </div>
-              <span className='create-form-title'>Фильтрация электива</span>
-
-              <div className='filterRadios'>
-                <input type="radio" id='instituteRadio' name='radio' onChange={() => handleStatus(1)} />
-                <label htmlFor="instituteRadio">Институты</label>
-
-                <input type="radio" id='facultetRadio' name='radio' onChange={() => handleStatus(2)} />
-                <label htmlFor="facultetRadio">Направления</label>
-
-                <input type="radio" id='profileRadio' name='radio' onChange={() => handleStatus(3)} />
-                <label htmlFor="profileRadio">Профили</label>
-              </div>
               {
-                filterStatus === 1 && (
-                  <div>
-                    <Select
-                        options={selectInstitute}
-                        value={selectedInstitutes}
-                        isMulti  
-                        isSearchable 
-                        closeMenuOnSelect={false}  
-                        placeholder="Поиск"
-                        classNamePrefix='selectTeacher'
-                        onChange={(selectedOptions) => setSelectedInstitutes(selectedOptions)}
-                      />
-                  </div>
-                )
+              facultativeState === 1 && 
+              <div>
+                <span className='create-form-title'>Фильтрация электива</span>
+                <label>Выберите институты и направления, которые будут проходить электив</label>
+                  <div className='tree'>
+                    <CheckboxTree
+                      nodes={treeData}
+                      checked={checked}
+                      expanded={expanded}
+                      onCheck={(checked) => setChecked(checked)}
+                      onExpand={(expanded) => setExpanded(expanded)}
+                      classNamePrefix="checkTree"
+                    />
+                </div>
+                <span className='create-form-title'>Курсы</span>
+                <label>Выберите курсы и семестры, которые будут проходить электив</label>
+                  <div className='tree'>
+                    {/* <CheckboxTree
+                      nodes={treeData}
+                      checked={checked}
+                      expanded={expanded}
+                      onCheck={(checked) => setChecked(checked)}
+                      onExpand={(expanded) => setExpanded(expanded)}
+                      classNamePrefix="checkTree"
+                    /> */}
+                </div>
+              </div>
+
+
               }
-
-              {
-                filterStatus === 2 && (
-                  <div>
-                    <Select
-                        options={selectFacultet}
-                        value={selectedFacultets}
-                        isMulti 
-                        isSearchable 
-                        closeMenuOnSelect={false} 
-                        placeholder="Поиск"
-                        classNamePrefix='selectTeacher'
-                        onChange={(selectedOptions) => setSelectedFacultets(selectedOptions)}
-                      />
-                  </div>
-                )
-              }
-
-              {
-                filterStatus === 3 && (
-                  <div>
-                    <Select
-                        options={selectProfile}
-                        value={selectedProfiles}
-                        isMulti  
-                        isSearchable  
-                        closeMenuOnSelect={false} 
-                        placeholder="Поиск"
-                        classNamePrefix='selectTeacher'
-                        onChange={(selectedOptions) => setSelectedProfiles(selectedOptions)}
-                      />
-                  </div>
-                )
-              }
-              {filterStatus === 1 && (
-
-              <div className='status1' >
-              <span className='create-form-title'>Настройки</span>
-              <div className='filterRadios'>
-                <input type="radio" id='commonRadio' name='radioSettings' onChange={() => handleSettings(1)} />
-                <label htmlFor="commonRadio">Общие</label>
-                <input type="radio" id='broadRadio' name='radioSettings' onChange={() => handleSettings(2)} />
-                <label htmlFor="broadRadio">Расширенные</label>
-              </div>
-              {filterSettings === 1 && (
-              <div className='settings'>
-                <div className='settingsContainer'>
-                  <div className='semestersSettings'>
-                    <label>Форма обучения</label>
-                    <Select
-                      options={selectForms}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedForms(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Курс</label>
-                    <Select
-                      options={selectCourse}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedCourses(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Семестр</label>
-                    <Select
-                      options={selectSemesters}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedSemesters(selectedOptions)}  
-                    />
-                  </div>
-                </div>
-              </div>
-              )}
-              {filterSettings === 2 && (
-              <div className='ipfInfo'>
-              {selectedInstitutes.length > 0 ? (
-                selectedInstitutes.map((institute) => (
-                  <div className='ifpContainer' key={institute.value}>
-                  <div>
-                    <label>{institute.label}</label>
-                  </div>
-                  <div className='settingsContainer'>
-                  <div className='semestersSettings'>
-                    <label>Форма</label>  
-                    <Select
-                      options={selectForms}                      
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedForms(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Курс</label>
-                    <Select
-                      options={selectCourse}                      
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedCourses(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Семестр</label>
-                    <Select
-                      options={selectSemesters}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedSemesters(selectedOptions)}  
-                    />
-                  </div>
-                </div>
-                  </div>
-                ))
-              ) : ( <span className='notSelected'>Нет выбранных институтов</span> )}
-              </div>
-              )}
-              </div>
-              )}
-              {filterStatus === 2 && (
-              <div className='status2'>
-              <span className='create-form-title'>Направления</span>
-              <div className='filterRadios'>
-                <input type="radio" id='commonRadio' name='radioSettings' onChange={() => handleSettings(1)} />
-                <label htmlFor="commonRadio">Общие</label>
-                <input type="radio" id='broadRadio' name='radioSettings' onChange={() => handleSettings(2)} />
-                <label htmlFor="broadRadio">Расширенные</label>
-              </div>
-              {filterSettings === 1 && (
-              <div className='settings'>
-                <div className='settingsContainer'>
-                  <div className='semestersSettings'>
-                    <label>Форма обучения</label>
-                    <Select
-                      options={selectForms}
-                      value={selectedForms}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedForms(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Курс</label>
-                    <Select
-                      options={selectCourse}
-                      value={selectedCourses}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedCourses(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Семестр</label>
-                    <Select
-                      options={selectSemesters}
-                      value={selectedSemesters}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedSemesters(selectedOptions)}  
-                    />
-                  </div>
-                </div>
-              </div>
-              )}
-
-              {filterSettings === 2 && (
-              <div className='ipfInfo'>
-              {selectedFacultets.length > 0 ? (
-                selectedFacultets.map((facultet) => (
-                  <div className='ifpContainer' key={facultet.value}>
-                    <label>{facultet.label}</label>
-                    <div className='settingsContainer'>
-                  <div className='semestersSettings'>
-                    <label>Форма</label>  
-                    <Select
-                      options={selectForms}                      
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedForms(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Курс</label>
-                    <Select
-                      options={selectCourse}                      
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedCourses(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Семестр</label>
-                    <Select
-                      options={selectSemesters}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedSemesters(selectedOptions)}  
-                    />
-                  </div>
-                </div>
-                  </div>
-                ))
-              ) : (
-                <span className='notSelected'>Нет выбранных направлений</span>
-              )}
-              </div>
-              )}
-              </div>
-              )}
-
-
-              {filterStatus === 3 && (
-              <div className='status3'>
-              <span className='create-form-title'>Профиль обучения</span>
-              <div className='filterRadios'>
-                <input type="radio" id='commonRadio' name='radioSettings' onChange={() => handleSettings(1)} />
-                <label htmlFor="commonRadio">Общие</label>
-                <input type="radio" id='broadRadio' name='radioSettings' onChange={() => handleSettings(2)} />
-                <label htmlFor="broadRadio">Расширенные</label>
-              </div>
-              {filterSettings === 1 && (
-              <div className='settings'>
-                <div className='settingsContainer'>
-                  <div className='semestersSettings'>
-                    <label>Форма обучения</label>
-                    <Select
-                      options={selectForms}
-                      value={selectedForms}
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedForms(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Курс</label>
-                    <Select
-                      options={selectCourse}
-                      value={selectedCourses}
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedCourses(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Семестр</label>
-                    <Select
-                      options={selectSemesters}
-                      value={selectedSemesters}
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedSemesters(selectedOptions)}  
-                    />
-                  </div>
-                </div>
-              </div>
-              )}
-
-              {filterSettings === 2 && (
-              <div className='ipfInfo'>
-                {selectedProfiles.length > 0 ? (
-                  selectedProfiles.map((profile) => (
-                    <div className='ifpContainer' key={profile.value}>
-                      <label>{profile.label}</label>
-                      <div className='settingsContainer'>
-                  <div className='semestersSettings'>
-                    <label>Курс</label>
-                    <Select
-                      options={selectCourse}                      
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedCourses(selectedOptions)}  
-                    />
-                  </div>
-                  <div className='semestersSettings'>
-                    <label>Семестр</label>
-                    <Select
-                      options={selectSemesters}
-                      isMulti  
-                      isSearchable  
-                      closeMenuOnSelect={false} 
-                      placeholder="Поиск"
-                      classNamePrefix='selectTeacher'
-                      onChange={(selectedOptions) => setSelectedSemesters(selectedOptions)}  
-                    />
-                  </div>
-                </div>
-                    </div>
-                  ))
-                ) : (
-                  <span className='notSelected'>Нет выбранных прфоилей</span>
-                )}
-              </div>
-              )}
-              </div>
-              )}
-                <div className='createElectiveNavigation'>
-                  <div className='formNavigation'>
-                    <button type="submit" className='nextStepButton'>Создать электив</button>
-                  </div>  
-                </div>
+              <button className='create-form-button' type="submit">Создать электив</button>
             </form>
           )}
         </div>
