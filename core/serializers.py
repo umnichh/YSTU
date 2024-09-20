@@ -21,13 +21,19 @@ class InstituteSerializer(serializers.ModelSerializer):
         model = Institute
         fields = ('id', 'name',)
 
+class UGSNSerializer(serializers.ModelSerializer):
+    institute = InstituteSerializer(read_only=True)
+
+    class Meta:
+        model = Ugsn
+        fields = ('id', 'name', 'institute')
 
 class FacultetSerializer(serializers.ModelSerializer):
-    institute = InstituteSerializer()
+    ugsn = UGSNSerializer(read_only=True)
 
     class Meta:
         model = Facultet
-        fields = ('id', 'name', 'institute')
+        fields = ('id', 'name', 'ugsn')
 
 
 class FormSerializer(serializers.ModelSerializer):
@@ -65,26 +71,31 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('id', 'last_name', 'first_name', 'middle_name', 'year_of_study', 'group', 'average_grade', 'profile', 'health')
+        fields = ('id', 'last_name', 'first_name', 'middle_name', 'course', 'group', 'average_grade', 'profile', 'health')
 
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
         fields = '__all__'
+
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = '__all__'
         
 class ElectiveSerializer(serializers.ModelSerializer):
     status = StatusSerializer(read_only=True)  # read-only, так как создаем его отдельно
     teachers = serializers.SerializerMethodField()
-    health = HealthSerializer(read_only=True)          # Для отправки полного объекта
-    form = FormSerializer(read_only=True) 
+    health = HealthSerializer(read_only=True)  # Для отправки полного объекта
+    form = FormSerializer(read_only=True)
     made_by = TeacherSerializer(read_only=True)
-    institutes = serializers.SerializerMethodField()  
-    facultets = serializers.SerializerMethodField()  
-    profiles = serializers.SerializerMethodField()  
+    profiles = serializers.SerializerMethodField()  # Custom method for profiles
+    institutes = serializers.SerializerMethodField()  # Custom method for institutes
+    type = TypeSerializer(read_only=True)
 
     class Meta:
         model = Elective
-        fields = ['id', 'name', 'describe', 'place', 'form', 'volume', 'date_start', 'date_finish', 'marks', 'health', 'status', 'registration_closed', 'teachers', 'made_by', 'institutes', 'facultets', 'profiles']
+        fields = ['id', 'name', 'describe', 'place', 'form', 'volume', 'date_start', 'date_finish', 'marks', 'health', 'status', 'registration_closed', 'teachers', 'made_by', 'profiles', 'institutes', 'type']
 
     def validate(self, data):
         required_fields = ['name', 'describe', 'place', 'volume', 'date_start', 'date_finish', 'marks']
@@ -103,24 +114,28 @@ class ElectiveSerializer(serializers.ModelSerializer):
         if volume and not isinstance(volume, int):
             raise serializers.ValidationError("Объём должен быть числом")
 
-        return data   
+        return data
 
     def get_teachers(self, obj):
         teacher_electives = TeacherElective.objects.filter(elective=obj)
         teachers = [teacher_elective.teacher for teacher_elective in teacher_electives]
         return TeacherSerializer(teachers, many=True).data
-    
-    def get_institutes(self, obj):
-        elective_institutes = ElectiveInstitute.objects.filter(elective=obj)
-        return ElectiveInstituteSerializer(elective_institutes, many=True).data
 
-    def get_facultets(self, obj):
-        elective_facultets = ElectiveFacultet.objects.filter(elective=obj)
-        return ElectiveFacultetSerializer(elective_facultets, many=True).data
+    def get_institutes(self, obj):
+        elective_profiles = ElectiveProfile.objects.filter(elective=obj).select_related('profile', 'profile__facultet', 'profile__facultet__ugsn', 'profile__facultet__ugsn__institute')
+
+        institutes = set()
+        for elective_profile in elective_profiles:
+            institute = elective_profile.profile.facultet.ugsn.institute
+            institutes.add(institute)
+
+        return InstituteSerializer(institutes, many=True).data
 
     def get_profiles(self, obj):
         elective_profiles = ElectiveProfile.objects.filter(elective=obj)
         return ElectiveProfileSerializer(elective_profiles, many=True).data
+
+
  
 class ElectiveInstituteSerializer(serializers.ModelSerializer):
     institute = serializers.PrimaryKeyRelatedField(read_only=True)

@@ -46,4 +46,5 @@ admin.site.register(ElectiveFacultet)
 admin.site.register(ElectiveProfile)
 admin.site.register(Course)
 admin.site.register(Semester)
-
+admin.site.register(Ugsn)
+admin.site.register(Type)

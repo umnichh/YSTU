@@ -10,6 +10,31 @@ class CustomUser(AbstractUser):
     class Meta:
         db_table = "CustomUser"
 
+class Admin(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    last_name = models.CharField('Фамилия', max_length=150)
+    first_name = models.CharField('Имя', max_length=150)
+    middle_name = models.CharField('Отчество', max_length=150)
+
+    def __str__(self):
+        return f"{self.last_name} {self.first_name} {self.middle_name}"
+
+    class Meta:
+        db_table = "Admin"
+        verbose_name_plural = "Тип курсов"
+        verbose_name = "Тип курса"
+
+class Type(models.Model):
+    name = models.CharField('Тип курса', max_length=50)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = "Type"
+        verbose_name_plural = "Тип курсов"
+        verbose_name = "Тип курса"
+
 class Semester(models.Model):
     name = models.PositiveIntegerField("Семестр", null=True, blank=True)
 
@@ -43,6 +68,17 @@ class Institute(models.Model):
         verbose_name_plural = "Институты"
         verbose_name = "Институт"  
 
+class Ugsn(models.Model):
+    name = models.CharField('УГСН', max_length=10)
+    institute = models.ForeignKey(Institute, on_delete=models.CASCADE, verbose_name='Институт')
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        db_table = "Ugsn"
+        verbose_name_plural = "УГСН"
+        verbose_name = "УГСН"  
+
 class Teacher(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Институт')
@@ -74,7 +110,7 @@ class Health(models.Model):
   
 
 class Facultet(models.Model):
-    institute = models.ForeignKey(Institute, on_delete=models.CASCADE, verbose_name='Институт')
+    ugsn = models.ForeignKey(Ugsn, on_delete=models.CASCADE, null=True, verbose_name="УГСН")
     name = models.CharField('Направление подготовки',max_length=100)
     def __str__(self):
         return f"{self.name}"
@@ -118,6 +154,7 @@ class Student(models.Model):
     average_grade = models.FloatField('Средний балл', null=True)
     health = models.ForeignKey(Health, on_delete=models.CASCADE, null=True, verbose_name='Группа здоровья')
 
+
     def __str__(self):
         full_name = f"{self.last_name} {self.first_name} {self.middle_name}"
         return full_name.strip()
@@ -147,6 +184,7 @@ class Elective(models.Model):
     health = models.ForeignKey(Health, on_delete=models.CASCADE, null=True)
     status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True)
     registration_closed = models.BooleanField('Регистрация закрыта', default=False)
+    type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, verbose_name="Тип курса")
     made_by = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
     
     def __str__(self):
@@ -213,9 +251,9 @@ class ElectiveFacultet(models.Model):
 class ElectiveProfile(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
-    assign_all_semestrs = models.BooleanField(default=False)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
+    assign_all_semestrs = models.BooleanField(default=False, null=True)
 
     def __str__(self):
         return f'{self.elective.name} -  {self.profile.name}'

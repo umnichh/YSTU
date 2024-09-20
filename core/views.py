@@ -99,6 +99,8 @@ class ElectiveView(APIView):
             health = Health.objects.get(id=health_id)
             form = Form.objects.get(id=form_id)
             status_first = Status.objects.filter(name='Скоро начнётся').first()
+            type_id = data.get('facultativeState')
+            type = Type.objects.get(id=type_id)
 
             elective = Elective.objects.create(
                 name=validated_data['name'],
@@ -111,59 +113,32 @@ class ElectiveView(APIView):
                 marks=validated_data['marks'],
                 health=health,
                 status=status_first,
-                made_by=teacher
+                made_by=teacher,
+                type = type,
             )
 
             teacher_ids = data.get('selectedTeachers', [])
             for teacher_id in teacher_ids:
 
-                teacher = Teacher.objects.get(id=teacher_id['value'])
+                teacher = Teacher.objects.get(id=teacher_id)
                 TeacherElective.objects.create(elective=elective, teacher=teacher)
         
-            institutes = data.get('institute_ids', [])
-            facultets = data.get('facultet_ids', [])
-            profiles = data.get('profile_ids', [])
-            course = data.get('course', None)
-            semestr = data.get('semestr', None)
-            assign_all_semestrs = data.get('assign_all_semestrs', False)
+            profiles = data.get('checked', [])
+            # course = data.get('course', None)
+           
+            # semestr = data.get('semestr', None)
+            # assign_all_semestrs = data.get('assign_all_semestrs', False)
             
-            for institute_id in institutes:
-
-                try:
-                    institute = Institute.objects.get(id=institute_id)
-                    ElectiveInstitute.objects.create(
-                        elective=elective,
-                        institute=institute,
-                        course=course,
-                        semestr=semestr if not assign_all_semestrs else None,
-                        assign_all_semestrs=assign_all_semestrs
-                    )
-                except Institute.DoesNotExist:
-                    return Response({'error': f'Институт с айди {institute_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
-
-            for facultet_id in facultets:
-
-                try:
-                    facultet = Facultet.objects.get(id=facultet_id)
-                    ElectiveFacultet.objects.create(
-                        elective=elective,
-                        facultet=facultet,
-                        course=course,
-                        semestr=semestr if not assign_all_semestrs else None,
-                        assign_all_semestrs=assign_all_semestrs
-                    )
-                except Facultet.DoesNotExist:
-                    return Response({'error': f'Факультет с айди {facultet_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
 
             for profile_id in profiles:
                 try:
                     profile = Profile.objects.get(id=profile_id)
                     ElectiveProfile.objects.create(
                         elective=elective,
-                        profile=profile,
-                        course=course,
-                        semestr=semestr if not assign_all_semestrs else None,
-                        assign_all_semestrs=assign_all_semestrs
+                        profile=profile
+                        # course=course,
+                        # semestr=semestr if not assign_all_semestrs else None,
+                        # assign_all_semestrs=assign_all_semestrs
                     )
                 except Profile.DoesNotExist:
                     return Response({'error': f'Профиль с айди {profile_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
@@ -228,11 +203,14 @@ class ElectiveAvaliableStudentView(APIView):
         try:
             user = request.user
             student = Student.objects.get(user=user)
-            all_electives = Elective.objects.all()
-            enrolled_electives = StudentElective.objects.filter(student=student).values_list('elective_id', flat=True)
-            available_electives = all_electives.exclude(id__in=enrolled_electives)
+            student_profile = student.profile
+            available_electives = Elective.objects.filter(
+            electiveprofile__profile=student_profile  
+        ).exclude(studentelective__student=student)
+    
             serializer = ElectiveSerializer(available_electives, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
         except Student.DoesNotExist:
             return Response({'error': 'Студент не найден'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -268,26 +246,27 @@ class UploadInstitutesView(APIView):
 
         try:
             uploaded_file = request.FILES['document']
-
             data = pd.read_excel(uploaded_file)
 
             for index, row in data.iterrows():
                 institute_name = row['Институт']
-                form_of_study = row['Форма обучения']
+                ugsn_name = row['УГСН']
                 faculty_name = row['Специальность']
                 profile_name = row['Профиль']
+                form_of_study = row['Форма обучения']
 
                 form = Form.objects.filter(name=form_of_study.capitalize()).first()
-                institute, created = Institute.objects.get_or_create(name=institute_name)
-                faculty, created = Facultet.objects.get_or_create(name=faculty_name, institute=institute)
+                institute, _ = Institute.objects.get_or_create(name=institute_name)
+                ugsn, _ = Ugsn.objects.get_or_create(name=ugsn_name, institute=institute)
+                faculty, _ = Facultet.objects.get_or_create(name=faculty_name, ugsn=ugsn)
 
                 if not pd.isnull(profile_name):
-                    profile, created = Profile.objects.get_or_create(name=profile_name, facultet=faculty, form=form)
+                    profile, _ = Profile.objects.get_or_create(name=profile_name, facultet=faculty, form=form)
 
-            return Response({'message': 'Всё норм загружены'}, status=status.HTTP_201_CREATED)
+            return Response({'message': 'Данные загружены'}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            print(e)
+            print(str(e))
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
 class AllInstitutes(APIView):
@@ -393,6 +372,7 @@ class ElectivesMadeByTeacher(APIView):
 class AllDataView(APIView):
     def get(self, request):
         institutes = Institute.objects.all()
+        ugsns = Ugsn.objects.all()
         facultets = Facultet.objects.all()
         profiles = Profile.objects.all()
         teachers = Teacher.objects.all()
@@ -400,8 +380,10 @@ class AllDataView(APIView):
         healths = Health.objects.all()
         courses = Course.objects.all()
         semesters = Semester.objects.all()
+        types = Type.objects.all()
 
         instituteSerializer = InstituteSerializer(institutes, many=True)
+        ugsnSerializer = UGSNSerializer(ugsns, many=True)
         facultetSerializer = FacultetSerializer(facultets, many=True)
         profileSerializer = ProfileSerializer(profiles, many=True)
         formSerializer = FormSerializer(forms, many=True)
@@ -409,15 +391,18 @@ class AllDataView(APIView):
         healthSerializer = HealthSerializer(healths, many=True)
         courseSerializer = CourseSerializer(courses, many=True)
         semesterSerializer = SemesterSerializer(semesters, many=True)
+        typeSerializer = TypeSerializer(types, many=True)
 
         data = {
             'institutes': instituteSerializer.data,
+            'ugsns': ugsnSerializer.data,
             'facultets': facultetSerializer.data,
             'profiles': profileSerializer.data,
             'forms' : formSerializer.data,
             'teachers' : teacherSerializer.data,
             'healths' : healthSerializer.data,
             'courses' : courseSerializer.data,
-            'semesters' : semesterSerializer.data
+            'semesters' : semesterSerializer.data,
+            'types' : typeSerializer.data
         }
         return Response(data)
