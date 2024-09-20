@@ -87,7 +87,7 @@ function Electives(){
 
       <div className='electives'>
         <div className='elective-container'>
-          <div className="searchSettings">
+        <div className="searchSettings">
             <form>
               <div className='search-container'>
                 <input className='search-electives' type="text" placeholder="Поиск элективов"/>
@@ -108,6 +108,7 @@ function Electives(){
 
           {electives.map((elective) => (
             <div key={elective.id} className='elective' onClick={() => handleClick(elective)}>
+            
               <img src={electiveImage} alt="elective" className="elective-image"/>
               <div className="elective-info">
                 <div className='elective-name'>{elective.name}</div>

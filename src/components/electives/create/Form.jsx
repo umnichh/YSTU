@@ -7,6 +7,12 @@ import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 function Create() {
   const currentToken = localStorage.getItem('access_token');
   const navigate = useNavigate();
+
+  // Отображение фильтров
+  const [facultativeState, setFacultative] = useState(false);
+  const [forAll, setForAll] = useState(false)
+  const [filterSettings, setFilterSettings] = useState(false)
+
   // Состояния справочников
   const [forms, setForms] = useState([]);
   const [institutes, setInstitutes] = useState([]);
@@ -16,16 +22,42 @@ function Create() {
   const [profiles, setProfiles] = useState([]);
   const [healths, setHealths] = useState([]);
   const [checked, setChecked] = useState([]);
+  const [checkedCourses, setCheckedCourses] = useState([]);
+
+  const [checkedCoursesList, setCheckedCoursesList] = useState([]); // Массив для чекнутых курсов
+  const [expandedList, setExpandedList] = useState([]); // Массив для расширенных элементов
+
+// Обработчик для изменения состояния курсов для конкретного профиля
+const handleCheckCourses = (index, checkedCourses) => {
+  const updatedCheckedCoursesList = [...checkedCoursesList];
+  updatedCheckedCoursesList[index] = checkedCourses;
+  setCheckedCoursesList(updatedCheckedCoursesList);
+};
+
+// Обработчик для изменения состояния расширения для конкретного профиля
+const handleExpandCourses = (index, expanded) => {
+  const updatedExpandedList = [...expandedList];
+  updatedExpandedList[index] = expanded;
+  setExpandedList(updatedExpandedList);
+};
+
   const [expanded, setExpanded] = useState([]);
-  const [facultativeState, setFacultative] = useState(1);
   const [courses, setCourses] = useState([]);
-  const [semesters, setSemesters] = useState([]);
-
-
-
 
   // Выбранные значения
   const [selectedTeachers, setSelectedTeachers] = useState([]);
+
+  function handleForAll(){
+    setForAll(!forAll)
+  }
+
+  function handleSettings(){
+    setFilterSettings(!filterSettings)
+  }
+  function handleFacultative(){
+    setFacultative(!facultativeState)
+  }
+
 
   // Получение справочной информации
   useEffect(() => {
@@ -47,7 +79,6 @@ function Create() {
           setProfiles(data.profiles);
           setHealths(data.healths);
           setCourses(data.courses);
-          setSemesters(data.semesters);
           setUgsn(data.ugsns);
           console.log(data)
         }
@@ -119,7 +150,6 @@ function Create() {
     };
   });
   
-  console.log(combinedData)
   // Создает дерево
   const treeData = combinedData.map(institute => ({
     label: institute.name,
@@ -131,17 +161,25 @@ function Create() {
         label: faculty.name,
         value: `faculty-${faculty.id}`,
           children:  faculty.profiles.map(profile => ({
-          label: profile.name,
+          label: profile.name + ' — ' + profile.form.name,
           value: profile.id
         })),
       })),
     })),
   }));
-  
+
+  const courseTree = courses.map(course => ({
+    label: course.name,
+    value: `course-${course.name}`,
+    children: (course.semesters || []).map(semester => ({
+        label: semester.name,
+        value: `semester-${semester.id}`
+    }))
+}));
   if (!forms || !facultets || !institutes || !teachers || !profiles || !healths) {
     return <div>Загрузка...</div>;
   }
-
+  console.log(courseTree)
   return (
     
     <div className='container'>
@@ -149,15 +187,10 @@ function Create() {
           {(
             <form  className = "electiveForm" onSubmit={sendElective}>
               <span className='create-form-title first-title'>Информация об элективе</span>
-              <label>Создать:</label>
               <div className='facultativeRadio'>
-                <div className='facultativeContainer'>
-                  <input type="radio" id='facultativeRadio' name='facultative' defaultChecked='checked' onChange={() => setFacultative(1)} />
-                  <label htmlFor="facultativeRadio">Электив</label>
-                </div>
-                <div className='electiveContainer'>
-                  <input type="radio" id='electiveRadio' name='facultative' onChange={() => setFacultative(2)} />
-                  <label htmlFor="electiveRadio">Факультатив</label>
+                <div className='forAll'>
+                  <label htmlFor="facultativeRadio">Создать факультатив?</label>
+                  <input type="checkbox" id='facultativeRadio' name='facultative' onChange={handleFacultative} />
                 </div>
               </div>
               <label className='teacherLabel'>Преподаватели:</label>
@@ -219,10 +252,88 @@ function Create() {
                 <textarea className='electiveDescription  ' name="describe" rows="5" cols="33"></textarea>
               </div>
               {
-              facultativeState === 1 && 
+              !facultativeState && 
               <div>
                 <span className='create-form-title'>Фильтрация электива</span>
-                <label>Выберите институты и направления, которые будут проходить электив</label>
+                  <div className='forAll'>
+                    <label htmlFor="forAll">Электив для всех направлений?</label>
+                    <input type="checkbox" id='facultativeRadio' name='forAll' onChange={handleForAll}/>
+                  </div>
+                {
+                  !forAll &&
+                  <>
+                    <label>Выберите институты и направления, которые будут проходить электив</label>
+                    <div className='tree'>
+                      <CheckboxTree
+                        nodes={treeData}
+                        checked={checked}
+                        expanded={expanded}
+                        onCheck={(checked) => setChecked(checked)}
+                        onExpand={(expanded) => setExpanded(expanded)}
+                        classNamePrefix="checkTree"
+                      />
+                    </div>
+                  </>
+                }
+                <div className='status2'>
+<span className='create-form-title'>Курсы</span>
+<div className='forAll'>
+<label htmlFor="commonRadio">Расширенные настройки</label>
+<input type="checkbox" id='commonRadio' name='radioSettings' onChange={() => handleSettings()} />
+</div>
+{filterSettings === false && (
+  <div className='settings'>
+  <div className='settingsContainer'>
+  <label>Выберите курсы или семестры, которые будут проходить электив</label>
+  <div className='tree'>
+    <CheckboxTree
+      nodes={courseTree}
+      checked={checkedCourses}
+      expanded={expanded}
+      onCheck={(checkedCourses) => setCheckedCourses(checkedCourses)}
+      onExpand={(expanded) => setExpanded(expanded)}
+      classNamePrefix="checkTree"
+    />
+  </div>
+</div>
+</div>
+)}
+{filterSettings === true && (
+<div className='ipfInfo'>
+{checked.length > 0 ? (
+  checked.map((check, index) => {
+    const profile = profiles.find((p) => p.id === Number(check));
+    if (!profile) return null; // Проверка на случай отсутствия профиля
+
+    return (
+      <div className='ifpContainer' key={profile.id}>
+        <label>{profile.name}</label>
+        <div className='settingsContainer'>
+          <div className='semestersSettings'>
+            <div className='courseTree'>
+              <CheckboxTree
+                nodes={courseTree}
+                checked={checkedCoursesList[index] || []} // Уникальное состояние для каждого профиля
+                expanded={expandedList[index] || []} // Уникальное состояние для каждого профиля
+                onCheck={(checkedCourses) => handleCheckCourses(index, checkedCourses)}
+                onExpand={(expanded) => handleExpandCourses(index, expanded)}
+                classNamePrefix="courseTreePrefix"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  })
+) : (
+  <span className='notSelected'>Нет выбранных профилей</span>
+)}
+</div>
+)}
+</div>
+
+                {/* <span className='create-form-title'>Курсы</span>
+                <label>Выберите курсы и семестры, которые будут проходить электив</label>
                   <div className='tree'>
                     <CheckboxTree
                       nodes={treeData}
@@ -232,19 +343,7 @@ function Create() {
                       onExpand={(expanded) => setExpanded(expanded)}
                       classNamePrefix="checkTree"
                     />
-                </div>
-                <span className='create-form-title'>Курсы</span>
-                <label>Выберите курсы и семестры, которые будут проходить электив</label>
-                  <div className='tree'>
-                    {/* <CheckboxTree
-                      nodes={treeData}
-                      checked={checked}
-                      expanded={expanded}
-                      onCheck={(checked) => setChecked(checked)}
-                      onExpand={(expanded) => setExpanded(expanded)}
-                      classNamePrefix="checkTree"
-                    /> */}
-                </div>
+                </div> */}
               </div>
 
 

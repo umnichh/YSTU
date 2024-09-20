@@ -10,7 +10,7 @@ body {
   font-weight: 400;
   line-height: normal;
   overflow-y: scroll;
-  background: linear-gradient(to right, rgb(109, 188, 220), rgb(255, 250, 245));
+  background: linear-gradient(to right, rgb(177, 233, 255), rgb(255, 221, 189));
 
 }
 
@@ -76,12 +76,13 @@ body {
 }
 
 .nav-links-container *{
-  font-size: 19px;
+  font-size: 21px;
   color: black;
   border-style: none;
   text-decoration: none;
   background-color: transparent;
-  transition: 0.1s ease-in-out;
+  transition: 0.1s ease-out;
+
   white-space: nowrap;
 }
 
@@ -308,8 +309,8 @@ body {
 
 
 .create-form {
-  width: 82%;
-  margin-top: 50px;
+  width: 60%;
+  margin-top: 25px;
   margin-bottom: 30px;
   background-color: white;
   padding: 30px 40px;
@@ -333,6 +334,21 @@ body {
 
 .first-title{
   padding-top: 20px;
+}
+
+.create-form-button{
+  margin-top: 30px;
+  padding: 7px;
+  align-items: center;
+  font-size: 20px;
+  color: white;
+  background: rgb(22, 86, 155);
+  transition: 0.1s;
+  border: none;
+}
+
+.create-form-button:hover{
+  opacity: 0.9;
 }
 
 .selectProperty:hover, .electiveForm input:hover, .electiveForm input:focus, .electiveDescription:focus{
@@ -534,7 +550,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
-  border-bottom: 1px dashed black;
+  border-bottom: 2px solid black;
 }
 
 .radioGroup {
@@ -561,7 +577,6 @@ body {
 
 .semestersSettings {
  width: 100%;
-  height:200px;
 }
 
 .titleLow{
@@ -954,6 +969,7 @@ label{
 }
 
 .react-checkbox-tree ol{
+
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -1037,4 +1053,36 @@ label{
 .searchRadio{
   display: flex;
   align-items: center;
+}
+
+.forAll{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.forAll label{
+  margin: 0px 5px 0px 0px;
+}
+
+.courseTree .react-checkbox-tree ol{
+  margin-bottom: 20px;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.rct-icons-fa4 .rct-icon-check::before{
+  background: url('./ystu-images/icons/check.png');
+  background-size: 19px;
+  color: black; 
+}
+
+.rct-icons-fa4 .rct-icon-uncheck::before{
+  background: url('./ystu-images/icons/uncheck.png');
+  background-size: 19px;
+  color: black; 
+}
+
+.rct-node-icon{
+  color: #333;
 }

@@ -69,14 +69,13 @@ function Madeby(){
   
   return (
     <div className="container">
-
-      <form>
+      <div className='electives'>
+        <div className='elective-container'>
+        <form>
         <div className='search-container'>
           <input className='search-electives' type="text" placeholder="Поиск элективов"/>
         </div>
       </form>
-      <div className='electives'>
-        <div className='elective-container'>
           {electives.map((elective) => (
             <div key={elective.id} className='elective' id = {'elective' + elective.id }>
               <img src={electiveImage} alt="elective" className="elective-image"/>
