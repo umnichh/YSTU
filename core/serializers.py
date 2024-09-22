@@ -6,20 +6,28 @@ class CustomUserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('username', 'password')
 
-class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        fields = '__all__'
-
 class SemesterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Semester
         fields = '__all__'
 
+class CourseSerializer(serializers.ModelSerializer):
+    semesters = serializers.SerializerMethodField()
+    class Meta:
+        model = Course
+        fields = ('name', 'semesters')
+
+    def get_semesters(self, obj):
+        semesters =Semester.objects.filter(course=obj)
+        return SemesterSerializer(semesters, many=True).data
+
+
 class InstituteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institute
         fields = ('id', 'name',)
+
+
 
 class UGSNSerializer(serializers.ModelSerializer):
     institute = InstituteSerializer(read_only=True)
@@ -82,7 +90,7 @@ class TypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
         fields = '__all__'
-        
+
 class ElectiveSerializer(serializers.ModelSerializer):
     status = StatusSerializer(read_only=True)  # read-only, так как создаем его отдельно
     teachers = serializers.SerializerMethodField()
@@ -92,10 +100,12 @@ class ElectiveSerializer(serializers.ModelSerializer):
     profiles = serializers.SerializerMethodField()  # Custom method for profiles
     institutes = serializers.SerializerMethodField()  # Custom method for institutes
     type = TypeSerializer(read_only=True)
+    studentCounters = serializers.SerializerMethodField()
 
     class Meta:
         model = Elective
-        fields = ['id', 'name', 'describe', 'place', 'form', 'volume', 'date_start', 'date_finish', 'marks', 'health', 'status', 'registration_closed', 'teachers', 'made_by', 'profiles', 'institutes', 'type']
+        fields = ['id', 'name', 'describe', 'place', 'form', 'volume', 'date_start', 'date_finish', 'marks', 'health', 'status', 'registration_closed', 
+                  'teachers', 'made_by', 'profiles', 'institutes', 'type', 'studentCounters']
 
     def validate(self, data):
         required_fields = ['name', 'describe', 'place', 'volume', 'date_start', 'date_finish', 'marks']
@@ -134,6 +144,10 @@ class ElectiveSerializer(serializers.ModelSerializer):
     def get_profiles(self, obj):
         elective_profiles = ElectiveProfile.objects.filter(elective=obj)
         return ElectiveProfileSerializer(elective_profiles, many=True).data
+    
+    def get_studentCounters(self, obj):
+        counter = StudentElective.objects.filter(elective=obj).count()
+        return obj.place - counter
 
 
  

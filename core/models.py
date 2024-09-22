@@ -34,21 +34,9 @@ class Type(models.Model):
         db_table = "Type"
         verbose_name_plural = "Тип курсов"
         verbose_name = "Тип курса"
-
-class Semester(models.Model):
-    name = models.PositiveIntegerField("Семестр", null=True, blank=True)
-
-    def __int__(self):
-        return f"{self.name} семестр   "
-    
-    class Meta:
-        db_table = "Semester"
-        verbose_name_plural = "Семестры"
-        verbose_name = "Семестр"
     
 class Course(models.Model):
     name = models.PositiveIntegerField("Курс", null=True, blank=True)
-
     def __str__(self):
         return f"{self.name} курс"
     
@@ -56,8 +44,19 @@ class Course(models.Model):
         db_table = "Course"
         verbose_name_plural = "Курсы"
         verbose_name = "Курс"
+
+class Semester(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, verbose_name="Курс")
+    name = models.PositiveIntegerField("Семестр", null=True, blank=True)
+
+    def __int__(self):
+        return f"{str(self.name)}"
     
-        
+    class Meta:
+        db_table = "Semester"
+        verbose_name_plural = "Семестры"
+        verbose_name = "Семестр"
+
 class Institute(models.Model):
     name = models.CharField('Название института', max_length=100)
 
@@ -170,6 +169,8 @@ class Status(models.Model):
         return self.name
     class Meta:
         db_table = "Status"
+        verbose_name_plural = "Статусы элективного курса"
+        verbose_name = "Статус элективного курса"
         
 class Elective(models.Model):
     name = models.CharField('Название', max_length=100, null=True, blank=True)
@@ -247,13 +248,9 @@ class ElectiveFacultet(models.Model):
         verbose_name_plural = "Направления подготовки в элективе"
         verbose_name = "Направления подготовки в элективе"
 
-
 class ElectiveProfile(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
-    assign_all_semestrs = models.BooleanField(default=False, null=True)
 
     def __str__(self):
         return f'{self.elective.name} -  {self.profile.name}'
@@ -263,3 +260,16 @@ class ElectiveProfile(models.Model):
         verbose_name_plural = "Профили подготовки в элективе"
         verbose_name = "Профили подготовки в элективе"
 
+
+
+class ElectiveProfileCourse(models.Model):
+    electiveprofile = models.ForeignKey(ElectiveProfile, on_delete=models.CASCADE, null=True)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
+    all_course = models.BooleanField("Назначен ли всем курсам", default=False)
+
+    def __str__(self):
+        return f'{self.electiveprofile.elective.name} -  {self.semester}'
+    
+    class Meta:
+        db_table = "ElectiveProfileCourse"
+        verbose_name_plural = "Курсы в профиле в элективе"

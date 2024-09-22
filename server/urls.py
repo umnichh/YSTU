@@ -43,4 +43,6 @@ urlpatterns = [
     path('api/institutes/', AllInstitutes.as_view(), name='all_institutes'),  # GET: Список всех институтов/направлений/профилей
 
     path('api/create/info/', AllDataView.as_view(), name='all_data'),  # GET: all data
+
+    path('api/elective/<int:id>/edit/', ElectiveEditView.as_view(), name='edit_elective') #get говно как отправлется при создании
 ]

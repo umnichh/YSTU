@@ -99,7 +99,7 @@ class ElectiveView(APIView):
             health = Health.objects.get(id=health_id)
             form = Form.objects.get(id=form_id)
             status_first = Status.objects.filter(name='Скоро начнётся').first()
-            type_id = data.get('facultativeState')
+            type_id = data.get('type')
             type = Type.objects.get(id=type_id)
 
             elective = Elective.objects.create(
@@ -124,26 +124,36 @@ class ElectiveView(APIView):
                 TeacherElective.objects.create(elective=elective, teacher=teacher)
         
             profiles = data.get('checked', [])
+            checked_courses = data.get('checkedCourses', [])  # Если данные приходят как просто список семестров
+            checked_courses_list = data.get('checkedCoursesList', {})  # Если данные приходят в виде {profile_id: [semester_ids]}
+
             # course = data.get('course', None)
-           
             # semestr = data.get('semestr', None)
             # assign_all_semestrs = data.get('assign_all_semestrs', False)
             
+            if checked_courses:
+                for profile_id in profiles:
+                    try:
+                        profile = Profile.objects.get(id=profile_id)
+                        elective_profile = ElectiveProfile.objects.create(elective=elective, profile=profile)
+                        for semester_id in checked_courses:
+                            semester = Semester.objects.get(id=semester_id)
+                            ElectiveProfileCourse.objects.create(electiveprofile=elective_profile, semester=semester)
+                    except Profile.DoesNotExist:
+                        return Response({'error': f'Профиль с айди {profile_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+                    
+            elif checked_courses_list:
+                for profile_id, semester_ids in checked_courses_list.items():
+                    try:
+                        profile = Profile.objects.get(id=profile_id)
+                        elective_profile = ElectiveProfile.objects.create(elective=elective, profile=profile)
+                        for semester_id in semester_ids:
+                            semester = Semester.objects.get(id=semester_id)
+                            ElectiveProfileCourse.objects.create(electiveprofile=elective_profile, semester=semester)
+                    except Profile.DoesNotExist:
+                        return Response({'error': f'Профиль с айди {profile_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
+                
 
-            for profile_id in profiles:
-                try:
-                    profile = Profile.objects.get(id=profile_id)
-                    ElectiveProfile.objects.create(
-                        elective=elective,
-                        profile=profile
-                        # course=course,
-                        # semestr=semestr if not assign_all_semestrs else None,
-                        # assign_all_semestrs=assign_all_semestrs
-                    )
-                except Profile.DoesNotExist:
-                    return Response({'error': f'Профиль с айди {profile_id} не найден'}, status=status.HTTP_404_NOT_FOUND)
-
-            # Return the newly created elective with related data
             return Response({
                 'message': 'Elective created',
                 'elective': ElectiveSerializer(elective).data
@@ -379,7 +389,6 @@ class AllDataView(APIView):
         forms = Form.objects.all()
         healths = Health.objects.all()
         courses = Course.objects.all()
-        semesters = Semester.objects.all()
         types = Type.objects.all()
 
         instituteSerializer = InstituteSerializer(institutes, many=True)
@@ -390,7 +399,6 @@ class AllDataView(APIView):
         teacherSerializer = TeacherSerializer(teachers, many=True)
         healthSerializer = HealthSerializer(healths, many=True)
         courseSerializer = CourseSerializer(courses, many=True)
-        semesterSerializer = SemesterSerializer(semesters, many=True)
         typeSerializer = TypeSerializer(types, many=True)
 
         data = {
@@ -402,7 +410,49 @@ class AllDataView(APIView):
             'teachers' : teacherSerializer.data,
             'healths' : healthSerializer.data,
             'courses' : courseSerializer.data,
-            'semesters' : semesterSerializer.data,
             'types' : typeSerializer.data
-        }
+        }   
         return Response(data)
+
+
+class ElectiveEditView(APIView):
+    def get(self, request, id):
+        try:
+            elective = Elective.objects.get(id=id)
+
+            # Получаем учителей для электива
+            teachers = TeacherElective.objects.filter(elective=elective).values_list('teacher__id', flat=True)
+
+            # Получаем профили и семестры для электива
+            elective_profiles = ElectiveProfile.objects.filter(elective=elective)
+            checked_profiles = [profile.profile.id for profile in elective_profiles]
+
+            # Структура checkedCoursesList
+            checked_courses_list = {}
+            for elective_profile in elective_profiles:
+                courses = ElectiveProfileCourse.objects.filter(electiveprofile=elective_profile)
+                checked_courses_list[elective_profile.profile.id] = [course.semester.id for course in courses]
+
+            # Подготовка данных для ответа
+            data = {
+                'id': elective.id,
+                'name': elective.name,
+                'describe': elective.describe,
+                'place': elective.place,
+                'form': elective.form.id,
+                'volume': elective.volume,
+                'date_start': elective.date_start,
+                'date_finish': elective.date_finish,
+                'marks': elective.marks,
+                'health': elective.health.id,
+                'status': elective.status.name,
+                'type': elective.type.id,
+                'selectedTeachers': list(teachers),  # Список ID учителей
+                'checked': checked_profiles,  # Список профилей
+                'checkedCoursesList': checked_courses_list,  # Структура checkedCoursesList
+            }
+
+            return Response(data, status=status.HTTP_200_OK)
+        
+        except Elective.DoesNotExist:
+            return Response({'error': 'Электив не найден'}, status=status.HTTP_404_NOT_FOUND)
