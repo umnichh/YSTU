@@ -1,10 +1,13 @@
 import React, { useState, useEffect} from 'react';
 import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
 function Create() {
+  const location = useLocation();
+  const { state } = location;
+  const elective = state?.elective || {}; 
   const currentToken = localStorage.getItem('access_token');
   const navigate = useNavigate();
 
@@ -24,6 +27,10 @@ function Create() {
   const [healths, setHealths] = useState([]);
   const [checked, setChecked] = useState([]);
 
+  const [electiveData, setElectiveData] = useState({});
+  const [describe, setDescribe] = useState('Описания нет');
+  const [dateStart, setDateStart] = useState([]);
+  const [dateFinish, setDateFinish] = useState([]);
   const [checkedCourses, setCheckedCourses] = useState([]);
   const [checkedCoursesList, setCheckedCoursesList] = useState({});
 
@@ -69,7 +76,31 @@ const handleExpandCourses = (profileName, expanded) => {
   useEffect(() => {
     async function fetchInfo(){
       try{
-        const response = await fetch('http://212.67.13.70:8000/api/create/info/', {
+        const response = await fetch(`http://212.67.13.70:8000/api/elective/${elective.id}/edit/`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${currentToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setElectiveData(data);
+          const profileIds = data.checked.map(profile => String(profile.id));
+          const teacherIds = data.selectedTeachers.map(teacher => ({
+            value: teacher.id,
+            label: `${teacher.last_name} ${teacher.first_name} ${teacher.middle_name}`}));
+          setChecked(profileIds);
+          setCheckedCourses(data.checkedCourses);
+          setCheckedCoursesList(data.checkedCoursesList);
+          setSelectedTeachers(teacherIds);
+          console.log(data)
+        }
+      } catch(error) {
+        console.error(error);
+      }
+      try{
+        const response = await fetch(`http://212.67.13.70:8000/api/create/info/`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${currentToken}`,
@@ -86,6 +117,7 @@ const handleExpandCourses = (profileName, expanded) => {
           setHealths(data.healths);
           setCourses(data.courses);
           setUgsn(data.ugsns);
+          
         }
       } catch(error) {
         console.error(error);
@@ -100,10 +132,8 @@ const handleExpandCourses = (profileName, expanded) => {
       value: item.id,
       label: labelFormatter(item),
     }));
-
   // Опции для маппинга
   const selectTeacher = mapOptions(teachers, teacher => `${teacher.last_name} ${teacher.first_name} ${teacher.middle_name}`);
-
   // Отправка формы
   const sendElective = async (event) => {
     event.preventDefault();
@@ -128,7 +158,6 @@ const handleExpandCourses = (profileName, expanded) => {
         ...formObject,
       }
     }
-    console.log(elective)
     await fetch('http://212.67.13.70:8000/api/electives/create/', {
       method: 'POST',
       body: JSON.stringify(elective),
@@ -137,7 +166,7 @@ const handleExpandCourses = (profileName, expanded) => {
         'Content-Type': 'application/json',
       },
     });
-    navigate('/elective/created');
+    // navigate('/elective/created');
   };
 
   // Вытаскиваем значения из справочников и возвращаем в один объект
@@ -166,6 +195,7 @@ const handleExpandCourses = (profileName, expanded) => {
     };
   });
   
+   
   // Создает дерево
   const treeData = combinedData.map(institute => ({
     label: institute.name,
@@ -192,9 +222,18 @@ const handleExpandCourses = (profileName, expanded) => {
         value: semester.id
     }))
 }));
-  if (!forms || !facultets || !institutes || !teachers || !profiles || !healths) {
+
+  if (!forms || !facultets || !institutes || !teachers || !profiles || !healths || !courses || !ugsns || !checked) {
     return <div>Загрузка...</div>;
   }
+
+  // const teacherNames = elective.teacherIds.map(teacherId => {
+  //   const teacher = teachers.find(t => t.id === teacherId);
+  //   return teacher ? teacher.name : 'Учитель не найден';
+  // });
+
+  const teacherNames = selectedTeachers.map(teacher => ({label: teacher.last_name + ' ' + teacher.first_name + ' ' + teacher.middle_name, value: teacher.id}));
+
   return (
     
     <div className='container'>
@@ -205,30 +244,31 @@ const handleExpandCourses = (profileName, expanded) => {
               <div className='facultativeRadio'>
                 <div className='forAll'>
                   <label htmlFor="facultativeRadio">Создание факультатива</label>
-                  <input type="checkbox" id='facultativeRadio' name='facultative' onChange={handleFacultative} />
+                  <input  type="checkbox" id='facultativeRadio' name='facultative' onChange={handleFacultative} />
                 </div>
               </div>
               <label className='teacherLabel'>Преподаватели:</label>
-                  <Select
-                    options={selectTeacher}
-                    isMulti  
-                    isSearchable  
-                    closeMenuOnSelect={false}  
-                    placeholder="Поиск преподавателя"
-                    classNamePrefix='selectTeacher'
-                    onChange={(selectedOptions) => setSelectedTeachers(selectedOptions)}
-                  />
+              <Select
+                options={selectTeacher}  // для мульти-селекта передаем массив значений
+                value={selectedTeachers} 
+                isMulti  
+                isSearchable  
+                closeMenuOnSelect={false}  
+                placeholder="Поиск преподавателя"
+                classNamePrefix='selectTeacher'
+                onChange={(selectedOptions) => setSelectedTeachers(selectedOptions)}
+              />
               <div>
                 <label >Название электива:</label>
-                <input type="text"  name="name" autoComplete='off' />
+                <input type="text" defaultValue={electiveData.name}  name="name" autoComplete='off'  required title="Введите название электива"  />
               </div>
               <div>
                 <label>Количество мест:</label>
-                <input type="number" min="1" name="place" autoComplete='off' />
+                <input type="number" min="1" defaultValue={electiveData.place} name="place" autoComplete='off' />
               </div>
               <div>
               <label>Форма проведения:</label>
-                <select name="form" className="selectProperty">
+                <select name="form"  className="selectProperty">
                   {forms.map((form) => (
                     <option key={form.id} value={form.id}>
                       {form.name}
@@ -239,20 +279,20 @@ const handleExpandCourses = (profileName, expanded) => {
               <div className='electiveDates'>
                 <div>
                   <label>Объем в часах:</label>
-                  <input type="number"  min="1" name="volume" autoComplete='off'/>
+                  <input type="number" defaultValue={electiveData.volume} min="1" name="volume" autoComplete='off'/>
                 </div>
                 <div>
                   <label>Дата начала:</label>
-                  <input type="date" name="date_start" autoComplete='off'/>
+                  <input type="date" defaultValue={electiveData.date_start} name="date_start" autoComplete='off'/>
                 </div>
                 <div>
                   <label>Дата окончания:</label>
-                  <input type="date" name="date_finish" autoComplete='off'/>
+                  <input type="date" defaultValue={electiveData.date_finish} name="date_finish" autoComplete='off'/>
                 </div>
               </div>
               <div>
                 <label>Минимальный средний балл:</label>
-                <input type="number"  min="0" max="5" name="marks" autoComplete='off'/>
+                <input type="number" defaultValue={electiveData.marks}  min="0" max="5" name="marks" autoComplete='off'/>
               </div>
               <div>
               <label>Группа здоровья:</label>
@@ -266,7 +306,7 @@ const handleExpandCourses = (profileName, expanded) => {
               </div>
               <div>
                 <label>Описание:</label>
-                <textarea className='electiveDescription  ' name="describe" rows="5" cols="33"></textarea>
+                <textarea className='electiveDescription' defaultValue={electiveData.describe} name="describe" rows="5" cols="33"></textarea>
               </div>
               {
               !facultativeState  && 

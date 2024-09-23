@@ -33,6 +33,7 @@ function Electives(){
         if (response.ok) {
           const data = await response.json();
           setElectives(data);
+          console.log(data)
         }
       } catch (error) {
           console.log(response.text());
@@ -76,9 +77,13 @@ function Electives(){
     }
   }
     
+  const handleEdit = (elective) => {
+    navigate('/elective/edit', { state: { elective: elective } });
+  };
+
   // Обработчик клика на электив
   const handleClick = (elective) => {
-    navigate('/elective/about', { state: { elective: elective } });
+    navigate('/elective/enrolled', { state: { elective: elective } });
   };
   
 
@@ -107,7 +112,7 @@ function Electives(){
           </div>
 
           {electives.map((elective) => (
-            <div key={elective.id} className='elective' onClick={() => handleClick(elective)}>
+            <div key={elective.id} className='elective'>
             
               <img src={electiveImage} alt="elective" className="elective-image"/>
               <div className="elective-info">
@@ -151,7 +156,7 @@ function Electives(){
                   </>
                 ) : role === 'teacher' ? (
                   <>
-                    <button className="elective-edit" type='button' >Редактировать</button>
+                    <button className="elective-edit" type='button' onClick={() => handleEdit(elective)} >Редактировать</button>
                   </>
                 ) : null
               }

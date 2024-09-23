@@ -34,6 +34,7 @@ function Enrolled(){
 
           const data = await response.json();
           setElectives(data);
+          console.log(data)
         }
       } catch (error) {
           console.log(error);
@@ -98,7 +99,7 @@ function Enrolled(){
               <div className="elective-info">
                 <div className='elective-name'>{elective.name}</div>
                 <div className='elective-properties'>
-                  <div>Осталось мест: {elective.place}</div>
+                  <div>Осталось мест: {elective.studentCounters}</div>
                   <div> Входное тестирование: Отсутствует</div>
                   <div> Регистрация до: {elective.date_finish}</div>
                   <div className='elective-teachers'>

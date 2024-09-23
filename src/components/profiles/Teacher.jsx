@@ -68,9 +68,9 @@ const sendFile = async (event) => {
 };
 
 
-const handleFileChange = (event) => {
-  setFile(event.target.files[0]);
-};
+// const handleFileChange = (event) => {
+//   setFile(event.target.files[0]);
+// };
 
 
 
@@ -79,10 +79,10 @@ const handleFileChange = (event) => {
 
   return (
     <div className="container">
-     <form onSubmit={sendFile}>
-   <input type="file" onChange={handleFileChange} />
-   <button type="submit">Загрузить файл</button>
- </form>
+      {/* <form onSubmit={sendFile}>
+        <input type="file" onChange={handleFileChange} />
+        <button type="submit">Загрузить файл</button>
+      </form> */}
       <div className='profile'>
         <img className='profile-image' src={teacher} alt='teacher'/>
         <div className='profile-info'>

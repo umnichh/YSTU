@@ -16,7 +16,7 @@ import Madeby from './components/electives/Madeby'
 
 // create elective
 import Form from './components/electives/create/Form';
-
+import Edit from './components/electives/Edit';
 // routing
 import NotFoundPage from './components/routing/NotFoundPage';
 import ProtectedRoute from './components/routing/ProtectedRoute';
@@ -72,8 +72,11 @@ function App() {
           <Route path="/elective/about" element={<ProtectedRoute element={About} allowedRoles={['student', 'teacher']} />} />
           <Route path="/elective/created" element={<ProtectedRoute element={Madeby} allowedRoles={['teacher']} />} />
 
+
           {/* create electives */}
           <Route path="/elective/create" element={<ProtectedRoute element={Form} allowedRoles={['teacher']} />} />
+          <Route path="/elective/edit" element={<ProtectedRoute element={Edit} allowedRoles={['teacher']} />} />
+
         </Route>
         {/* not found */}
         <Route path="*" element={<NotFoundPage />} />
