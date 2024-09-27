@@ -10,9 +10,32 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis  # Добавляем зависимость от Redis
+
   db:
     image: postgres:latest
     environment:
       POSTGRES_DB: cool_electives
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 5203955
+
+  redis:
+    image: redis:latest  # Добавляем сервис Redis
+  
+  celery-worker:
+    build: .
+    command: celery -A server worker --loglevel=info
+    depends_on:
+      - redis
+      - db
+    volumes:
+      - .:/ElectiveNeverEnds
+
+  celery-beat:
+    build: .
+    command: celery -A server beat --loglevel=info
+    depends_on:
+      - redis
+      - db
+    volumes:
+      - .:/ElectiveNeverEnds

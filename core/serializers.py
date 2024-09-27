@@ -105,7 +105,7 @@ class ElectiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Elective
         fields = ['id', 'name', 'describe', 'place', 'form', 'volume', 'date_start', 'date_finish', 'marks', 'health', 'status', 'registration_closed', 
-                  'teachers', 'made_by', 'profiles', 'institutes', 'type', 'studentCounters']
+                  'teachers', 'made_by', 'profiles', 'institutes', 'type', 'studentCounters', 'note']
 
     def validate(self, data):
         required_fields = ['name', 'describe', 'place', 'volume', 'date_start', 'date_finish', 'marks']

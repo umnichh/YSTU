@@ -47,12 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-CELERY_BEAT_SCHEDULE = {
-    'clear-expired-tokens': {
-        'task': 'core.tasks.clear_expired_tokens',
-        'schedule': crontab(hour=19, minute=55),  # Каждый день в полночь
-    },
-}
+# Celery settings
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
 
 AUTH_USER_MODEL = 'core.CustomUser'
 

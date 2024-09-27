@@ -115,6 +115,7 @@ class ElectiveView(APIView):
                 status=status_first,
                 made_by=teacher,
                 type = type,
+                note = validated_data['note']
             )
 
             teacher_ids = data.get('selectedTeachers', [])
@@ -420,18 +421,19 @@ class ElectiveEditView(APIView):
         try:
             elective = Elective.objects.get(id=id)
 
-            # Получаем учителей для электива
-            teachers = TeacherElective.objects.filter(elective=elective).values_list('teacher__id', flat=True)
-
+            # Получаем учителей для электива и сериализуем их
+            teacher_electives = TeacherElective.objects.filter(elective=elective)
+            teachers = [TeacherSerializer(teacher_elective.teacher).data for teacher_elective in teacher_electives]
+            
             # Получаем профили и семестры для электива
             elective_profiles = ElectiveProfile.objects.filter(elective=elective)
-            checked_profiles = [profile.profile.id for profile in elective_profiles]
+            checked_profiles = [ProfileSerializer(profile.profile).data for profile in elective_profiles]
 
             # Структура checkedCoursesList
             checked_courses_list = {}
             for elective_profile in elective_profiles:
                 courses = ElectiveProfileCourse.objects.filter(electiveprofile=elective_profile)
-                checked_courses_list[elective_profile.profile.id] = [course.semester.id for course in courses]
+                checked_courses_list[elective_profile.profile.id] = [SemesterSerializer(course.semester).data for course in courses]
 
             # Подготовка данных для ответа
             data = {
@@ -439,20 +441,77 @@ class ElectiveEditView(APIView):
                 'name': elective.name,
                 'describe': elective.describe,
                 'place': elective.place,
-                'form': elective.form.id,
+                'form': FormSerializer(elective.form).data,  
                 'volume': elective.volume,
+                'note' : elective.note,
                 'date_start': elective.date_start,
                 'date_finish': elective.date_finish,
                 'marks': elective.marks,
-                'health': elective.health.id,
-                'status': elective.status.name,
-                'type': elective.type.id,
-                'selectedTeachers': list(teachers),  # Список ID учителей
-                'checked': checked_profiles,  # Список профилей
-                'checkedCoursesList': checked_courses_list,  # Структура checkedCoursesList
+                'health': HealthSerializer(elective.health).data,  
+                'status': StatusSerializer(elective.status).data,  
+                'type': TypeSerializer(elective.type).data,  
+                'selectedTeachers': teachers,  
+                'checked': checked_profiles,  
+                'checkedCoursesList': checked_courses_list,  
             }
 
             return Response(data, status=status.HTTP_200_OK)
-        
+
         except Elective.DoesNotExist:
             return Response({'error': 'Электив не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, id):
+        try:
+            elective = Elective.objects.get(id=id)
+            data = request.data
+
+            # Обновление основных полей электива
+            elective.name = data.get('name', elective.name)
+            elective.describe = data.get('describe', elective.describe)
+            elective.place = data.get('place', elective.place)
+            elective.form_id = data.get('form', elective.form.id)
+            elective.volume = data.get('volume', elective.volume)
+            elective.date_start = data.get('date_start', elective.date_start)
+            elective.date_finish = data.get('date_finish', elective.date_finish)
+            elective.marks = data.get('marks', elective.marks)
+            elective.health_id = data.get('health', elective.health.id)
+            elective.status_id = data.get('status', elective.status.id)
+            elective.type_id = data.get('type', elective.type.id)
+            elective.note = data.get('note', elective.note)
+            elective.save()
+
+            # Обновление учителей
+            selected_teachers = data.get('selectedTeachers', [])
+            TeacherElective.objects.filter(elective=elective).delete()
+            for teacher_id in selected_teachers:
+                teacher = Teacher.objects.get(id=teacher_id)
+                TeacherElective.objects.create(elective=elective, teacher=teacher)
+
+            # Обновление профилей и семестров
+            checked_profiles = data.get('checked', [])
+            checked_courses_list = data.get('checkedCoursesList', {})
+            ElectiveProfile.objects.filter(elective=elective).delete()
+
+            for profile_id in checked_profiles:
+                profile = Profile.objects.get(id=profile_id)
+                elective_profile = ElectiveProfile.objects.create(
+                    elective=elective,
+                    profile=profile
+                )
+                
+                semesters = checked_courses_list.get(str(profile_id), [])
+                for semester_id in semesters:
+                    semester = Semester.objects.get(id=semester_id)
+                    ElectiveProfileCourse.objects.create(
+                        electiveprofile=elective_profile,
+                        semester=semester
+                    )
+
+            return Response({'message': 'Электив обновлён'}, status=status.HTTP_200_OK)
+
+        except Elective.DoesNotExist:
+            return Response({'error': 'Электив не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+

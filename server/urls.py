@@ -44,5 +44,5 @@ urlpatterns = [
 
     path('api/create/info/', AllDataView.as_view(), name='all_data'),  # GET: all data
 
-    path('api/elective/<int:id>/edit/', ElectiveEditView.as_view(), name='edit_elective') #get говно как отправлется при создании
+    path('api/electives/<int:id>/edit/', ElectiveEditView.as_view(), name='edit_elective') #get говно как отправлется при создании
 ]

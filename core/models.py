@@ -187,6 +187,23 @@ class Elective(models.Model):
     registration_closed = models.BooleanField('Регистрация закрыта', default=False)
     type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, verbose_name="Тип курса")
     made_by = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
+    note = models.TextField('Примечание преподавателя', null=True)
+
+    def change_status(self):
+        today = date.today()
+
+        if self.date_start and self.date_finish:
+            if self.date_start <= today < self.date_finish:
+                status_started = Status.objects.get(name='Начался')
+                self.status = status_started
+            elif today >= self.date_finish:
+                status_finished = Status.objects.get(name='Завершён')
+                self.status = status_finished
+            else:
+                status_soon = Status.objects.get(name='Скоро начнётся')
+                self.status = status_soon
+            self.save()
+
     
     def __str__(self):
         return f'{self.name}'
