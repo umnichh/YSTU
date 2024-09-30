@@ -44,5 +44,14 @@ urlpatterns = [
 
     path('api/create/info/', AllDataView.as_view(), name='all_data'),  # GET: all data
 
-    path('api/electives/<int:id>/edit/', ElectiveEditView.as_view(), name='edit_elective') #get говно как отправлется при создании
+    path('api/electives/<int:id>/edit/', ElectiveEditView.as_view(), name='edit_elective'), #get говно как отправлется при создании
+    path('api/archive/teacher/', TeacherElectiveArchive.as_view(), name='teacher_archive'), #get
+    path('api/archive/student/', StudentElectiveArchive.as_view(), name='student_archive'), #get
+
+    path('api/electives/to_check/', ElectivesToCheck.as_view(), name='electives_to_check'), #get
+    path('api/electives/checked/', CheckedElectives.as_view(), name='checked_electives'), #get
+    path('api/electives/cancelled/', CanceledElectives.as_view(), name='canceled_electives'), #get
+    path('api/electives/<int:id>/check/', CheckElectives.as_view(), name='CheckElectives'), #get 
+    path('api/electives/<int:id>/resend/', TeacherResendElective.as_view(), name='TeacherResendElective'), #get
+
 ]

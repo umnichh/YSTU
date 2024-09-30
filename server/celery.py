@@ -14,11 +14,10 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'update-elective-statuses-daily': {
         'task': 'core.tasks.update_elective_statuses',
-        'schedule': crontab(hour=21, minute=00),  # запуск каждый день в полночь
+        'schedule': crontab(hour=0, minute=0),  # запуск каждый день в полночь
     },
     'clear-expired-tokens-daily': {
         'task': 'core.tasks.clear_expired_tokens',
-        'schedule': crontab(hour=21, minute=00),  # запуск каждый день в полночь
+        'schedule': crontab(hour=0, minute=0),  # запуск каждый день в полночь
     },
 }
-

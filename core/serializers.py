@@ -91,6 +91,11 @@ class TypeSerializer(serializers.ModelSerializer):
         model = Type
         fields = '__all__'
 
+class StatusByAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StatusByAdmin
+        fields = '__all__'
+
 class ElectiveSerializer(serializers.ModelSerializer):
     status = StatusSerializer(read_only=True)  # read-only, так как создаем его отдельно
     teachers = serializers.SerializerMethodField()
@@ -101,11 +106,12 @@ class ElectiveSerializer(serializers.ModelSerializer):
     institutes = serializers.SerializerMethodField()  # Custom method for institutes
     type = TypeSerializer(read_only=True)
     studentCounters = serializers.SerializerMethodField()
+    admin_status = StatusByAdminSerializer(read_only=True)
 
     class Meta:
         model = Elective
         fields = ['id', 'name', 'describe', 'place', 'form', 'volume', 'date_start', 'date_finish', 'marks', 'health', 'status', 'registration_closed', 
-                  'teachers', 'made_by', 'profiles', 'institutes', 'type', 'studentCounters', 'note']
+                  'teachers', 'made_by', 'profiles', 'institutes', 'admin_status', 'type', 'studentCounters', 'note', 'comment']
 
     def validate(self, data):
         required_fields = ['name', 'describe', 'place', 'volume', 'date_start', 'date_finish', 'marks']
@@ -147,7 +153,10 @@ class ElectiveSerializer(serializers.ModelSerializer):
     
     def get_studentCounters(self, obj):
         counter = StudentElective.objects.filter(elective=obj).count()
-        return obj.place - counter
+        if obj.place - counter > 0:
+            return obj.place - counter
+        else:
+            return 0
 
 
  

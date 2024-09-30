@@ -21,8 +21,8 @@ class Admin(models.Model):
 
     class Meta:
         db_table = "Admin"
-        verbose_name_plural = "Тип курсов"
-        verbose_name = "Тип курса"
+        verbose_name_plural = "Администрация"
+        verbose_name = "Админ"
 
 class Type(models.Model):
     name = models.CharField('Тип курса', max_length=50)
@@ -171,7 +171,20 @@ class Status(models.Model):
         db_table = "Status"
         verbose_name_plural = "Статусы элективного курса"
         verbose_name = "Статус элективного курса"
+
+class StatusByAdmin(models.Model):
+    name = models.CharField('Название', max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        db_table = "StatusByAdmin"
+        verbose_name_plural = "Статусы проверки"
+        verbose_name = "Статус проверки"
         
+
+
 class Elective(models.Model):
     name = models.CharField('Название', max_length=100, null=True, blank=True)
     describe = models.TextField('Описание',  null=True)
@@ -188,6 +201,8 @@ class Elective(models.Model):
     type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, verbose_name="Тип курса")
     made_by = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True)
     note = models.TextField('Примечание преподавателя', null=True)
+    comment = models.CharField('Комментарий', max_length=255, null=True, blank=True)
+    admin_status = models.ForeignKey(StatusByAdmin, on_delete=models.CASCADE, null=True)
 
     def change_status(self):
         today = date.today()
@@ -211,7 +226,6 @@ class Elective(models.Model):
         db_table = "Elective"
         verbose_name_plural = "Элективы"
         verbose_name = "Электив"
-    
     
 class TeacherElective(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, verbose_name='Преподаватель')

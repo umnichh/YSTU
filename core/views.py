@@ -27,6 +27,11 @@ class UserRoleView(APIView):
             return Response({'role': 'teacher'})
         except Teacher.DoesNotExist:
             pass
+        try:
+            admin = Admin.objects.get(user=user)
+            return Response({'role': 'admin'})
+        except Teacher.DoesNotExist:
+            pass
     
         return Response({'error': 'Роль не найдена'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -515,3 +520,154 @@ class ElectiveEditView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class TeacherElectiveArchive(APIView):
+    def get(self, request):
+        try:
+            teacher = Teacher.objects.get(user=request.user)
+            statuss = Status.objects.get(name='Завершён')
+            teacherElective = Elective.objects.filter(teacherelective__teacher=teacher, status=statuss)
+            serializer = ElectiveSerializer(teacherElective, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Teacher.DoesNotExist:
+            return Response({"error": "Пользователь не является преподавателем."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Status.DoesNotExist:
+            return Response({"error": "Статус 'Завершён' не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"error": f"Произошла ошибка: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    
+
+class StudentElectiveArchive(APIView):
+    def get(self, request):
+        try:
+            student = Student.objects.get(user=request.user)
+            statuss = Status.objects.get(name='Завершён')
+            studentElective = Elective.objects.filter(studentelective__student=student, status=statuss)
+            serializer = ElectiveSerializer(studentElective, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            return Response({"error": "Пользователь не является студентом."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Status.DoesNotExist:
+            return Response({"error": "Статус 'Завершён' не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"error": f"Произошла ошибка: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+class ElectivesToCheck(APIView):
+    def get(self, request):
+        try:
+            statusByAdmin = StatusByAdmin.objects.get(name='Ожидает проверки')
+            electives = Elective.objects.filter(admin_status=statusByAdmin)
+            serializer = ElectiveSerializer(electives, many=True)
+            admin_statuses = StatusByAdmin.objects.all()
+            admin_serializer = StatusByAdminSerializer(admin_statuses, many=True)
+            data = {}
+            data = {
+                'admin_statuses': admin_serializer.data,
+                'checked_electives' : serializer.data
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        
+        except statusByAdmin.DoesNotExist:
+                return Response({"error": "Статус 'Ожидает проверки' не найден."}, status=status.HTTP_404_NOT_FOUND)
+        
+class CheckedElectives(APIView):
+    def get(self, request):
+        try:
+            statusByAdmin = StatusByAdmin.objects.get(name='Принят')
+            electives = Elective.objects.filter(admin_status=statusByAdmin)
+            serializer = ElectiveSerializer(electives, many=True)
+     
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except statusByAdmin.DoesNotExist:
+                return Response({"error": "Статус 'Принят' не найден."}, status=status.HTTP_404_NOT_FOUND)
+        
+class CanceledElectives(APIView):
+    def get(self, request):
+        try:
+            statusByAdmin = StatusByAdmin.objects.get(name='Отклонён')
+            electives = Elective.objects.filter(admin_status=statusByAdmin)
+            serializer = ElectiveSerializer(electives, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except statusByAdmin.DoesNotExist:
+                return Response({"error": "Статус 'Отклонён' не найден."}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class CheckElectives(APIView):
+    def get(self, request):
+        admin_statuses = StatusByAdmin.objects.all()
+        return Response(StatusByAdminSerializer(admin_statuses).data)
+    
+    def post(self, request, id):
+        try:
+            # Получаем данные из запроса
+            data = request.data
+            print(data)
+            elective = Elective.objects.get(id=id)
+            status_id = data.get('status_id')  # Идентификатор нового статуса
+            comment = data.get('comment')  # Комментарий от администратора (необязательный)
+
+            # Проверяем, что статус был передан
+            if not status_id:
+                return Response({"error": "Необходимо указать идентификатор статуса"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Находим новый статус в модели StatusByAdmin
+            try:
+                admin_status = StatusByAdmin.objects.get(id=status_id)
+                print(admin_status)
+            except StatusByAdmin.DoesNotExist:
+                return Response({"error": "Указанный статус не найден"}, status=status.HTTP_404_NOT_FOUND)
+
+            
+            if admin_status.name == 'Отклонён' and not comment:
+                return Response({"error": "Необходимо указать комментарий при отклонении"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Обновляем статус и комментарий (если есть)
+            elective.admin_status = admin_status
+            if comment:
+                elective.comment = comment
+
+            # Сохраняем изменения в базе данных
+            elective.save()
+
+            # Возвращаем сообщение об успешном изменении статуса
+            return Response({"message": f"Статус электива успешно изменён на '{admin_status.name}'."}, status=status.HTTP_200_OK)
+
+        except Elective.DoesNotExist:
+            return Response({"error": "Электив не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"error": f"Произошла ошибка: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class TeacherResendElective(APIView):
+    def get(self, request):
+        try:
+            status_to_check = StatusByAdmin.objects.get(name='Ожидает проверки')
+            admin_serializer = StatusByAdminSerializer(status_to_check)
+            return Response(admin_serializer.data)
+        
+        except StatusByAdmin.DoesNotExist:
+            return Response({"error": "Статус не найден."}, status=status.HTTP_404_NOT_FOUND)
+    
+    def post(self, request, id):
+        try:
+            elective = Elective.objects.get(id=id)
+            status_to_check = StatusByAdmin.objects.get(name='Ожидает проверки')
+            elective.admin_status = status_to_check
+            elective.comment = ""
+            elective.save()
+            return Response({"message": "статус изменён"}, status=status.HTTP_200_OK)
+        
+        except StatusByAdmin.DoesNotExist:
+            return Response({"error": "Статус не найден."}, status=status.HTTP_404_NOT_FOUND)
+        except Elective.DoesNotExist:
+            return Response({"error": "Электив не найден."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": f"Произошла ошибка: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
