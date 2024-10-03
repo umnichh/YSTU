@@ -8,9 +8,11 @@ function Madeby(){
   const navigate = useNavigate();
   const [electives, setElectives] = useState([]);
   const currentToken = localStorage.getItem('access_token');
+  const role = localStorage.getItem('role'); 
+  // Запрашиваем роль
 
 
-  // Переход на страницу с информацией об элективеq
+  // Переход на страницу с информацией об элективе 
   const handleClick = (elective) => {
     navigate('/elective/about', { state:{ elective: elective }});
   };
@@ -19,8 +21,14 @@ function Madeby(){
   // Загрузка созданных элективов
   useEffect(() => {
     async function fetchElectives() {
+      let path;
+      if (role === 'student') {
+        path = 'api/archive/student/';
+      } else if (role === 'teacher') {
+        path = 'api/archive/teacher/';
+      }
       try {
-        const response = await fetch(`http://212.67.13.70:8000/api/electives/created/`, {
+        const response = await fetch(`http://212.67.13.70:8000/${path}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${currentToken}`,
@@ -31,44 +39,22 @@ function Madeby(){
         if (response.ok) {
           const data = await response.json();
           setElectives(data); // Сохраняем элективы в состояние
+          console.log(data);
         } else {
           console.error('Ошибка получения элективов:', response.status); // Логируем ошибку
+          console.log(response.json())
         }
       } catch (error){
+
         console.log(error);
       }
     }
     fetchElectives();
   }, [currentToken]);
 
-
-  // Удаление электива
-  async function deleteElective(id){
-    const result = window.confirm('Вы уверены, что хотите удалить электив?');
-    if (result) {
-      try{
-        const response = await fetch(`http://212.67.13.70:8000/api/electives/${id}/`, {
-          method: 'DELETE',
-          body: JSON.stringify(id), 
-          headers: {
-            'Authorization': `Bearer ${currentToken}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        if (response.ok) {
-          console.log('Электив был удален')
-          document.getElementById('elective' + id).remove();
-        } else {
-          return;
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }
   
   return (
-    <div className="container">
+    <main>
       <div className='electives'>
         <div className='elective-container'>
         <form>
@@ -82,6 +68,7 @@ function Madeby(){
               <div className="elective-info">
                 <div className='elective-name'>{elective.name}</div>
                 <div className='elective-properties'>
+                  <div>Статус: {elective.status.name}</div>
                   <div>Осталось мест: {elective.place}</div>
                   <div> Входное тестирование: Отсутствует</div>
                   <div> Регистрация до: {elective.date_finish}</div>
@@ -100,15 +87,14 @@ function Madeby(){
                 </div>
               </div>
               <div className="elective-buttons">
-                <button className="elective-signIn  deleteElective" style={{display: 'block'}} type='button' id={'unsign' + elective.id}  onClick={() => deleteElective(elective.id)}>Удалить электив</button>
-                <button className="elective-info_button" type='button' onClick={() => handleClick(elective)}>Подробнее</button>
+                <button className="elective-info_button" type='button' onClick={() => handleClick(elective)}>Подробнее</button>      
               </div>
             </div> 
           ))} 
         </div>
       </div>
       
-    </div>
+    </main>
   );
 }
 

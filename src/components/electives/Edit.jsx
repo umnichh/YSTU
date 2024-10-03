@@ -8,6 +8,7 @@ function Create() {
   const location = useLocation();
   const { state } = location;
   const elective = state?.elective || {}; 
+  const elective_id = elective.id;
   const currentToken = localStorage.getItem('access_token');
   const navigate = useNavigate();
 
@@ -26,6 +27,7 @@ function Create() {
   const [profiles, setProfiles] = useState([]);
   const [healths, setHealths] = useState([]);
   const [checked, setChecked] = useState([]);
+  const [statuses, setStatuses] = useState([]);
 
   const [electiveData, setElectiveData] = useState({});
   const [describe, setDescribe] = useState('Описания нет');
@@ -76,7 +78,7 @@ const handleExpandCourses = (profileName, expanded) => {
   useEffect(() => {
     async function fetchInfo(){
       try{
-        const response = await fetch(`http://212.67.13.70:8000/api/elective/${elective.id}/edit/`, {
+        const response = await fetch(`http://212.67.13.70:8000/api/electives/${elective.id}/edit/`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${currentToken}`,
@@ -86,6 +88,7 @@ const handleExpandCourses = (profileName, expanded) => {
         if (response.ok) {
           const data = await response.json();
           setElectiveData(data);
+
           const profileIds = data.checked.map(profile => String(profile.id));
           const teacherIds = data.selectedTeachers.map(teacher => ({
             value: teacher.id,
@@ -94,7 +97,7 @@ const handleExpandCourses = (profileName, expanded) => {
           setCheckedCourses(data.checkedCourses);
           setCheckedCoursesList(data.checkedCoursesList);
           setSelectedTeachers(teacherIds);
-          console.log(data)
+          console.log('ELECTVIE', data)
         }
       } catch(error) {
         console.error(error);
@@ -123,6 +126,7 @@ const handleExpandCourses = (profileName, expanded) => {
         console.error(error);
       }
     }
+
     fetchInfo();
   }, []);
 
@@ -158,14 +162,28 @@ const handleExpandCourses = (profileName, expanded) => {
         ...formObject,
       }
     }
-    await fetch('http://212.67.13.70:8000/api/electives/create/', {
+    await fetch(`http://212.67.13.70:8000/api/electives/${elective_id}/resend/`, {
       method: 'POST',
+      body: JSON.stringify({'elective_id':elective_id}),
+      headers: {
+        'Authorization': `Bearer ${currentToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  
+    await fetch(`http://212.67.13.70:8000/api/electives/${elective_id}/edit/`, {
+      method: 'PUT',
       body: JSON.stringify(elective),
       headers: {
         'Authorization': `Bearer ${currentToken}`,
         'Content-Type': 'application/json',
       },
     });
+
+
+
+
+
     // navigate('/elective/created');
   };
 
@@ -236,7 +254,7 @@ const handleExpandCourses = (profileName, expanded) => {
 
   return (
     
-    <div className='container'>
+    <main>
         <div className='create-form'>
           {(
             <form  className = "electiveForm" onSubmit={sendElective}>
@@ -247,6 +265,7 @@ const handleExpandCourses = (profileName, expanded) => {
                   <input  type="checkbox" id='facultativeRadio' name='facultative' onChange={handleFacultative} />
                 </div>
               </div>
+              
               <label className='teacherLabel'>Преподаватели:</label>
               <Select
                 options={selectTeacher}  // для мульти-селекта передаем массив значений
@@ -307,6 +326,10 @@ const handleExpandCourses = (profileName, expanded) => {
               <div>
                 <label>Описание:</label>
                 <textarea className='electiveDescription' defaultValue={electiveData.describe} name="describe" rows="5" cols="33"></textarea>
+              </div>
+              <div>
+                <label>Требования преподавателя к оборудованию/материалам/кабинету/расписанию:</label>
+                <textarea className='electiveDescription' defaultValue={electiveData.note} name="note" rows="5" cols="33"></textarea>
               </div>
               {
               !facultativeState  && 
@@ -412,7 +435,7 @@ const handleExpandCourses = (profileName, expanded) => {
             </form>
           )}
         </div>
-      </div>
+      </main>
   )
 }
 

@@ -3,35 +3,28 @@ import { useEffect, useState } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import React from 'react';
 
-function StudentPage() {
+export default function StudentProfile() {
   const [studentData, setStudentData] = useState(null);
 
+  // Загрузка данных студента
   useEffect(() => {
-    async function getProfile() {
-      try{
-        const response = await fetch('http://212.67.13.70:8000/api/student/cabinet/', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        })
-        if (response.ok) {
-          const data = await response.json();
-          setStudentData(data);
-        }
-      }
-      catch (error) {
-        console.log(error);
-    }
-  }
-  getProfile();
+    fetch('http://212.67.13.70:8000/api/student/cabinet/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    })
+    .then(response => response.json())
+    .then(data => setStudentData(data))
+    .catch(error => console.error('Error:', error));
 }, [])
 
   if (!studentData) {
-    return null; 
+    return <div>Загрузка...</div>;
   }
 
+  // Деструктуризация
   const {
     last_name = '',
     first_name = '',
@@ -43,41 +36,31 @@ function StudentPage() {
     health = {},
   } = studentData;
 
-  const fullName = `${last_name} ${first_name} ${middle_name}`;
-  const program = profile.facultet.name || 'Не указано';
-  const healthGroup = health.name || 'Не указана';
+  const program = profile.facultet.name || 'Не указано',
+        healthGroup = health.name || 'Не указана';
   
   return (
-    <div className="container">
-      <div className='profile'>
-        <img className='profile-image' src={student} alt='student'/>
-        <div className='profile-info'>
-          <div className='profile-fullname'>{fullName}</div>
-          <div className='profile-parameters'>
-            <div className='profile-properties'>
-              <span>Направление:</span>
-              <span>Статус:</span>
-              <span>Курс:</span>
-              <span>Группа:</span>
-              <span>Успеваемость:</span>
-              <span>Группа здоровья:</span>
+    <main>
+      {
+        studentData && (
+          <>
+            <div className='profile'>
+              <img className='profile-image' src={student} alt='student'/>
+              <div className='profile-info'>
+                <div className='profile-fullname'>{last_name} {first_name} {middle_name}</div>
+                <dl>
+                  <dt>Направление:</dt><dd>{program}</dd>
+                  <dt>Статус:</dt><dd>"Студенты"</dd>
+                  <dt>Курс:</dt><dd>{year_of_study}</dd>
+                  <dt>Группа:</dt><dd>{group}</dd>
+                  <dt>Успеваемость:</dt><dd id='ratings'>{average_grade}</dd>
+                  <dt>Группа здоровья:</dt><dd>{healthGroup}</dd>
+                </dl>
+              </div>
             </div>
-            <div className='profile-values'>
-              <span>{program}</span>
-              <span>"Студенты"</span>
-              <span>{year_of_study}</span>
-              <span>{group}</span>
-              <span id='ratings'>{average_grade}</span>
-              <span>{healthGroup}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-  </div>
+          </>
+        )
+      }
+    </main>
   );
 }
-
-export default StudentPage;
-
-
-

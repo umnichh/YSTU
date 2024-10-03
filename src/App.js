@@ -10,15 +10,15 @@ import Teacher from './components/profiles/Teacher';
 
 // electives
 import Electives from './components/electives/Electives';
-import Enrolled from './components/electives/Enrolled';
 import About from './components/electives/About';
-import Madeby from './components/electives/Madeby'
+import Archive from './components/electives/Archive'
+import Status from './components/electives/Status'
 
 // create elective
-import Form from './components/electives/create/Form';
+import Form from './components/electives/Form';
 import Edit from './components/electives/Edit';
 // routing
-import NotFoundPage from './components/routing/NotFoundPage';
+import NotFoundPage from './components/routing/404NF';
 import ProtectedRoute from './components/routing/ProtectedRoute';
 
 
@@ -63,19 +63,21 @@ function App() {
 
         <Route exact path ='/' element={<Layout />}>
           {/* profiles */}  
-          <Route path="/profile/student" element={<ProtectedRoute element={Student} allowedRoles={['student']} />} />
-          <Route path="/profile/teacher" element={<ProtectedRoute element={Teacher} allowedRoles={['teacher']} />} />
+          <Route path="/profile/student" element={<ProtectedRoute element={Student} allowedRoles={['student', 'admin']} />} />
+          <Route path="/profile/teacher" element={<ProtectedRoute element={Teacher} allowedRoles={['teacher', 'admin']} />} />
 
           {/* electives */}
-          <Route path="/elective/all" element={<ProtectedRoute element={Electives} allowedRoles={['student', 'teacher']} />} />
-          <Route path="/elective/enrolled" element={<ProtectedRoute element={Enrolled} allowedRoles={['student', 'teacher']} />} />
-          <Route path="/elective/about" element={<ProtectedRoute element={About} allowedRoles={['student', 'teacher']} />} />
-          <Route path="/elective/created" element={<ProtectedRoute element={Madeby} allowedRoles={['teacher']} />} />
+          <Route path="/electives/" element={<ProtectedRoute element={Electives} allowedRoles={['teacher', 'student']} />} />
+
+          <Route path="/elective/about" element={<ProtectedRoute element={About} allowedRoles={['student', 'teacher', 'admin']} />} />
+          <Route path="/elective/archive" element={<ProtectedRoute element={Archive} allowedRoles={['teacher', 'student', 'admin']} />} />
+          <Route path="/elective/status" element={<ProtectedRoute element={Status} allowedRoles={['admin']} />} />
+
 
 
           {/* create electives */}
-          <Route path="/elective/create" element={<ProtectedRoute element={Form} allowedRoles={['teacher']} />} />
-          <Route path="/elective/edit" element={<ProtectedRoute element={Edit} allowedRoles={['teacher']} />} />
+          <Route path="/elective/create" element={<ProtectedRoute element={Form} allowedRoles={['teacher', 'admin']} />} />
+          <Route path="/elective/edit" element={<ProtectedRoute element={Edit} allowedRoles={['teacher', 'admin']} />} />
 
         </Route>
         {/* not found */}

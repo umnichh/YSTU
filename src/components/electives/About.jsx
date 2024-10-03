@@ -20,62 +20,51 @@ function About() {
 
   console.log(elective);
   return(
-    <>
-      <div className="container">
-        <div className='elective-info-container'>
-          <div className='elective-info-header'>
-            {name}
-            <img src={electiveImage} alt="elective" className="elective-image-info"/>
-          </div>
-          <div className='elective-info-info'>
-            <div className='elective-info-properties'>
-              <span>Количество мест:</span>
-              <span>Объем:</span>
-              <span>Дата начала:</span>
-              <span>Дата окончания:</span>
-              <span>Форма прохождения:</span>
-              <span>Группа здоровья:</span>
-              <span>Оценка:</span>
-              <span>Преподаватели:</span>
-              <span>Институты:</span>
+      <main>
+      <div className="about">
+      <img src={electiveImage} className="about-image" alt="Картинка электива" />
+      <dl>
+      <h1>{name}</h1>
+        <dt>Статус:</dt><dd>{elective.status.name}</dd>
+        <dt>Количество мест:</dt><dd>{place}</dd>
+        <dt>Объем:</dt><dd>{volume}</dd>
+        <dt>Дата начала:</dt><dd>{date_start}</dd>
+        <dt>Дата окончания:</dt><dd>{date_finish}</dd>
+        <dt>Форма прохождения:</dt><dd>{form.name}</dd>
+      </dl>
+    </div>
+    <dl className='about-other'>
+      <dt>Группа здоровья:</dt><dd>{health.name}</dd>
+      <dt>Оценка:</dt><dd>{marks}</dd>
+      <dt>Преподаватели:</dt>
+      <dd>
+        {elective.teachers.length > 0 ? (
+          elective.teachers.map((teacher) => (
+            <div key={teacher.id}>
+            • {teacher.last_name} {teacher.first_name} {teacher.middle_name} 
             </div>
-            <div className='elective-info-values'>
-
-              <span>{place}</span>
-              <span>{volume}</span>
-              <span>{date_start}</span>
-              <span>{date_finish}</span>
-              <span>{form.name}</span>
-              <span>{health.name}</span>
-              <span>{marks}</span>
-              {elective.teachers.length > 0 ? (
-                elective.teachers.map((teacher) => (
-                  <div key={teacher.id}>
-                    {teacher.last_name} {teacher.first_name} {teacher.middle_name} 
-                  </div>
-                ))
-              ) : (
-                <span> Не указаны</span>
-              )}
-              {elective.institutes.length > 0 ? (
-                elective.institutes.map((institute) => (
-                  <div key={institute.id}>
-                    {institute.name} 
-                  </div>
-                ))
-              ) : (
-                <span>Электив для всех направлений</span>
-              )}
+          ))
+        ) : (
+          <span> Не указаны</span>
+        )}
+      </dd>
+      <dt>Институты:</dt>
+      <dd>
+        {elective.institutes.length > 0 ? (
+          elective.institutes.map((institute) => (
+            <div key={institute.id}>
+            • {institute.name} 
             </div>
-          </div>
-        </div>
-        <div className='describe-container'>
-        {describe}
-        </div>
-
+          ))
+        ) : (
+          <span> Не указаны</span>
+        )}
+      </dd>
+    </dl>
+    <div className="about-description">
+       {describe}
       </div>
-     
-    </>
+    </main>
   )
 
 }

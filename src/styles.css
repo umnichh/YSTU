@@ -1,111 +1,55 @@
-body::before{
-  background-image: url('./ystu-images/grayLogo.png');
-  transform:translate(-50%,-50%) rotate(45deg);
-  background-size: 100px;
+/*All*/
+@import url(https://fonts.googleapis.com/css?family=Nunito:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
+#root {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  padding: 0px;;
+
 }
+
 body {
-  font-family: Arial;
-  margin: 0px;
+  margin: 0px 150px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
   overflow-y: scroll;
 }
+body *{
+  font-family: Nunito;
+}
 
-.container{
+main{
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.container * {
-  display: flex;
-}
-
-/* NAVBAR */
-/* Навигационный блок */
-.nav-container{
-  outline: 10px solid rgb(15, 73, 137);
-  position: sticky;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: 65px;
-  transition: height 0.5s ease;
-  padding: 0px 400px;
-  background-color: white;
-}
-
-
-.nav-container.is-pinned * {
-  background-color: red;
-} 
-
-.nav-logo-container *{
-  display: flex;
-  align-items: center; 
-  width: auto;  
-  height: 50px; 
-  padding-right: 10px;
-  border-right: none;
-}
-
-.nav-links-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  text-align: center;
+  width: 100% !important;
   height: 100%;
-  width: 100%;
-  gap: 30px;
+  box-shadow: 10px 0px 10px 1px #aaaaaa;  
 }
 
-.nav-links-container :first-child{
-  padding-left: 10px;
-}
-
-.nav-links-container :last-child{
-  padding-right: 15px;
-}
-
-.nav-links-container *{
-  font-size: 18px;
-  color: black;
-  border-style: none;
-  text-decoration: none;
-  background-color: transparent;
-  transition: 0.1s ease-out;
-
-  white-space: nowrap;
-}
-
-.nav-links-container *:hover{
-  text-decoration: underline 2px;
-  text-underline-offset: 5px;
-  opacity: 0.6;
-}
-
-.nav-links-container i:hover{
-  text-decoration: none;
-}
-
-
-
-
-
-
-/* LOGIN */
-/* Логин */
-.login-form *{
+details {
+  background-color: #333;
+  border-radius: 5px;
+  color: white;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
+details p{
+  padding: 0px 0px 10px 10px;
+}
+
+summary {
+  border-bottom: 1px solid black;
+  background-color: rgb(25, 93, 165);
+  color: white;
+  padding: 10px;
+}
+
+
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/*Login.jsx*/
 .login-form{
   display: flex;
   flex-direction: column;
@@ -113,27 +57,66 @@ body {
   justify-content: center;
   margin-top: 30px;
   padding: 30px;
-  border-radius: 20px;
+  border-radius: 5px;
+  gap: 30px;  
   background-color: white;
-  border: 1px solid black;
   box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
 }
 
-.ystu-logo-big {
+.logo-big {
   width: 650px;
   height: 270px;
-  border: 1px solid black;
-  border-radius: 10px;
-  margin-top: 50px;
-  margin-bottom: 70px;
-  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+  border-radius:  5px;
+  margin-bottom: 50px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
-.login-form *{
-  gap: 40px;  
+.login-form_input {
+  padding-left: 80px;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  background-color: rgba(217, 217, 217, 0.40);
+  width: 300px;
+  height: 75px;
+  border-radius: 5px;
+  border: 1px solid #a6a6a6;
+  transition: 0.2s;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
 }
 
-/* Иконки перед input */
+.login-form_input:focus{
+  box-shadow: rgb(22, 86, 155) 10px 10px;
+  outline: #ffaf1b solid 3px;
+}
+
+.login-form_input::placeholder {
+  color: #9b9b9b;
+}
+
+.login-form_button{
+  border-radius: 2%;
+  border-style: none;
+  background: rgb(22, 86, 155);
+  width: 380px;
+  height: 75px;
+  color: #FFF;
+  font-size: 25px;
+  transition: 0.2s;
+  margin-bottom: 50px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 1px 5px;
+}
+
+.login-form_button:hover{
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.login-form_button:focus{
+
+  box-shadow: rgb(239, 127, 27) 10px 10px;
+}
+
 .icon-container{
   position: relative;
 }
@@ -146,174 +129,467 @@ body {
   width: 35px;
   height: 40px;
   transform: scale(0.7);
-
 }
 
 .login-container:before {
   background: url("./ystu-images/icons/user.svg") no-repeat;
-
 }
-
 .password-container:before {
   background: url("./ystu-images/icons/lock.svg") no-repeat;
 }
 
-/* Инпуты */
-.login-form_input {
-  padding-left: 80px;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  background-color: rgba(217, 217, 217, 0.40);
-  width: 300px;
-  height: 75px;
-  border-radius: 20px;
-  border: 1px solid #a6a6a6;
-  transition: 0.2s;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-}
 
-.login-form_input:focus{
-  box-shadow: rgb(22, 86, 155) 10px 10px;
-  outline: #ffaf1b solid 3px;
-}
 
-.login-form_input:-webkit-autofill::first-line {font-size: 20px}
-
-.login-form_input::placeholder {
-  color: #9b9b9b;
-}
-
-.login-form_button{
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/*Navbar.jsx*/
+aside{
+  background-color: rgb(25, 93, 165);
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  border-radius: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: height 0.5s ease;
+  overflow: hidden;
+  box-shadow: -10px 0px 10px 1px #aaaaaa;  
+  border-left: #333 1px solid;
+  border-right: #333 1px solid;
+  width: 230px !important;
+  position: sticky;
+  top: 0px;
+  height: 100vh;
+  min-height: 200px;
+}
+
+.nav-logo-container *{
+  display: flex;
+  align-items: center; 
+  width: 100%;  
+  height: 100%; 
+  border-right: none;
+}
+
+.nav-links-container {
+  margin: 20px 0px 0px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: center;
+  gap: 20px;
+}
+
+.nav-links-container *{
+  font-size: 17px;
+  color: white;
   border-style: none;
-  background: rgb(22, 86, 155);
-  width: 450px;
-  height: 90px;
-  color: #FFF;
-  font-size: 35px;
-  transition: 0.2s;
-  margin-bottom: 30px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  text-decoration: none;
+  background-color: transparent;
+  transition: 0.1s ease-out;
+  white-space: nowrap;
 }
 
-.login-form_button:hover{
-  scale: 1.03;
-  box-shadow: rgb(239, 127, 27) 10px 10px;
+.nav-links-container button{
+  padding: 0;
 }
 
-/* Ошибки в инпутах */
-.input-error {
-  outline: 2px solid red;
-}
-
-.error-message-wrapper {
-  position:absolute;
-  top: 300px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: fadeInOut 3s ease-in-out forwards;
-}
-
-/* Стиль самого сообщения об ошибке */
-.error-message {
-  font-size: 20px;
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 1px solid #f5c6cb;
-  width: fit-content;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Анимация плавного появления и исчезновения */
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.nav-links-container *:hover{
+  text-decoration: underline 2px;
+  text-underline-offset: 5px;
+  opacity: 0.6;
 }
 
 
 
-
-/* PROFILES */
-/* Профиль студента и преподавателя */
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/*Student, Teacher.jsx*/
 .profile{
   display: flex;
-  background: white;
-  padding: 50px;
-  outline: 1px solid black;
+  margin: 30px;
+  padding: 20px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 .profile-image{
-  width: 250px;
-  height: 250px;
-}
-.profile-fullname{
-  font-size: 32px;
-  white-space: nowrap;
-  margin-left: 20px;
-  padding-right: 100%;
-  border-bottom: 1px solid black;
-  margin-bottom: 20px;
-}
-.profile-properties{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-}
-
-.profile-parameters{
-  margin-left: 50px;
-  font-size: 20px;
-}
-
-.profile-parameters *{
-  margin-bottom: 5px;
-}
-
-.profile-values{
-  display: flex;
-  flex-direction: column;
-  padding-left: 10px;
+  width: 200px;
+  border: 1px solid black;
+  border-radius: 4px;
+  height: 280px;
 }
 
 .profile-info{
-  display: flex;
-  flex-direction: column;
+  margin-left: 20px;
 }
 
-/* CREATEFORM */
-/* Создание электива */
+.profile-fullname{
+  font-size: 32px;
+  white-space: nowrap;
+  border-bottom: 1px solid black;
+  margin-bottom: 20px;
+}
 
+dl{
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: 3px;
+}
+dt {
+  grid-column-start: 1;
+  background-color: #f1f1f1;
+}
+dd {
+  grid-column-start: 2;
+  background-color: #ecf4ff;
+}
+
+dt, dd{
+  border-radius: 5px;
+  padding: 5px 10px;
+  white-space: wrap;
+  border: 1px solid rgb(212, 212, 212);
+}
+
+dd, dt, dl {
+  font-size: 14px;
+  margin: 0;
+}
+
+.about-service{
+  margin: 20px;
+}
+
+
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/*Search.jsx */
+.search-electives{
+  margin: 20px;
+  width: 30%;
+  border-radius: 18px;
+  border: 2px solid white;
+  background: rgba(217, 217, 217, 0.40);
+  border: 1px solid rgb(158, 158, 158);
+  font-size: 20px;
+  height: 40px;
+  padding-left: 40px;
+  flex-shrink: 0;
+}
+
+.search-electives:focus{
+  outline: 1px solid white;
+}
+
+
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* Elective.jsx*/
+.elective-institutes{
+  gap: 0px !important;
+}
+
+.electives{
+  display: grid;
+  grid-template-columns: 1fr  1fr 1fr;
+  margin: 0px 20px;
+  gap : 15px;
+}
+
+.elective{
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border: 1px solid rgb(110, 110, 110);
+  transition: 0.2s ease-in-out;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.elective-image{
+  margin-top: 5px;
+  height: 190px;
+}
+
+.elective-name{
+  margin-top: 10px;
+  font-size: 26px;
+  text-align: center;
+  height: 80px;
+}
+.elective-lists{
+  display: flex;  
+  flex-direction: column;
+  margin: 3px;
+  gap: 3px;
+}
+
+.sign{
+  border-style: none;
+  border: 1px solid black;
+  background-color: rgb(10, 98, 196);
+  color: white;
+}
+
+.elective-buttons{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 5px;
+}
+
+.deleteElective{
+  background-color: rgb(206, 51, 51);
+  width: 100%;
+  color: white;
+  border-style: none;
+  padding: 10px;
+}
+
+.deleteElective:hover{
+  opacity: 0.8;
+}
+
+.elective-edit {
+  width: 100%;
+  border-style: none;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+}
+
+.elective-edit:hover{
+  opacity: 0.85;
+}
+
+.elective-about{
+  width: 100%;
+  border-style: none;
+  padding: 10px;
+  background-color: rgb(20, 70, 122);
+  color: white;
+}
+
+.elective-about:hover{
+  opacity: 0.85;
+}
+
+.accepted-elective{
+  background-color: rgb(81, 234, 92);
+}
+
+.rejected-elective{
+  background-color: rgb(235, 56, 77);
+  color: white;
+}
+
+.pending-elective{
+  background-color: rgb(246, 210, 72);
+}
+
+.radioGroup input{
+  display: none;
+}
+
+.radioGroup label{
+  margin-top: 20px;
+  text-align: center;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  background-color:rgb(25, 93, 165);
+  width: 30%;
+  height: 100%;
+  color: white;
+  padding: 10px;
+  border: 1px solid black;
+
+}
+
+.radioGroup input[type=radio]:checked + label {
+  background-color:white;
+  border-bottom: none;
+  color: black;
+}
+
+.radioGroup label:hover{
+  opacity: 0.9;
+}
+
+.radioGroup {
+  display: flex;
+  justify-content: center;
+  gap: 10px; 
+  box-shadow: none;
+  opacity: 0.9;
+
+}
+
+
+
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/*RequestsStudents.jsx*/
+table{
+  border: 1px solid rgb(190, 190, 190);
+
+	table-layout: fixed;
+	width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+table th {
+	font-weight: bold;
+	padding: 5px;
+	background: #dfdfdf;
+  border: 1px solid rgb(190, 190, 190);
+}
+table td{
+	padding: 5px 10px;
+	text-align: left;
+  border: 1px solid rgb(190, 190, 190);
+
+}
+table tbody tr:nth-child(odd){
+	background: #fff;
+}
+table tbody tr:nth-child(even){
+	background: #F7F7F7;
+}
+
+table.no-spacing {
+  border-spacing:0; 
+  border-collapse: collapse; 
+}
+
+.showStudents{
+  width: 100%;
+  background-color: rgb(68, 123, 181);
+  color: white;
+  padding: 10px;
+  border: none;
+}
+
+.showStudents:hover{
+  opacity: 0.9;
+}
+
+
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/*About.jsx*/
+.about-image{
+  height: 250px;
+  width: 250px;
+  margin: 35px 30px 30px 30px;
+}
+.about dl{
+  padding: 0;
+  height: min-content;
+  margin: 10px 30px 0px 0px;
+  width: 100%;
+}
+
+.about dt, .about dd{
+  font-size: 14px;
+}
+.about{
+  display: flex;
+  flex-direction: row;
+}
+
+.about h1{
+  font-size: 36px;
+  margin-bottom: 0;
+}
+
+.about-other{
+  margin: 0px 30px;
+}
+
+.about-describe{
+  margin: 0px 30px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* Form*/
+.tox-statusbar{
+  visibility: hidden;
+}
 
 .create-form {
-  width: 50%;
-  margin-bottom: 30px;
   background-color: white;
-  padding: 30px 100px;
+  padding: 30px 60px;
 }
 
-.create-form *{
+.elective-form {
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
+
+.selectProperty:hover, .elective-form input:hover, .elective-form input:focus, .electiveDescription:focus{
+  border-color: #80bdff;
+  outline: none;
+  box-shadow: 0 0 0 1px #80bdff;
+}
+
+.elective-form label{
+  margin: 15px 0px 5px 0px;
+  font-size: 20px;
+  width: 100%;
+}
+
+
+.elective-form input{
+  font-size: 16px;
+  padding: 7px;
+  border-radius: 5px;
+  border: 1px solid rgb(172, 172, 172);
+  background-color: #f9f9f9; 
+  transition: 0.03s ease-in-out;
+}
+
 
 .create-form-title{
   font-size: 32px;
@@ -342,29 +618,6 @@ body {
   opacity: 0.9;
 }
 
-.selectProperty:hover, .electiveForm input:hover, .electiveForm input:focus, .electiveDescription:focus{
-  border-color: #80bdff;
-  outline: none;
-  box-shadow: 0 0 0 1px #80bdff;
-}
-
-.electiveForm label{
-  margin: 15px 0px 5px 0px;
-  font-size: 20px;
-}
-
-.electiveForm {
-  width: 100%;
-}
-
-.electiveForm input{
-  font-size: 16px;
-  padding: 7px;
-  border-radius: 5px;
-  border: 1px solid rgb(172, 172, 172);
-  background-color: #f9f9f9; 
-  transition: 0.03s ease-in-out;
-}
 
 .selectProperty {
   width: 100%;              
@@ -544,13 +797,7 @@ body {
   border-bottom: 2px solid black;
 }
 
-.radioGroup {
-  display: flex;
-  flex-direction: row;
-  gap: 10px; /* Расстояние между радио-кнопками */
-  margin-bottom: 6px;
 
-}
 
 
 
@@ -619,6 +866,8 @@ body {
   width: 80%;
   border-radius: 10px;
 }
+
+
 .elective-info-info * {
   gap: 10px;
   margin-left: 30px;
@@ -700,146 +949,6 @@ body {
 
 
 
-.elective-institutes{
-  gap: 0px !important;
-  flex-wrap: wrap;
-}
-
-
-.search-electives{
-  border-radius: 20px;
-  border: 2px solid white;
-  background: rgba(217, 217, 217, 0.40);
-  border: 1px solid rgb(158, 158, 158);
-  color: white;
-  font-size: 24px;
-  height: 50px;
-  padding-left: 40px;
-  flex-shrink: 0;
-
-}
-
-
-.search-electives:focus{
-  outline: 1px solid white;
-}
-
-.elective-container{
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  padding: 30px;
-  gap: 20px;
-  background-color: white;
-
-}
-.electives{
-  display: flex;
-  width: 100%;
-  
-  justify-content: center;
-  padding-bottom: 20px;
-}
-.elective{
-
-  padding: 30px;
-  border-radius: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: white;
-  border: 1px solid rgb(110, 110, 110);
-  transition: 0.2s ease-in-out;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-.elective:hover{
-  transform: scale(1.02 );
-}
-
-.elective-image{
-  width: 210px;
-  height: 210px;
-}
-.elective-info{
-  width: 500px;
-  display: flex;
-  flex-direction: column;
-}
-.elective-info * {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-}
-.elective-name{
-  font-size: 32px;
-  margin-left: 20px;
-  white-space: nowrap;
-}
-
-.elective-properties div:nth-child(4) {
-  display: inline;
-  flex-direction: row;
-}
-
-
-
-.elective-properties{
-  margin-top: 10px;
-  font-size: 16px;
-  padding-left: 30px;
-  white-space: nowrap;
-}
-
-.elective-info_button{
-  font-size: 16px;
-  background-color: transparent;
-  border: none;
-  text-decoration: underline;
-}
-
-.elective-info_button:hover{
-  opacity: 0.75;
-}
-
-.elective-signIn{
-  width: 200px;
-  height: 50px;
-  border-radius: 10px;
-  font-size: 16px;
-  white-space: nowrap;
-}
-
-
-.sign{
-  display: block;
-  border-style: none;
-  border: 1px solid black;
-
-  background-color: rgb(10, 98, 196);
-
-  color: white;
-}
-
-.unsign{
-  display: none;
-  border-style: none;
-  border: 1px solid black;
-  color: black;
-  background-color: rgb(241, 241, 241);
-}
-
-.elective-signIn:hover{
-  opacity: 0.9;
-
-}
-
-.elective-buttons{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
 
 
 
@@ -853,10 +962,7 @@ body {
   flex-direction: column;
 }
 
-.deleteElective{
-  background-color: rgb(255, 110, 110);
-  color: white;
-}
+
 
 .step1{
   display:  block;

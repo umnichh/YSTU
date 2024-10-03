@@ -1,176 +1,40 @@
-import React, { useEffect , useState } from "react";
-import { useNavigate } from "react-router-dom";
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import electiveImage from '../../ystu-images/elective.jpg';
+import All from './electivesBookmarks/All';
+import My from './electivesBookmarks/My';
+import Created from './electivesBookmarks/Created';
+import RequestsStudents from './electivesBookmarks/RequestsStudents';
 
-function Electives(){
-  const role = localStorage.getItem('role'); 
-  const navigate = useNavigate();
-  const [path, setPath] = useState('');
-  const [electives, setElectives] = useState(null);
+import { useState } from 'react';
 
-  // Запрашиваем роль
-  useEffect(() => {
-    if (role === 'student') {
-      setPath('api/electives/choice/');
-    } else if (role === 'teacher') {
-      setPath('api/electives/');
-    }
-  }, [role]);
-
-  useEffect(() => {
-    console.log(path)
-    async function getElectives() {
-      try{
-          console.log(path)
-        const response = await fetch(`http://212.67.13.70:8000/${path}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        })
-        if (response.ok) {
-          const data = await response.json();
-          setElectives(data);
-          console.log(data)
-        }
-      } catch (error) {
-          console.log(response.text());
-      }
-  }
-  getElectives();
-}, [path]);
-
-  if (!electives) {
-    return null; 
-  }
-  // Запись на электив
-  async function enroll(id, settings){
-    let method = null;
-    settings == 'enroll' ? method = 'POST' :
-    settings == 'unroll' ? method = 'DELETE' : 0;
-    try{
-      const response = await fetch(`http://212.67.13.70:8000/api/electives/${id}/enroll/`, {
-        method: method,
-        body: JSON.stringify(id),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-        },
-      })
-      if (response.ok) {
-        if (method === 'POST') {
-          
-          alert('Вы записались на электив');
-          document.getElementById(`${'sign' + id}`).style.display = 'none';
-          document.getElementById(`${'unsign' + id}`).style.display = 'block';
-  
-        } else if (method === 'DELETE') {
-          alert('Вы отменили запись на электив');
-          document.getElementById(`${'sign' + id}`).style.display = 'block';
-          document.getElementById(`${'unsign' + id}`).style.display = 'none';
-        }
-      }
-    } catch (error) {
-        console.log(error);
-    }
-  }
-    
-  const handleEdit = (elective) => {
-    navigate('/elective/edit', { state: { elective: elective } });
-  };
-
-  // Обработчик клика на электив
-  const handleClick = (elective) => {
-    navigate('/elective/enrolled', { state: { elective: elective } });
-  };
-  
+export default function Electives(){
+  const [mode, setMode] = useState('All'),
+        role = localStorage.getItem('role');
 
   return (
-    <div className="container">
-
-      <div className='electives'>
-        <div className='elective-container'>
-        <div className="searchSettings">
-            <form>
-              <div className='search-container'>
-                <input className='search-electives' type="text" placeholder="Поиск элективов"/>
-              </div>
-            </form>
-            {/* <div className="searchRadios">
-            <div className='searchRadio'>
-                  <input type="radio" id='facultativeRadio' name='facultative' defaultChecked='checked' onChange={() => setFacultative(1)} />
-                  <label htmlFor="facultativeRadio">Электив</label>
-                </div>
-                <div className='searchRadio'>
-                  <input type="radio" id='electiveRadio' name='facultative' onChange={() => setFacultative(2)} />
-                  <label htmlFor="electiveRadio">Факультатив</label>
-                </div>
-            </div> */}
-
-          </div>
-
-          {electives.map((elective) => (
-            <div key={elective.id} className='elective'>
-            
-              <img src={electiveImage} alt="elective" className="elective-image"/>
-              <div className="elective-info">
-                <div className='elective-name'>{elective.name}</div>
-                <div className='elective-properties'>
-                  <div>Осталось мест: {elective.place}</div>
-                  <div> Входное тестирование: Отсутствует</div>
-                  <div> Регистрация до: {elective.date_finish}</div>
-                  <div className='elective-teachers'>
-                    Преподаватели: 
-                    {elective.teachers.length > 0 ? (
-                      elective.teachers.map((teacher) => (
-                        <div key={teacher.id}>
-                        • {teacher.last_name} {teacher.first_name} {teacher.middle_name} 
-                        </div>
-                      ))
-                    ) : (
-                      <span> Не указаны</span>
-                    )}
-                  </div>
-                  <div className='elective-institutes'>
-                    Институты: 
-                    {elective.institutes.length > 0 ? (
-                      elective.institutes.map((institute) => (
-                        <div key={institute.id}>
-                        • {institute.name} 
-                        </div>
-                      ))
-                    ) : (
-                      <span>Электив для всех направлений</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="elective-buttons">
-              {
-                role === 'student'? (
-                  <>
-                    <button className="elective-signIn sign" type='button' id={'sign' + elective.id}  onClick={() => enroll(elective.id, 'enroll')}>Записаться на электив</button>
-                    <button className="elective-signIn unsign" type='button' id={'unsign' + elective.id}  onClick={() => enroll(elective.id, 'unroll')}>Отменить запись</button>
-                  </>
-                ) : role === 'teacher' ? (
-                  <>
-                    <button className="elective-edit" type='button' onClick={() => handleEdit(elective)} >Редактировать</button>
-                  </>
-                ) : null
-              }
-                <button className="elective-info_button" type='button' onClick={() => handleClick(elective)}>Подробнее</button>
-              </div>
-            </div> 
-          ))} 
-        </div>
+    <main>
+      <div className='radioGroup'>
+        <input type="radio" id="all" name="electives" value="all" defaultChecked onChange={() => setMode('All')}/>
+        <label htmlFor="all">Все элективы</label>
+        {role === 'student' &&
+          <>
+          <input type="radio" id="my" name="electives" value="my" onChange={() => setMode('My')}/>
+          <label htmlFor="my">Мои элективы</label>
+          </>
+        }
+        {role === 'teacher' && 
+          <>
+            <input type="radio" id="my" name="electives" value="my" onChange={() => setMode('My')}/>
+            <label htmlFor="my">Элективы к проведению</label>
+            <input type="radio" id="created" name="electives" value="created" onChange={() => setMode('Created')}/>
+            <label htmlFor="created">Созданные элективы</label>
+            <input type="radio" id="requestsStudents" name="electives" value="requestsStudents" onChange={() => setMode('RequestsStudents')}/>
+            <label htmlFor="requestsStudents">Заявки студентов</label>
+          </>
+        }
       </div>
-    </div>
-  );
+      {mode === 'All' &&  <All />}
+      {mode === 'My' && <My />}
+      {mode === 'Created' && role === 'teacher' && <Created />}
+      {mode === 'RequestsStudents' && role === 'teacher' && <RequestsStudents />}
+    </main>
+  )
 }
-
-export default Electives;
-
-
-

@@ -1,10 +1,8 @@
 import logo from './../../ystu-images/logo.jpg';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
-
-function LoginPage() {
+export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -51,6 +49,7 @@ function LoginPage() {
       const data = await response.json();
       localStorage.setItem('role', data.role); //УБРАТЬ ПОЗЖЕ
       setRole(data.role);
+      console.log(data)
     }
   }, [credentials]);
   
@@ -60,50 +59,44 @@ function LoginPage() {
         navigate('/profile/student/');
       } else if (role === 'teacher') {
         navigate('/profile/teacher/');
+      } else if (role === 'admin'){
+        navigate('/elective/status/');
       }
     }
   }, [role, navigate]);
-  //navigate eslint error
+
   return (
-    <div className="container">
-      <div className="login-form">
-        <div className="logo-container">
-          <img src={logo} className="ystu-logo-big" alt="YSTU" />
+    <main>
+      <form className='login-form' onSubmit={handleLogin}>
+        <img src={logo} className="logo-big" alt="Логотип ЯГТУ"/>
+        <div className="icon-container login-container">
+          <input
+            className="login-form_input"
+            type="text"
+            name="login"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="off"
+            required
+            placeholder="Имя пользователя"
+          />
         </div>
-        <form onSubmit={handleLogin}>
-          <div className="icon-container login-container">
-            <input
-              className="login-form_input"
-              id="login"
-              type="text"
-              name="login"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="off"
-              required
-              placeholder="Имя пользователя"
-            />
-          </div>
-          <div className="icon-container password-container">
-            <input
-              className="login-form_input"
-              id="password"
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="off"
-              required
-              placeholder="Пароль"
-            />
-          </div>
-          <button className="login-form_button" type="submit">
-            Войти
-          </button>
-        </form>
-      </div>
-    </div>  
+        <div className="icon-container password-container">
+          <input
+            className="login-form_input"
+            type="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="off"
+            required
+            placeholder="Пароль"
+          />
+        </div>
+        <button className="login-form_button" type="submit">Войти</button>
+      </form>
+    </main>  
   );
 }
 
-export default LoginPage;
+

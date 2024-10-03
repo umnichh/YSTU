@@ -1,18 +1,17 @@
-// Layout.js
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import Navbar from './Navbar';
+import Sidebar from './Sidebar';
 
-const Layout = () => {
+export default function Layout() {
   const location = useLocation();
   const excludeNavbarRoutes = ['/login', '*'];
 
   return (
     <>
-      {!excludeNavbarRoutes.includes(location.pathname) && <Navbar />}
+      {!excludeNavbarRoutes.includes(location.pathname) && <Sidebar />}
       <Outlet />
     </>
   );
 };
 
-export default Layout;
+
