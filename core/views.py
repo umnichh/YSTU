@@ -66,7 +66,8 @@ class StudentCabinetView(APIView):
 class AllElectivesView(APIView):
 
     def get(self, request):
-        electives = Elective.objects.all()
+        admin_status = StatusByAdmin.objects.filter(name='Принят').first()
+        electives = Elective.objects.filter(admin_status=admin_status)
         serializer = ElectiveSerializer(electives, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -106,7 +107,7 @@ class ElectiveView(APIView):
             status_first = Status.objects.filter(name='Скоро начнётся').first()
             type_id = data.get('type')
             type = Type.objects.get(id=type_id)
-
+            admin_status = StatusByAdmin.objects.filter(name='Ожидает проверки').first()
             elective = Elective.objects.create(
                 name=validated_data['name'],
                 describe=validated_data['describe'],
@@ -120,7 +121,8 @@ class ElectiveView(APIView):
                 status=status_first,
                 made_by=teacher,
                 type = type,
-                note = validated_data['note']
+                note = validated_data['note'],
+                admin_status = admin_status
             )
 
             teacher_ids = data.get('selectedTeachers', [])
@@ -189,10 +191,16 @@ class EnrollElectiveView(APIView):
         try:
             student = Student.objects.get(user=request.user)
             elective = Elective.objects.get(id=id)
+            admin_status = StatusByAdmin.objects.filter(name='Принят').first()
             if StudentElective.objects.filter(student=student, elective=elective).exists():
                 return Response({'error' : 'Студент уже записан'}, status=status.HTTP_400_BAD_REQUEST)
-        
-            StudentElective.objects.create(student=student, elective=elective)
+            counter = StudentElective.objects.filter(elective=elective).count()
+            if elective.admin_status == admin_status:
+                if elective.place - counter > 0:
+                    StudentElective.objects.create(student=student, elective=elective)
+                else:
+                    return Response({'error' : 'Нет мест на элективе'}, status=status.HTTP_400_BAD_REQUEST)
+
             return Response({'message': 'Студент записался'}, status=status.HTTP_201_CREATED)
         except Student.DoesNotExist:
             return Response({'error': 'Студент не найден!'}, status=status.HTTP_404_NOT_FOUND)
@@ -220,11 +228,17 @@ class ElectiveAvaliableStudentView(APIView):
             user = request.user
             student = Student.objects.get(user=user)
             student_profile = student.profile
+            admin_status = StatusByAdmin.objects.filter(name='Принят').first()
             available_electives = Elective.objects.filter(
-            electiveprofile__profile=student_profile  
+            electiveprofile__profile=student_profile, admin_status=admin_status 
         ).exclude(studentelective__student=student)
-    
-            serializer = ElectiveSerializer(available_electives, many=True)
+            available_elective = []
+            for elective in available_electives:
+                counter = StudentElective.objects.filter(elective=elective).count()
+                if elective.place - counter > 0:
+                    available_elective.append(elective)
+
+            serializer = ElectiveSerializer(available_elective, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         except Student.DoesNotExist:
@@ -247,7 +261,8 @@ class TeacherElectivView(APIView):
         try:
             user = request.user
             teacher = Teacher.objects.get(user=user)
-            electives = Elective.objects.filter(teacherelective__teacher=teacher)
+            admin_status = StatusByAdmin.objects.filter(name='Принят').first()
+            electives = Elective.objects.filter(teacherelective__teacher=teacher, admin_status=admin_status)
             serializer = ElectiveSerializer(electives, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Student.DoesNotExist:
@@ -648,7 +663,7 @@ class CheckElectives(APIView):
 class TeacherResendElective(APIView):
     def get(self, request):
         try:
-            status_to_check = StatusByAdmin.objects.get(name='Ожидает проверки')
+            status_to_check = StatusByAdmin.objects.get(name='Ожидает проверки')    
             admin_serializer = StatusByAdminSerializer(status_to_check)
             return Response(admin_serializer.data)
         
@@ -670,4 +685,11 @@ class TeacherResendElective(APIView):
             return Response({"error": "Электив не найден."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": f"Произошла ошибка: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
+
+class StudentElectiveRequest(APIView):
+    def get(self, request, id):
+        elective = Elective.objects.get(id=id)
+        students =  Student.objects.filter(studentelective__elective=elective)
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

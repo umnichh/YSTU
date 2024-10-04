@@ -19,5 +19,5 @@ app.conf.beat_schedule = {
     'clear-expired-tokens-daily': {
         'task': 'core.tasks.clear_expired_tokens',
         'schedule': crontab(hour=0, minute=0),  # запуск каждый день в полночь
-    },
+    }
 }

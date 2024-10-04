@@ -53,5 +53,6 @@ urlpatterns = [
     path('api/electives/cancelled/', CanceledElectives.as_view(), name='canceled_electives'), #get
     path('api/electives/<int:id>/check/', CheckElectives.as_view(), name='CheckElectives'), #get 
     path('api/electives/<int:id>/resend/', TeacherResendElective.as_view(), name='TeacherResendElective'), #get
+    path('api/electives/<int:id>/requests/', StudentElectiveRequest.as_view(), name='StudentElectiveRequest'), #get
 
 ]

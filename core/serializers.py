@@ -74,8 +74,8 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    health = HealthSerializer()
-    profile = ProfileSerializer()
+    health = HealthSerializer(read_only=True)
+    profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = Student
