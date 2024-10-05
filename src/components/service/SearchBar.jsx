@@ -1,3 +1,5 @@
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 export default function Search({electives}) {
   const SearchElectives = (value) => {
     electives.filter((elective) => {
@@ -7,13 +9,17 @@ export default function Search({electives}) {
         document.getElementById(`id${elective.id}`).style.display = 'none';
       }
     })
-  };  return (
+  };  
+  
+  return (
     <search>
-      <form>
-        <div className='search-container'>
-          <input className='search-electives' type="search" onChange={(e) => SearchElectives(e.target.value)} placeholder="Поиск элективов"/>
-        </div>
-      </form>
+      <div className='relative flex justify-center'>
+        <input 
+          className='w-11/12 my-4  bg-gray-100 p4 border-2 border-gray-400 rounded-lg pl-8 text-lg py-2 focus:outline-none focus:border-blue-500' 
+          type="text" 
+          onChange={(e) => SearchElectives(e.target.value)} 
+          placeholder="Поиск элективов"/>
+      </div>
     </search>
   );
 }

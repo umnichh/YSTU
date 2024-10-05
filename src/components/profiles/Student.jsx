@@ -18,7 +18,7 @@ export default function StudentProfile() {
     .then(response => response.json())
     .then(data => setStudentData(data))
     .catch(error => console.error('Error:', error));
-}, [])
+  }, [])
 
   if (!studentData) {
     return <div>Загрузка...</div>;
@@ -43,22 +43,20 @@ export default function StudentProfile() {
     <main>
       {
         studentData && (
-          <>
-            <div className='profile'>
-              <img className='profile-image' src={student} alt='student'/>
-              <div className='profile-info'>
-                <div className='profile-fullname'>{last_name} {first_name} {middle_name}</div>
-                <dl>
-                  <dt>Направление:</dt><dd>{program}</dd>
-                  <dt>Статус:</dt><dd>"Студенты"</dd>
-                  <dt>Курс:</dt><dd>{year_of_study}</dd>
-                  <dt>Группа:</dt><dd>{group}</dd>
-                  <dt>Успеваемость:</dt><dd id='ratings'>{average_grade}</dd>
-                  <dt>Группа здоровья:</dt><dd>{healthGroup}</dd>
-                </dl>
-              </div>
+          <section className='border-2 flex m-4'>            
+            <img className='w-1/6 min-w-52' src={student} alt='student'/>
+            <div className='flex flex-col m-4 gap-4'>
+              <div className='text-4xl border-b-2 border-black borderwid'>{last_name} {first_name} {middle_name}</div>
+              <dl>
+                <dt>Направление:</dt><dd>{program}</dd>
+                <dt>Статус:</dt><dd>"Студенты"</dd>
+                <dt>Курс:</dt><dd>{year_of_study}</dd>
+                <dt>Группа:</dt><dd>{group}</dd>
+                <dt>Успеваемость:</dt><dd id='ratings'>{average_grade}</dd>
+                <dt>Группа здоровья:</dt><dd>{healthGroup}</dd>
+              </dl>
             </div>
-          </>
+          </section>
         )
       }
     </main>

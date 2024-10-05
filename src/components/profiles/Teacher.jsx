@@ -16,7 +16,7 @@ export default function TeacherProfile() {
     .then(response => response.json())
     .then(data => setTeacherData(data))
     .catch(error => console.error('Error:', error));
-}, [])
+  }, [])
 
   // Деструктуризация
   const {
@@ -27,43 +27,41 @@ export default function TeacherProfile() {
     
   return (
     <main>
-      { 
-        teacherData && (
-          <>
-            <div className='profile'>
-              <img className='profile-image' src={teacher} alt='Фотография преподавателя'/>
-              <div className='profile-info'>
-                <div className='profile-fullname'>{last_name} {first_name} {middle_name}</div>
-                <dl>
-                  <dt>Статус:</dt><dd>Преподаватели</dd>
-                </dl>
-              </div>
+      {teacherData && (
+        <>
+          <section className='border-2 flex m-4'>
+            <img className='w-1/6 min-w-52' src={teacher} alt='Фотография преподавателя'/>
+            <div className='flex flex-col m-4 gap-4'>
+              <div className='text-4xl border-b-2 border-black borderwid'>{last_name} {first_name} {middle_name}</div>
+              <dl>
+                <dt>Статус:</dt><dd>Преподаватели</dd>
+              </dl>
             </div>
-            <article className='about-service'>
-              <details>
-                <summary>Как создать электив?</summary>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id cumque suscipit facere ipsa sapiente voluptates totam sit unde accusantium quisquam, magnam maiores magni modi ipsum dolorum pariatur, adipisci doloremque itaque?</p>
-              </details>
-              <details>
-                <summary>В чем разница между элективом и факультативом?</summary>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur, suscipit reprehenderit et aspernatur eius fuga molestiae quaerat. Quia cumque amet asperiores, nam voluptatum quasi ipsam dolore, odio repellendus illum animi.</p>
-              </details>
-              <details>
-                <summary>Как работают созданные элективы и заявки студентов?</summary>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum rem, aliquam ullam doloribus quaerat blanditiis suscipit cumque corporis laudantium, quisquam, odit doloremque animi tempora! Iure facilis eligendi voluptas omnis similique. </p>
-              </details>
-              <details>
-                <summary>Зачем нужен архив?</summary>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur, suscipit reprehenderit et aspernatur eius fuga molestiae quaerat. Quia cumque amet asperiores, nam voluptatum quasi ipsam dolore, odio repellendus illum animi.</p>
-              </details>
-              <details>
-                <summary>Как редактировать и удалить электив?</summary>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum rem, aliquam ullam doloribus quaerat blanditiis suscipit cumque corporis laudantium, quisquam, odit doloremque animi tempora! Iure facilis eligendi voluptas omnis similique. </p>
-              </details>
-            </article>
-          </>
-        )
-      }
+          </section>
+          <section className='w-full p-4'>
+            <details>
+              <summary>Как создать электив?</summary>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id cumque suscipit facere ipsa sapiente voluptates totam sit unde accusantium quisquam, magnam maiores magni modi ipsum dolorum pariatur, adipisci doloremque itaque?</p>
+            </details>
+            <details>
+              <summary>В чем разница между элективом и факультативом?</summary>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur, suscipit reprehenderit et aspernatur eius fuga molestiae quaerat. Quia cumque amet asperiores, nam voluptatum quasi ipsam dolore, odio repellendus illum animi.</p>
+            </details>
+            <details>
+              <summary>Как работают созданные элективы и заявки студентов?</summary>
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum rem, aliquam ullam doloribus quaerat blanditiis suscipit cumque corporis laudantium, quisquam, odit doloremque animi tempora! Iure facilis eligendi voluptas omnis similique. </p>
+            </details>
+            <details>
+              <summary>Зачем нужен архив?</summary>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur, suscipit reprehenderit et aspernatur eius fuga molestiae quaerat. Quia cumque amet asperiores, nam voluptatum quasi ipsam dolore, odio repellendus illum animi.</p>
+            </details>
+            <details>
+              <summary>Как редактировать и удалить электив?</summary>
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum rem, aliquam ullam doloribus quaerat blanditiis suscipit cumque corporis laudantium, quisquam, odit doloremque animi tempora! Iure facilis eligendi voluptas omnis similique. </p>
+            </details>
+          </section>
+        </>
+      )}
     </main>
   );
 }

@@ -1,7 +1,7 @@
 import logo from './../../ystu-images/logo.jpg';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
 export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -66,36 +66,36 @@ export default function LoginPage() {
   }, [role, navigate]);
 
   return (
-    <main>
-      <form className='login-form' onSubmit={handleLogin}>
-        <img src={logo} className="logo-big" alt="Логотип ЯГТУ"/>
-        <div className="icon-container login-container">
-          <input
-            className="login-form_input"
-            type="text"
-            name="login"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="off"
-            required
-            placeholder="Имя пользователя"
-          />
-        </div>
-        <div className="icon-container password-container">
-          <input
-            className="login-form_input"
-            type="password"
-            name="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="off"
-            required
-            placeholder="Пароль"
-          />
-        </div>
-        <button className="login-form_button" type="submit">Войти</button>
-      </form>
-    </main>  
+    <form className="text-2xl absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-12 flex flex-col gap-4 justify-center items-center shadow-xl border-2" onSubmit={handleLogin}>
+      <img src={logo} className="p-10 px-0 w-3/4" alt="Логотип ЯГТУ"/>
+      <div className='relative'>
+        <i className='absolute top-1/2 -translate-y-1/2 fas fa-user pr-3 pl-4 text-gray-300'></i>
+        <input
+          className="py-3 pl-14 border-2 rounded-xl transition focus:border-orange-400 outline-none shadow-sm "          
+          type="text"
+          name="login"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          autoComplete="off"
+          required
+          placeholder="Имя пользователя"
+        />
+      </div>
+      <div className='relative'>
+        <i className='absolute top-1/2 -translate-y-1/2 fas fa-lock pr-3 pl-4 text-gray-300'></i>
+        <input
+          className="py-3 pl-14 border-2 rounded-xl transition focus:border-orange-400 outline-none"
+          type="password"
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="off"
+          required
+          placeholder="Пароль"
+        />
+      </div>
+      <button className="uppercase font-semibold mt-6 mb-16 bg-ystu-blue focus:opacity-90 text-white py-4 px-32 hover:opacity-90" type="submit">Войти</button>
+    </form>
   );
 }
 

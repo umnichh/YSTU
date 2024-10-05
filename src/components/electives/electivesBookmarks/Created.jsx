@@ -41,7 +41,7 @@ export default function CreatedElectives(){
         })
         .catch(error => console.error('Error:', error));
     }
-  }
+  } 
 
   return (
     <main>

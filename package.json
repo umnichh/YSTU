@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -19,20 +22,21 @@
     "react": "^18.3.1",
     "react-checkbox-tree": "^1.8.0",
     "react-dom": "^18.3.1",
+    "react-fontawesome": "^1.7.1",
     "react-form-wizard-component": "^0.2.7",
     "react-hook-form": "^7.53.0",
     "react-router": "^6.26.2",
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "react-select": "^5.8.0",
-    "tailwindcss": "^3.4.13",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build-css": "tailwindcss build ./src/tailwind.css -o ./public/tailwind.css"
   },
   "eslintConfig": {
     "extends": [
@@ -57,6 +61,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.36.1",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "globals": "^15.9.0"
+    "globals": "^15.9.0",
+    "tailwindcss": "^3.4.13"
   }
 }

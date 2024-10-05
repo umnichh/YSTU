@@ -15,23 +15,18 @@ export default function Sidebar() {
   };
 
   return (
-    <aside>
-      <div className="nav-logo-container">
-        <Link to="https://www.ystu.ru/"><img src={logo} alt="logo" /></Link>
-      </div>
-      <div className="nav-links-container">
-        <Link className="resetStyle bookmark" to="/electives">Элективы</Link>
-        {role === 'student' ? (
-          <Link className="resetStyle user" to="/profile/student">Профиль</Link>
-        ) : role === 'teacher' ? (
-          <>
-            <Link className="resetStyle user" to="/profile/teacher">Профиль</Link>
-            <Link className="resetStyle plus" to="/elective/create">Создать электив</Link>
-          </>
-        ) : role === 'admin' ? (
-          <Link className="resetStyle bookmark" to="/elective/status">Изменить статус электива</Link>
-        ) : null}
-        <Link className="resetStyle check" to="/elective/archive">Архив</Link>
+    <aside className='flex flex-col sticky h-screen top-0  w-60 '>
+      <Link to="https://www.ystu.ru/"><img className='border-x-2' src={logo} alt="Логотип ЯГТУ" /></Link>
+      <div className="flex flex-col items-start gap-4 text-lg px-5 pt-2 h-full bg-ystu-blue text-white">
+        <Link to="/electives">Элективы</Link>
+        {role === 'student' && <Link to="/profile/student">Профиль</Link>}
+        {role === 'teacher' && <>
+                               <Link to="/profile/teacher">Профиль</Link>
+                               <Link to="/elective/create">Создать электив</Link>
+                               </>
+        }
+        {role === 'admin'   && <Link to="/elective/status">Изменить статус электива</Link>}
+        <Link to="/elective/archive">Архив</Link>
         <button type="button" onClick={handleLogout}>Выйти</button>
       </div>
     </aside>
