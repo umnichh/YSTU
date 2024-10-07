@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
-import Search from './SearchBar.tsx';
+import Search from './SearchBar';
 
 type ElectiveProps = {
   electives : Record<string, any>,
@@ -69,7 +69,7 @@ export default function ElectiveContainer({
             <dd>
               {elective.teachers.length > 0 ? (
                 <ul>
-                  {elective.teachers.map((teacher) => (
+                  {elective.teachers.map((teacher : Record<string, any>) => (
                     <li key={teacher.id}>▸ {teacher.last_name} {teacher.first_name} {teacher.middle_name}</li>
                   ))}
                 </ul>
@@ -81,7 +81,7 @@ export default function ElectiveContainer({
             <dd> 
               {elective.institutes.length > 0 ? (
                 <ul>
-                  {elective.institutes.map((institute) => (
+                  {elective.institutes.map((institute: Record<string, any>) => (
                     <li key={institute.id}>▸ {institute.name}</li>
                   ))}
                 </ul>

@@ -10,7 +10,7 @@ import Teacher from './components/profiles/Teacher.tsx';
 
 // electives
 import Electives from './components/electives/Electives';
-import About from './components/electives/About.tsx';
+import About from './components/electives/About';
 import Status from './components/electives/Status'
 
 // create elective

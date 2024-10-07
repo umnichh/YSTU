@@ -5,84 +5,59 @@ import electiveImage from '../../ystu-images/elective.jpg';
 
 export default function Status(){
   const navigate = useNavigate();
-  const [path, setPath] = useState('');
-
   const [toCheck, setToCheck] = useState(null);
   const [confirmed, setConfirmed] = useState(null);
   const [cancelled, setCancelled] = useState(null);
   const [comment, setComment] = useState(null);
-
   const [statuses, setStatuses] = useState(null);
   const [status_id, setStatus_id] = useState([]);
 
-  console.log(status_id)
-
   useEffect(() => {
-    async function getElectives() {
-      try{
-        const response = await fetch(`http://212.67.13.70:8000/api/electives/to_check/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        })
-        if (response.ok) {
-          const data = await response.json();
-          setToCheck(data.checked_electives);
-          setStatuses(data.admin_statuses);
-        }
-      } catch (error) {
-          console.log(response.text());
-      }
+    fetch(`http://212.67.13.70:8000/api/electives/to_check/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      setToCheck(data.checked_electives)
+      setStatuses(data.admin_statuses)
+    })
+    .catch(error => console.error(error));
 
-      try{
-        const response = await fetch(`http://212.67.13.70:8000/api/electives/checked/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        })
-        if (response.ok) {
-          const data = await response.json();
-          setConfirmed(data);
-          console.log(data)
-        }
-      } catch (error) {
-          console.log(response.text());
-      }
+    fetch(`http://212.67.13.70:8000/api/electives/checked/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    })
+    .then(response => response.json())
+    .then(data => setConfirmed(data))
+    .catch(error => console.error(error));
 
-      try{
-        const response = await fetch(`http://212.67.13.70:8000/api/electives/cancelled/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        })
-        if (response.ok) {
-          const data = await response.json();
-          setCancelled(data);
-          console.log(data)
-        }
-      } catch (error) {
-          console.log(response.text());
-      }
-  }
-  getElectives();
-}, [path]);
+    fetch(`http://212.67.13.70:8000/api/electives/cancelled/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    })
+    .then(response => response.json())
+    .then(data => setCancelled(data))
+    .catch(error => console.error(error));
+
+  }, []);
 
   if (!toCheck || !statuses || !confirmed || !cancelled) {
     return null; 
   }
 
   // Запись на электив
-  async function enroll(id, status_id){
-    const message =  id + ' status_id: ' + status_id;
-
-    try{
-      const response = await fetch(`http://212.67.13.70:8000/api/electives/${id}/check/`, {
+  function enroll(id, status_id){
+    fetch(`http://212.67.13.70:8000/api/electives/${id}/check/`, {
         method: 'POST',
         body: JSON.stringify({'elective_id':id,'status_id':status_id, 'comment':comment}),
         headers: {
@@ -90,22 +65,16 @@ export default function Status(){
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
         },
       })
-      if (response.ok) {
-          alert('Вы изменили статус');
-      } else{
-        console.log(response.text());
-      }
-    } catch (error) {
-        console.log(error);
-    }
-
-    
+      .then(response => {
+        if (response.ok) {
+          alert('Вы изменили статус электива')
+        } else {
+          alert('Не удалось изменить статус')
+        }
+      })
+      .catch(error => console.error(error));
   }
     
-  const handleEdit = (elective) => {
-    navigate('/elective/edit', { state: { elective: elective } });
-  };
-
   // Обработчик клика на электив
   const handleClick = (elective) => {
     navigate('/elective/about', { state: { elective: elective } });
@@ -114,27 +83,10 @@ export default function Status(){
 
   return (
     <main>
-
       <div className='electives'>
         <div className='elective-container'>
         <div className="searchSettings">
-            <form>
-              <div className='search-container'>
-                <input className='search-electives' type="text" placeholder="Поиск элективов"/>
-              </div>
-            </form>
-            {/* <div className="searchRadios">
-            <div className='searchRadio'>
-                  <input type="radio" id='facultativeRadio' name='facultative' defaultChecked='checked' onChange={() => setFacultative(1)} />
-                  <label htmlFor="facultativeRadio">Электив</label>
-                </div>
-                <div className='searchRadio'>
-                  <input type="radio" id='electiveRadio' name='facultative' onChange={() => setFacultative(2)} />
-                  <label htmlFor="electiveRadio">Факультатив</label>
-                </div>
-            </div> */}
-
-          </div>
+        </div>
           Ожидают проверки
           {toCheck.map((elective) => (
             <div key={elective.id} className='elective'>

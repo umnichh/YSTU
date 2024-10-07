@@ -156,7 +156,7 @@ export default function Create() {
       },
     });
     
-    //navigate('/electives');
+    navigate('/electives');
   };
 
   console.log('KURS', selected.selectedCourses)

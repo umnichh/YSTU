@@ -10,7 +10,7 @@ export default function Electives(){
 
   // Путь к элективам в зависимости от роли
   useEffect(() => {
-    role === 'student' ? setPath('api/electives/choice/') :
+    return role === 'student' ? setPath('api/electives/choice/') :
     role === 'teacher' || role === 'admin' ? setPath('api/electives/') : 0;
   }, [role]);
 
