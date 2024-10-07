@@ -1,7 +1,6 @@
 import React, { useEffect , useState } from "react";
 import electiveImage from '../../../ystu-images/elective.jpg';
-import Search from "../../service/SearchBar";
-import Elective from "../../service/Elective";
+import Elective from "../../service/Elective.tsx";
 
 export default function My(){
   const [path, setPath] = useState('');
@@ -33,7 +32,7 @@ export default function My(){
     }
 }, [path]);
 
-  // Запись на электив
+    // Запись на электив
   async function enroll(id){
     // Метод заявки на электив
     let methodToEnroll;
@@ -74,12 +73,8 @@ export default function My(){
     
   return (
     <main>
-      {
-        electives &&
-        <>
-          <Search electives={electives}/>
-          <Elective electives={electives} electiveImage={electiveImage} from='My' func={enroll}/>
-        </>
+      {electives &&
+        <Elective electives={electives} electiveImage={electiveImage} from='My' func={enroll}/>
       }
     </main>
   );

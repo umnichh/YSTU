@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef} from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import SelectProperty from './TeachersCourseList';
+import SelectProperty from './formComponents/TeachersCourseList';
 
 export default function Create() {
   const currentToken = localStorage.getItem('access_token'),
@@ -104,14 +104,22 @@ export default function Create() {
     })
     .then(response => response.json())
     .then(data => {
+      console.log(data)
       const teachers = data.selectedTeachers.map(teacher => ({
         value: teacher.id,
         label: `${teacher.last_name} ${teacher.first_name} ${teacher.middle_name}`,
       }));
       const profiles = data.selectedProfiles.map(profile => {
-      return profile.id
+        return profile.id
       });
-      setSelected({ selectedTeachers: teachers, selectedProfiles: profiles });
+      const courses = data.selectedCourses.map(course => {
+        return course.name
+      });
+      setSelected({ 
+        selectedTeachers: teachers, 
+        selectedProfiles: profiles,
+        selectedCourses: courses,
+      });
       console.log(data)
       setCreateOnSomething(data);
 
@@ -151,6 +159,7 @@ export default function Create() {
     //navigate('/electives');
   };
 
+  console.log('KURS', selected.selectedCourses)
   const CloseDetails = () => {
     document.getElementById('createOnSomething').removeAttribute('open')
   }

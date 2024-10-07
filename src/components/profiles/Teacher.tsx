@@ -1,8 +1,14 @@
-import teacher from '../../ystu-images/teacher.jpg';
+import photo from '../../ystu-images/teacher.jpg';
 import React, { useEffect, useState } from 'react';
 
+interface TeacherData {
+  last_name?: string;
+  first_name?: string;
+  middle_name?: string;
+}
+
 export default function TeacherProfile() {
-  const [teacherData, setTeacherData] = useState(null);
+  const [teacherData, setTeacherData] = useState<TeacherData>({});
 
   // Загрузка данных преподавателя
   useEffect(() => {
@@ -30,7 +36,7 @@ export default function TeacherProfile() {
       {teacherData && (
         <>
           <section className='border-2 flex m-4'>
-            <img className='w-1/6 min-w-52' src={teacher} alt='Фотография преподавателя'/>
+            <img className='w-1/6 min-w-52' src={photo} alt='Фотография преподавателя'/>
             <div className='flex flex-col m-4 gap-4'>
               <div className='text-4xl border-b-2 border-black borderwid'>{last_name} {first_name} {middle_name}</div>
               <dl>

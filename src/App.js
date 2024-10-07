@@ -5,22 +5,21 @@ import React, { useEffect } from 'react';
 import LoginPage from './components/authorization/Login';
 
 // profiles
-import Student from './components/profiles/Student';
-import Teacher from './components/profiles/Teacher';
+import Student from './components/profiles/Student.tsx';
+import Teacher from './components/profiles/Teacher.tsx';
 
 // electives
 import Electives from './components/electives/Electives';
-import About from './components/electives/About';
-import Archive from './components/electives/Archive'
+import About from './components/electives/About.tsx';
 import Status from './components/electives/Status'
 
 // create elective
-import Form from './components/electives/formComponents/Form';
+import Form from './components/electives/Create';
 import Edit from './components/electives/formComponents/Edit';
 // routing
-import NotFoundPage from './components/routing/404NF';
-import ProtectedRoute from './components/routing/ProtectedRoute';
-import Layout from './components/service/Layout';
+import NotFoundPage from './components/routing/404NF.tsx';
+import ProtectedRoute from './components/routing/ProtectedRoute.tsx';
+import Layout from './components/service/Layout.tsx';
 
 // styles
 import './tailwind.css';
@@ -65,7 +64,6 @@ export default function App() {
           {/* electives */}
           <Route path="/electives/" element={<ProtectedRoute element={Electives} allowedRoles={['teacher', 'student']} />} />
           <Route path="/elective/about" element={<ProtectedRoute element={About} allowedRoles={['student', 'teacher', 'admin']} />} />
-          <Route path="/elective/archive" element={<ProtectedRoute element={Archive} allowedRoles={['teacher', 'student', 'admin']} />} />
           <Route path="/elective/status" element={<ProtectedRoute element={Status} allowedRoles={['admin']} />} />
           {/* create electives */}
           <Route path="/elective/create" element={<ProtectedRoute element={Form} allowedRoles={['teacher', 'admin']} />} />

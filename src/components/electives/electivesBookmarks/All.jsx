@@ -1,7 +1,6 @@
 import React, { useEffect , useState } from "react";
 import electiveImage from '../../../ystu-images/elective.jpg';
-import Search from "../../service/SearchBar";
-import Elective from "../../service/Elective";
+import Elective from "../../service/Elective.tsx";
 
 export default function Electives(){
   const role = localStorage.getItem('role'),
@@ -73,12 +72,8 @@ export default function Electives(){
 
   return (
     <main>
-      {
-        electives &&
-        <>
-          <Search electives={electives}/>
-          <Elective electives={electives} electiveImage={electiveImage} from='All' func={enroll}/>
-        </>
+      {electives &&
+        <Elective electives={electives} electiveImage={electiveImage} from='All' func={enroll}/>
       }
     </main>
   );

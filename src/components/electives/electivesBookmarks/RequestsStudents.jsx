@@ -1,9 +1,13 @@
 import React, { useEffect , useState } from "react";
+import { useNavigate } from "react-router";
+
 
 export default function StudentList(){
   const [electives, setElectives] = useState(null),
         [students, setStudents] = useState({}),
-        [showStudents, setShowStudents] = useState({});
+        [showStudents, setShowStudents] = useState({}),
+        navigate = useNavigate();
+
 
   // Получение элективов
   useEffect(() => {
@@ -18,6 +22,11 @@ export default function StudentList(){
         .then((data) => setElectives(data))
         .catch((error) => console.error(error));
 }, []);
+
+  // Подробнее об элективе
+  const handleClick = (elective) => {
+    navigate('/elective/about', { state: { elective: elective } });
+  };
 
   // Запись на электив
   function request(id){
@@ -35,14 +44,11 @@ export default function StudentList(){
         setShowStudents((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
-  console.log(students)
-  console.log(showStudents)
-
   return (
     <main>
       {electives &&
         <>
-          <table className="electives-table">
+          <table>
             <thead>
               <tr>
                 <th>Название электива</th>
@@ -50,6 +56,7 @@ export default function StudentList(){
                 <th>Средний балл</th>
                 <th>Входное тестирование</th>
                 <th>Показать студентов</th>
+                <th>Подробнее</th>
               </tr>
             </thead>
             <tbody>
@@ -62,12 +69,17 @@ export default function StudentList(){
                       <td>Отсутствует</td>
                       <td>
                         <button 
-                          className="showStudents" 
-                          onClick={() => request(elective.id)}
-                        >
+                          className="underline underline-offset-4" 
+                          onClick={() => request(elective.id)}>
                           {showStudents[elective.id] ? 'Скрыть студентов' : 'Показать всех студентов'}
+                        </button>                         
+                      </td>
+                      <td>
+                        <button 
+                          className="underline underline-offset-4" 
+                          onClick={() => handleClick(elective)}>
+                          Подробнее
                         </button>
-                          
                       </td>
                     </tr>
 

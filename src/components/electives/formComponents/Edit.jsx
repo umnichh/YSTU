@@ -86,7 +86,7 @@ export default function Edit() {
     .catch(error => console.error(error));
 
     // Получение данных о курсе
-    fetch(`http://212.67.13.70:8000/api/electives/${elective.id}/edit/`, {
+    fetch(`http://212.67.13.70:8000/api/electives/${electiveId}/edit/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${currentToken}`,
@@ -100,12 +100,19 @@ export default function Edit() {
         label: `${teacher.last_name} ${teacher.first_name} ${teacher.middle_name}`,
       }));
       const profiles = data.selectedProfiles.map(profile => {
-      return profile.id
+        return profile.id
       });
-      setSelected({ selectedTeachers: teachers, selectedProfiles: profiles });
+      const courses = data.selectedCourses.map(profile => {
+        return profile.id
+      });
+      setSelected({ 
+        selectedTeachers: teachers, 
+        selectedProfiles: profiles,
+        selectedCourses: courses
+      });
       console.log(data)
       setCreateOnSomething(data);
-    })
+      })
     .catch(error => console.error(error));
   }, []);
 

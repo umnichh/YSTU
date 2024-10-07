@@ -1,5 +1,5 @@
 import React, { useEffect , useState } from "react";
-import { json, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import electiveImage from '../../ystu-images/elective.jpg';
 
@@ -76,7 +76,6 @@ export default function Status(){
   if (!toCheck || !statuses || !confirmed || !cancelled) {
     return null; 
   }
-
 
   // Запись на электив
   async function enroll(id, status_id){

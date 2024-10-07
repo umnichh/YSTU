@@ -5,17 +5,8 @@ export default function SelectList(props){
   const selected = props.selected,
         formInfo = props.formInfo,
         [semesterList, setSemesterList] = useState({}),
-        [expandedList, setExpandedList] = useState({});
-  
-  // Дерево для курсов
-  const courseTree = formInfo.courses.map(course => ({
-    label: course.name,
-    value: `course-${course.name}`,
-    children: (course.semesters || []).map(semester => ({
-        label: semester.name,
-        value: semester.id
-    }))
-  }));
+        [expandedList, setExpandedList] = useState({}),
+        courseTree = props.courseTree;
 
   // Обработчик для изменения состояния курсов для конкретного профиля
   const handleCheckCourses = (profileName, selectedCourses) => {
@@ -34,13 +25,13 @@ export default function SelectList(props){
   };
 
   return(
-    <>
-      {selected.selectedProfiles.length > 0 ? (
+    <div className='mt-6 grid grid-cols-3'>
+    {selected.selectedProfiles.length > 0 ? (
         selected.selectedProfiles.map((check) => {
           const profile = formInfo.profiles.find((p) => p.id === Number(check));
           return (
-            <div key={profile.id}>
-              <label>{profile.name}</label>
+            <div className='border-2  p-8 text-center flex flex-col items-center' key={profile.id}>
+              <strong className='text-xl underline underline-offset-2'>{profile.name + '- ' + profile.form.name}</strong>
                 <CheckboxTree
                   nodes={courseTree}
                   checked={semesterList[profile.id] || []}
@@ -53,7 +44,7 @@ export default function SelectList(props){
           );
         })
       ) : <label className='mt-4'>Нет выбранных профилей</label>
-      }
-    </> 
+    }   
+    </div>
   )
 }

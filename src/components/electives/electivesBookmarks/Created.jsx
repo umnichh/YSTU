@@ -1,8 +1,7 @@
 import React, { useEffect , useState } from "react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import electiveImage from '../../../ystu-images/elective.jpg';
-import Search from "../../service/SearchBar";
-import Elective from "../../service/Elective";
+import Elective from "../../service/Elective.tsx";
 
 export default function CreatedElectives(){
   const [electives, setElectives] = useState([]),
@@ -43,14 +42,11 @@ export default function CreatedElectives(){
     }
   } 
 
+  console.log(electives)
   return (
     <main>
-      {
-        electives && 
-        <>
-          <Search electives={electives}/>
+      {electives && 
           <Elective electives={electives} electiveImage={electiveImage} from='Created' func={deleteElective}/>
-        </>
       }
     </main>
   );

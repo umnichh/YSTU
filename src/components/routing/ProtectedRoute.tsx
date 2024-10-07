@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
 
-const ProtectedRoute = ({ element: Element, allowedRoles }) => {
+export default function ProtectedRoute({ element: Element, allowedRoles }){
 
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true); 
@@ -47,4 +47,3 @@ const ProtectedRoute = ({ element: Element, allowedRoles }) => {
   return allowedRoles.includes(role) ? <Element /> : <Navigate to="/" />;
 };
 
-export default ProtectedRoute;

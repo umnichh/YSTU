@@ -2,6 +2,7 @@ import All from './electivesBookmarks/All';
 import My from './electivesBookmarks/My';
 import Created from './electivesBookmarks/Created';
 import RequestsStudents from './electivesBookmarks/RequestsStudents';
+import Archive from './electivesBookmarks/Archive';
 
 import { useState } from 'react';
 
@@ -30,11 +31,15 @@ export default function Electives(){
             <label htmlFor="requestsStudents" className='mt-5 text-center border-2 h-full p-3 border-black rounded-t-md border-b-0 bg-ystu-blue w-1/3'>Заявки студентов</label>
           </>
         }
+        <input type="radio" id="finishedElectives" name="electives" value="finishedElectives" className='hidden' onChange={() => setMode('FinishedElectives')}/>
+        <label htmlFor="finishedElectives" className='mt-5 text-center border-2 h-full p-3 border-black rounded-t-md border-b-0 bg-ystu-blue w-1/3'>Завершенные элективы</label>
+
       </div>
       {mode === 'All' &&  <All />}
       {mode === 'My' && <My />}
       {mode === 'Created' && role === 'teacher' && <Created />}
       {mode === 'RequestsStudents' && role === 'teacher' && <RequestsStudents />}
+      {mode === 'FinishedElectives' && <Archive />}
     </main>
   )
 }

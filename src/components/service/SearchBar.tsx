@@ -1,12 +1,20 @@
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import React from 'react';
 
-export default function Search({electives}) {
-  const SearchElectives = (value) => {
-    electives.filter((elective) => {
+type SearchProps = {
+  electives : Record<string, any>
+}
+export default function Search({
+  electives, 
+} : SearchProps) {
+
+  const SearchElectives = (value : string) => {
+    electives.filter((elective : any) => {
+      const element : HTMLElement = document.getElementById(`id${elective.id}`)!;
       if (elective.name.toLowerCase().includes(value.toLowerCase())) {
-        document.getElementById(`id${elective.id}`).style.display = 'flex';
+        element.style.display = 'flex';
       } else {
-        document.getElementById(`id${elective.id}`).style.display = 'none';
+        element.style.display = 'none';
       }
     })
   };  

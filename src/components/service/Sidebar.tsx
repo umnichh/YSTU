@@ -26,7 +26,6 @@ export default function Sidebar() {
                                </>
         }
         {role === 'admin'   && <Link to="/elective/status">Изменить статус электива</Link>}
-        <Link to="/elective/archive">Архив</Link>
         <button type="button" onClick={handleLogout}>Выйти</button>
       </div>
     </aside>

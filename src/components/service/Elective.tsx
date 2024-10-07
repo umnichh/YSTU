@@ -1,27 +1,40 @@
 import { useNavigate } from 'react-router-dom';
-export default function ElectiveContainer(props){
-  const electives = props.electives,
-        students = props.students,
-        electiveImage = props.electiveImage,
-        role = localStorage.getItem('role'),
-        func = props.func,
-        from = props.from,
+import React from 'react';
+import Search from './SearchBar.tsx';
+
+type ElectiveProps = {
+  electives : Record<string, any>,
+  func : Function,
+  from : string,
+  electiveImage : string
+}
+export default function ElectiveContainer({
+  electives,
+  electiveImage,
+  func,
+  from,
+} : ElectiveProps) {
+
+  const role = localStorage.getItem('role'),
         navigate = useNavigate();
 
   // Редактирование электива 
-  const handleEdit = (elective) => {
+  const handleEdit = (elective : Record<string, any>) => {
     navigate('/elective/edit', { state: { elective: elective } });
   };
 
   // Подробнее об элективе
-  const handleClick = (elective) => {
+  const handleClick = (elective : Record<string, any>) => {
     navigate('/elective/about', { state: { elective: elective } });
   };
 
-
   return (
+    <>
+    {electives.length > 0 ? (
+     <>
+    <Search  electives={electives}/>
     <div className='grid grid-cols-3 gap-4 mx-5'>
-    {electives.map((elective) => (
+    {electives.map((elective : any) => (
       <section key={elective.id} className='py-3 px-5 flex flex-col justify-center items-center border-2 rounded-md overflow-hidden' id={'id' + elective.id}>
         <img src={electiveImage} alt="Изображение электива" className="h-48 mt1"/>
         <div>
@@ -104,24 +117,11 @@ export default function ElectiveContainer(props){
       </section> 
     ))}
     </div>
+    </>
+    ) : (
+      <div className='text-3xl m-10'>Список элективов пуст</div>
+    )
+  }
+  </>
   )
 }
-
-
-
-          {/* GOVNO KOD NIZJE
-
-          {students &&
-            <div className='elective-teachers'>
-              Студенты: 
-              {students.length > 0 ? (
-                students.map((student) => (
-                  <div key={student.id}>
-                  • {student.last_name} {student.first_name} {student.middle_name} 
-                  </div>
-                ))
-              ) : (
-                <span> Не указаны</span>
-              )}
-            </div>
-          } */}
