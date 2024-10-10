@@ -130,6 +130,8 @@ export default function Create() {
     .catch(error => console.error(error));
   }
 
+  console.log(formInfo);
+
   // Отправка формы
   async function sendElective(event){
     event.preventDefault();
@@ -159,7 +161,6 @@ export default function Create() {
     navigate('/electives');
   };
 
-  console.log('KURS', selected.selectedCourses)
   const CloseDetails = () => {
     document.getElementById('createOnSomething').removeAttribute('open')
   }

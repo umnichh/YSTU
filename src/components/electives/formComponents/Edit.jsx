@@ -95,6 +95,7 @@ export default function Edit() {
     })
     .then (response => response.json())
     .then (data => {
+      console.log(data)
       const teachers = data.selectedTeachers.map(teacher => ({
         value: teacher.id,
         label: `${teacher.last_name} ${teacher.first_name} ${teacher.middle_name}`,
@@ -102,13 +103,13 @@ export default function Edit() {
       const profiles = data.selectedProfiles.map(profile => {
         return profile.id
       });
-      const courses = data.selectedCourses.map(profile => {
-        return profile.id
+      const courses = data.selectedCourses.map(course => {
+        return course.name
       });
       setSelected({ 
         selectedTeachers: teachers, 
         selectedProfiles: profiles,
-        selectedCourses: courses
+        selectedCourses: courses,
       });
       console.log(data)
       setCreateOnSomething(data);
@@ -142,18 +143,22 @@ export default function Edit() {
       },
     });
   
-    await fetch(`http://212.67.13.70:8000/api/electives/${electiveId}/edit/`, {
+    fetch(`http://212.67.13.70:8000/api/electives/${electiveId}/edit/`, {
       method: 'PUT',
       body: JSON.stringify(elective),
       headers: {
         'Authorization': `Bearer ${currentToken}`,
         'Content-Type': 'application/json',
       },
-    });
+    })
+    .then(response => {
+      console.log(response.text());
+    })
 
-    // navigate('/elective/created');
+    navigate('/electives');
   };
 
+  console.log('selected', selected);
   return (
     formInfo &&
     <main>
@@ -202,8 +207,8 @@ export default function Edit() {
 
           <fieldset className='border-2 border-gray-500 p-4 mt-3 flex flex-col w-full'>
             <legend>Фильтрация электива</legend>
-              <SelectProperty formInfo={formInfo} selected={selected} expanded={expanded} handleSelect={handleSelect} handleExpand={handleExpand} setSelected={setSelected} setExpanded={setExpanded} sendData={handleGetData}/>
-          </fieldset>
+            <SelectProperty formInfo={formInfo} selected={selected} expanded={expanded} handleSelect={handleSelect} handleExpand={handleExpand} setSelected={setSelected} setExpanded={setExpanded} sendData={handleGetData}/>
+            </fieldset>
           <button className='p-2 bg-ystu-blue text-white w-full' type="submit">Создать электив</button>
         </form>
         )}

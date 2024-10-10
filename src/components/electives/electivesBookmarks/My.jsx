@@ -5,6 +5,7 @@ import Elective from "../../service/Elective.tsx";
 export default function My(){
   const [path, setPath] = useState('');
   const [electives, setElectives] = useState(null);
+  const [isEnrolled, setIsEnrolled] = useState(true);
 
   const role = localStorage.getItem('role'); 
   // Запрашиваем роль
@@ -58,11 +59,11 @@ export default function My(){
         const btn = document.querySelector(`#enroll${id}`);
 
         // Изменение кнопки 
-        if (isEnrolled){
-          btn.setAttribute('class', 'sign elective-signIn')
+        if (!isEnrolled){
+          btn.setAttribute('className', 'bg-green-600 p-2 w-full')
           btn.innerHTML = 'Подать заявку';
-        } else if (!isEnrolled) {
-          btn.setAttribute('class', 'unsign elective-signIn')
+        } else if (isEnrolled) {
+          btn.setAttribute('className', 'bg-red-800 p-2 w-full')
           btn.innerHTML = 'Отменить запись';
         }
       }

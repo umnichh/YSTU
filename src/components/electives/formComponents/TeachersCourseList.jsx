@@ -74,11 +74,12 @@ export default function SelectProperty(props) {
     label: course.name,
     value: `course-${course.name}`,
     children: (course.semesters || []).map(semester => ({
-        label: semester.course,
-        value: semester.name
+        label: semester.name,
+        value: semester.name,
     }))
   }));
 
+  console.log(courseTree)
   // Отправка данных родителю
   useEffect(() => {
     props.sendData({...selected});
