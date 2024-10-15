@@ -70,7 +70,7 @@ export default function Edit() {
 
   // Получение справочной информации
   useEffect(() => {
-    fetch('http://212.67.13.70:8000/api/create/info/', {
+    fetch(`${process.env.REACT_APP_URL}/create/info/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${currentToken}`,
@@ -86,7 +86,7 @@ export default function Edit() {
     .catch(error => console.error(error));
 
     // Получение данных о курсе
-    fetch(`http://212.67.13.70:8000/api/electives/${electiveId}/edit/`, {
+    fetch(`${process.env.REACT_APP_URL}/electives/${electiveId}/edit/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${currentToken}`,
@@ -134,7 +134,7 @@ export default function Edit() {
     };
      
     console.log(elective);
-    await fetch(`http://212.67.13.70:8000/api/electives/${electiveId}/resend/`, {
+    await fetch(`${process.env.REACT_APP_URL}/${electiveId}/resend/`, {
       method: 'POST',
       body: JSON.stringify({'elective_id':electiveId}),
       headers: {
@@ -143,7 +143,7 @@ export default function Edit() {
       },
     });
   
-    fetch(`http://212.67.13.70:8000/api/electives/${electiveId}/edit/`, {
+    fetch(`${process.env.REACT_APP_URL}/${electiveId}/edit/`, {
       method: 'PUT',
       body: JSON.stringify(elective),
       headers: {

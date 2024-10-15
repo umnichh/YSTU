@@ -13,11 +13,11 @@ export default function Madeby(){
   // Загрузка созданных элективов
   useEffect(() => {
     if (role === 'student') {
-      path = ('api/archive/student/');
+      path = ('archive/student/');
     } else if (role === 'teacher') {
-      path = ('api/archive/teacher/');
+      path = ('archive/teacher/');
     }
-    fetch(`http://212.67.13.70:8000/${path}`, {
+    fetch(`${process.env.REACT_APP_URL}/${path}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${currentToken}`,

@@ -65,7 +65,7 @@ export default function Create() {
 
   // Информация для формы
   useEffect(() => {
-    fetch('http://212.67.13.70:8000/api/create/info/', {
+    fetch(`${process.env.REACT_APP_URL}/create/info/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${currentToken}`,
@@ -81,7 +81,7 @@ export default function Create() {
     .catch(error => console.error(error));
 
     // Список созданных элективов
-    fetch(`http://212.67.13.70:8000/api/electives/created/`, {
+    fetch(`${process.env.REACT_APP_URL}/electives/created/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${currentToken}`,
@@ -95,7 +95,7 @@ export default function Create() {
   
   // Создание на основании
   function CreateOnSomething(id){
-    fetch(`http://212.67.13.70:8000/api/electives/${id}/edit/`, {
+    fetch(`${process.env.REACT_APP_URL}/electives/${id}/edit/`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${currentToken}`,
@@ -149,7 +149,7 @@ export default function Create() {
     };
      
     console.log(elective);
-    fetch('http://212.67.13.70:8000/api/electives/create/', {
+    fetch(`${process.env.REACT_APP_URL}/electives/create/`, {
       method: 'POST',
       body: JSON.stringify(elective),
       headers: {

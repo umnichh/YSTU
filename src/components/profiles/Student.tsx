@@ -23,7 +23,7 @@ export default function StudentProfile() {
 
   // Загрузка данных студента
   useEffect(() => {
-    fetch('http://212.67.13.70:8000/api/student/cabinet/', {
+    fetch(`${process.env.REACT_APP_URL}/student/cabinet/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

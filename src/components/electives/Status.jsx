@@ -14,7 +14,7 @@ export default function Status(){
   const [status_id, setStatus_id] = useState([]);
 
   useEffect(() => {
-    fetch(`http://212.67.13.70:8000/api/electives/status/info/`, {
+    fetch(`${process.env.REACT_APP_URL}/electives/status/info/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export default function Status(){
     })
     .catch(error => console.error(error));
 
-    fetch(`http://212.67.13.70:8000/api/electives/to_check/`, {
+    fetch(`${process.env.REACT_APP_URL}/electives/to_check/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export default function Status(){
     })
     .catch(error => console.error(error));
 
-    fetch(`http://212.67.13.70:8000/api/electives/checked/`, {
+    fetch(`${process.env.REACT_APP_URL}/electives/checked/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export default function Status(){
     .then(data => setConfirmed(data))
     .catch(error => console.error(error));
 
-    fetch(`http://212.67.13.70:8000/api/electives/cancelled/`, {
+    fetch(`${process.env.REACT_APP_URL}/electives/cancelled/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export default function Status(){
   // Запись на электив
   function enroll(id, status_id, comment){
     console.log(id, status_id, comment)
-    fetch(`http://212.67.13.70:8000/api/electives/${id}/check/`, {
+    fetch(`${process.env.REACT_APP_URL}/electives/${id}/check/`, {
         method: 'POST',
         body: JSON.stringify({'elective_id':id,'status_id':status_id, 'comment':comment}),
         headers: {

@@ -10,14 +10,14 @@ export default function Electives(){
 
   // Путь к элективам в зависимости от роли
   useEffect(() => {
-    return role === 'student' ? setPath('api/electives/choice/') :
-    role === 'teacher' || role === 'admin' ? setPath('api/electives/') : 0;
+    return role === 'student' ? setPath('electives/choice/') :
+    role === 'teacher' || role === 'admin' ? setPath('electives/') : 0;
   }, [role]);
 
   // Получение элективов
   useEffect(() => {
     if (path) {
-      fetch(`http://212.67.13.70:8000/${path}`, {
+      fetch(`${process.env.REACT_APP_URL}/${path}`, {
         methodToEnroll: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export default function Electives(){
 
     // Заявка на электив
     try{
-      const response = await fetch(`http://212.67.13.70:8000/api/electives/${id}/enroll/`, {
+      const response = await fetch(`${process.env.REACT_APP_URL}/electives/${id}/enroll/`, {
         method: methodToEnroll,
         body: JSON.stringify(id),
         headers: {

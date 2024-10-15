@@ -12,7 +12,7 @@ export default function TeacherProfile() {
 
   // Загрузка данных преподавателя
   useEffect(() => {
-    fetch('http://212.67.13.70:8000/api/teacher/cabinet/', {
+    fetch(`${process.env.REACT_APP_URL}/teacher/cabinet/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

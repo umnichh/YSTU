@@ -11,16 +11,16 @@ export default function My(){
   // Запрашиваем роль
   useEffect(() => {
     if (role === 'student') {
-      setPath('api/electives/student/');
+      setPath('electives/student/');
     } else if (role === 'teacher') {
-      setPath('api/electives/teacher/');
+      setPath('electives/teacher/');
     }
   }, [role]);
 
   // Загрузка элективов
   useEffect(() => {
     if (path) {
-      fetch(`http://212.67.13.70:8000/${path}`, {
+      fetch(`${process.env.REACT_APP_URL}/${path}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export default function My(){
 
     // Заявка на электив
     try{
-      const response = await fetch(`http://212.67.13.70:8000/api/electives/${id}/enroll/`, {
+      const response = await fetch(`${process.env.REACT_APP_URL}/electives/${id}/enroll/`, {
         method: methodToEnroll,
         body: JSON.stringify(id),
         headers: {

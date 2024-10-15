@@ -9,7 +9,7 @@ export default function CreatedElectives(){
 
   // Загрузка созданных элективов
   useEffect(() => {
-        fetch(`http://212.67.13.70:8000/api/electives/created/`, {
+        fetch(`${process.env.REACT_APP_URL}/electives/created/`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${currentToken}`,
@@ -25,7 +25,7 @@ export default function CreatedElectives(){
   function deleteElective(id){
     const result = window.confirm('Вы уверены, что хотите удалить электив?');
     if (result) {
-      fetch(`http://212.67.13.70:8000/api/electives/${id}/`, {
+      fetch(`${process.env.REACT_APP_URL}/electives/${id}/`, {
           method: 'DELETE',
           body: JSON.stringify(id), 
           headers: {

@@ -11,7 +11,7 @@ export default function StudentList(){
 
   // Получение элективов
   useEffect(() => {
-      fetch(`http://212.67.13.70:8000/api/electives/`, {
+      fetch(`${process.env.REACT_APP_URL}/electives/`, {
         methodToEnroll: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export default function StudentList(){
 
   // Запись на электив
   function request(id){
-      fetch(`http://212.67.13.70:8000/api/electives/${id}/requests/`, {
+      fetch(`${process.env.REACT_APP_URL}/electives/${id}/requests/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

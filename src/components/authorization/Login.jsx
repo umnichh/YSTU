@@ -15,11 +15,13 @@ export default function LoginPage() {
     setCredentials({ username, password });
   };
 
+  console.log('TEST:', process.env.REACT_APP_TEST);
+
   //Отправка логина и пароля, получение токена
   useEffect(() => {
     sendCredentials();
     async function sendCredentials() {
-      const response = await fetch('http://212.67.13.70:8000/api/auth/token/', {
+      const response = await fetch(`${process.env.REACT_APP_URL}/auth/token/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,7 +41,7 @@ export default function LoginPage() {
       }
     }
     async function getUserRole(){
-      const response = await fetch('http://212.67.13.70:8000/api/auth/user-role/', {
+      const response = await fetch(`${process.env.REACT_APP_URL}/auth/user-role/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
