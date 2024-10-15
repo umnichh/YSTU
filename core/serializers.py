@@ -9,7 +9,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class SemesterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Semester
-        fields = '__all__'
+        fields = ('course', 'name')
 
 class CourseSerializer(serializers.ModelSerializer):
     semesters = serializers.SerializerMethodField()

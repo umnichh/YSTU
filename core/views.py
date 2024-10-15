@@ -66,9 +66,12 @@ class StudentCabinetView(APIView):
 class AllElectivesView(APIView):
 
     def get(self, request):
-        admin_status = StatusByAdmin.objects.filter(name='Принят').first()
-        electives = Elective.objects.filter(admin_status=admin_status)
-        serializer = ElectiveSerializer(electives, many=True)
+        try:
+            admin_status = StatusByAdmin.objects.filter(name='Принят').first()
+            electives = Elective.objects.filter(admin_status=admin_status)
+            serializer = ElectiveSerializer(electives, many=True)
+        except StatusByAdmin.DoesNotExist:
+            return Response({'error': 'Статус "Принят" не найден'}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -105,8 +108,8 @@ class ElectiveView(APIView):
             health = Health.objects.get(id=health_id)
             form = Form.objects.get(id=form_id)
             status_first = Status.objects.filter(name='Скоро начнётся').first()
-            type_id = data.get('type')
-            type = Type.objects.get(id=type_id)
+            type_name = data.get('type')
+            type = Type.objects.get(name=type_name)
             admin_status = StatusByAdmin.objects.filter(name='Ожидает проверки').first()
             elective = Elective.objects.create(
                 name=validated_data['name'],
@@ -127,23 +130,26 @@ class ElectiveView(APIView):
 
             teacher_ids = data.get('selectedTeachers', [])
             for teacher_id in teacher_ids:
+                try:
+                    teacher = Teacher.objects.get(id=teacher_id)
+                    TeacherElective.objects.create(elective=elective, teacher=teacher)
+                except Teacher.DoesNotExist:
+                    return Response({'error': f'Преподаватель с айди {teacher_id} не найден'},
+                                    status=status.HTTP_404_NOT_FOUND)
 
-                teacher = Teacher.objects.get(id=teacher_id)
-                TeacherElective.objects.create(elective=elective, teacher=teacher)
-        
-            profiles = data.get('checked', [])
-            checked_courses = data.get('checkedCourses', [])  # Если данные приходят как просто список семестров
-            checked_courses_list = data.get('checkedCoursesList', {})  # Если данные приходят в виде {profile_id: [semester_ids]}
+            profiles = data.get('selectedProfiles', [])
+            checked_courses = data.get('selectedCourses', [])  # Если данные приходят как просто список семестров
+            checked_courses_list = data.get('selectedSemesters', {})  # Если данные приходят в виде {profile_id: [semester_ids]}
 
             # course = data.get('course', None)
             # semestr = data.get('semestr', None)
             # assign_all_semestrs = data.get('assign_all_semestrs', False)
-            
+            someCourses = data.get('courseSettings')
             if checked_courses:
                 for profile_id in profiles:
                     try:
                         profile = Profile.objects.get(id=profile_id)
-                        elective_profile = ElectiveProfile.objects.create(elective=elective, profile=profile)
+                        elective_profile = ElectiveProfile.objects.create(elective=elective, profile=profile, someCourses=someCourses)
                         for semester_id in checked_courses:
                             semester = Semester.objects.get(id=semester_id)
                             ElectiveProfileCourse.objects.create(electiveprofile=elective_profile, semester=semester)
@@ -451,9 +457,37 @@ class ElectiveEditView(APIView):
 
             # Структура checkedCoursesList
             checked_courses_list = {}
+
+            # Используем set для отслеживания уникальных профилей
+           # Множество обработанных профилей
+            processed_profiles = set()
+
+            # Флаг для того, чтобы добавить семестры только один раз
+            semesters_added = False
+
+            # Проходим по всем elective_profiles
             for elective_profile in elective_profiles:
-                courses = ElectiveProfileCourse.objects.filter(electiveprofile=elective_profile)
-                checked_courses_list[elective_profile.profile.id] = [SemesterSerializer(course.semester).data for course in courses]
+                profile_id = elective_profile.profile.id
+
+                # Проверяем, был ли уже обработан этот профиль
+                if profile_id in processed_profiles:
+                    continue  # Пропускаем профиль, если он уже обработан
+
+                processed_profiles.add(profile_id)  # Добавляем профиль в множество обработанных
+
+                if elective_profile.someCourses == 'someCourses':
+                    # Добавляем семестры только один раз
+                    if not semesters_added:
+                        courses = ElectiveProfileCourse.objects.filter(electiveprofile=elective_profile)
+                        unique_semesters = set(course.semester for course in courses)  # используем set для уникальности
+                        checked_courses_list = [SemesterSerializer(semester).data for semester in unique_semesters]
+                        semesters_added = True  # Устанавливаем флаг, что семестры добавлены
+                else:
+                    # Для обычных курсов возвращаем все курсы
+                    courses = ElectiveProfileCourse.objects.filter(electiveprofile=elective_profile)
+                    checked_courses_list[profile_id] = [SemesterSerializer(course.semester).data for course in courses]
+
+
 
             # Подготовка данных для ответа
             data = {
@@ -471,69 +505,100 @@ class ElectiveEditView(APIView):
                 'status': StatusSerializer(elective.status).data,  
                 'type': TypeSerializer(elective.type).data,  
                 'selectedTeachers': teachers,  
-                'checked': checked_profiles,  
-                'checkedCoursesList': checked_courses_list,  
+                'selectedProfiles': checked_profiles,  
+                'selectedCourses': checked_courses_list,  
             }
-
             return Response(data, status=status.HTTP_200_OK)
 
         except Elective.DoesNotExist:
             return Response({'error': 'Электив не найден'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, id):
+        data = request.data
+
         try:
             elective = Elective.objects.get(id=id)
-            data = request.data
+        except Elective.DoesNotExist:
+            return Response({'error': f'Электив с айди {id} не найден'}, status=status.HTTP_404_NOT_FOUND)
 
-            # Обновление основных полей электива
-            elective.name = data.get('name', elective.name)
-            elective.describe = data.get('describe', elective.describe)
-            elective.place = data.get('place', elective.place)
-            elective.form_id = data.get('form', elective.form.id)
-            elective.volume = data.get('volume', elective.volume)
-            elective.date_start = data.get('date_start', elective.date_start)
-            elective.date_finish = data.get('date_finish', elective.date_finish)
-            elective.marks = data.get('marks', elective.marks)
-            elective.health_id = data.get('health', elective.health.id)
-            elective.status_id = data.get('status', elective.status.id)
-            elective.type_id = data.get('type', elective.type.id)
-            elective.note = data.get('note', elective.note)
+        # Update serializer with existing elective instance
+        serializer = ElectiveSerializer(elective, data=data)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+
+            health_id = data.get('health')
+            form_id = data.get('form')
+            health = Health.objects.get(id=health_id)
+            form = Form.objects.get(id=form_id)
+            type_name = data.get('type')
+            type = Type.objects.get(name=type_name)
+
+            elective.name = validated_data['name']
+            elective.describe = validated_data['describe']
+            elective.place = validated_data['place']
+            elective.form = form
+            elective.volume = validated_data['volume']
+            elective.date_start = validated_data['date_start']
+            elective.date_finish = validated_data['date_finish']
+            elective.marks = validated_data['marks']
+            elective.health = health
+            elective.type = type
+            elective.note = validated_data['note']
+
             elective.save()
 
-            # Обновление учителей
-            selected_teachers = data.get('selectedTeachers', [])
-            TeacherElective.objects.filter(elective=elective).delete()
-            for teacher_id in selected_teachers:
-                teacher = Teacher.objects.get(id=teacher_id)
-                TeacherElective.objects.create(elective=elective, teacher=teacher)
+            # Update or create TeacherElective relationships
+            teacher_ids = data.get('selectedTeachers', [])
+            TeacherElective.objects.filter(elective=elective).delete()  # Clear existing relationships
+            for teacher_id in teacher_ids:
+                try:
+                    teacher = Teacher.objects.get(id=teacher_id)
+                    TeacherElective.objects.create(elective=elective, teacher=teacher)
+                except Teacher.DoesNotExist:
+                    return Response({'error': f'Преподаватель с айди {teacher_id} не найден'},
+                                    status=status.HTTP_404_NOT_FOUND)
 
-            # Обновление профилей и семестров
-            checked_profiles = data.get('checked', [])
-            checked_courses_list = data.get('checkedCoursesList', {})
+            # Update or create ElectiveProfile relationships
+            profiles = data.get('selectedProfiles', [])
+            checked_courses = data.get('selectedCourses', [])
+            checked_courses_list = data.get('selectedSemesters', {})
+            someCourses = data.get('courseSettings')
+
+            # Clear existing ElectiveProfile relationships
             ElectiveProfile.objects.filter(elective=elective).delete()
 
-            for profile_id in checked_profiles:
-                profile = Profile.objects.get(id=profile_id)
-                elective_profile = ElectiveProfile.objects.create(
-                    elective=elective,
-                    profile=profile
-                )
-                
-                semesters = checked_courses_list.get(str(profile_id), [])
-                for semester_id in semesters:
-                    semester = Semester.objects.get(id=semester_id)
-                    ElectiveProfileCourse.objects.create(
-                        electiveprofile=elective_profile,
-                        semester=semester
-                    )
+            if checked_courses:
+                for profile_id in profiles:
+                    try:
+                        profile = Profile.objects.get(id=profile_id)
+                        elective_profile = ElectiveProfile.objects.create(elective=elective, profile=profile,
+                                                                          someCourses=someCourses)
+                        for semester_id in checked_courses:
+                            semester = Semester.objects.get(id=semester_id)
+                            ElectiveProfileCourse.objects.create(electiveprofile=elective_profile, semester=semester)
+                    except Profile.DoesNotExist:
+                        return Response({'error': f'Ппрфиот с айди {profile_id} не найден'},
+                                        status=status.HTTP_404_NOT_FOUND)
 
-            return Response({'message': 'Электив обновлён'}, status=status.HTTP_200_OK)
+            elif checked_courses_list:
+                for profile_id, semester_ids in checked_courses_list.items():
+                    try:
+                        profile = Profile.objects.get(id=profile_id)
+                        elective_profile = ElectiveProfile.objects.create(elective=elective, profile=profile)
+                        for semester_id in semester_ids:
+                            semester = Semester.objects.get(id=semester_id)
+                            ElectiveProfileCourse.objects.create(electiveprofile=elective_profile, semester=semester)
+                    except Profile.DoesNotExist:
+                        return Response({'error': f'Профиль с айди {profile_id} не найден'},
+                                        status=status.HTTP_404_NOT_FOUND)
 
-        except Elective.DoesNotExist:
-            return Response({'error': 'Электив не найден'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({
+                'message': 'Электив обновлён!',
+                'elective': ElectiveSerializer(elective).data
+            }, status=status.HTTP_200_OK)
 
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TeacherElectiveArchive(APIView):
     def get(self, request):
@@ -578,17 +643,20 @@ class ElectivesToCheck(APIView):
             statusByAdmin = StatusByAdmin.objects.get(name='Ожидает проверки')
             electives = Elective.objects.filter(admin_status=statusByAdmin)
             serializer = ElectiveSerializer(electives, many=True)
-            admin_statuses = StatusByAdmin.objects.all()
-            admin_serializer = StatusByAdminSerializer(admin_statuses, many=True)
             data = {}
             data = {
-                'admin_statuses': admin_serializer.data,
                 'checked_electives' : serializer.data
             }
             return Response(data, status=status.HTTP_200_OK)
         
         except statusByAdmin.DoesNotExist:
                 return Response({"error": "Статус 'Ожидает проверки' не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+class AdminStatusesInfo(APIView):
+    def get(self, request):
+        admin_statuses = StatusByAdmin.objects.all()
+        admin_serializer = StatusByAdminSerializer(admin_statuses, many=True)
+        return Response(admin_serializer.data, status=status.HTTP_200_OK)
         
 class CheckedElectives(APIView):
     def get(self, request):
@@ -608,6 +676,7 @@ class CanceledElectives(APIView):
             statusByAdmin = StatusByAdmin.objects.get(name='Отклонён')
             electives = Elective.objects.filter(admin_status=statusByAdmin)
             serializer = ElectiveSerializer(electives, many=True)
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         except statusByAdmin.DoesNotExist:
@@ -621,21 +690,16 @@ class CheckElectives(APIView):
     
     def post(self, request, id):
         try:
-            # Получаем данные из запроса
             data = request.data
-            print(data)
             elective = Elective.objects.get(id=id)
-            status_id = data.get('status_id')  # Идентификатор нового статуса
-            comment = data.get('comment')  # Комментарий от администратора (необязательный)
+            status_id = data.get('status_id')
+            comment = data.get('comment')
 
-            # Проверяем, что статус был передан
             if not status_id:
-                return Response({"error": "Необходимо указать идентификатор статуса"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Необходимо указать айди статуса"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Находим новый статус в модели StatusByAdmin
             try:
                 admin_status = StatusByAdmin.objects.get(id=status_id)
-                print(admin_status)
             except StatusByAdmin.DoesNotExist:
                 return Response({"error": "Указанный статус не найден"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -655,7 +719,7 @@ class CheckElectives(APIView):
             return Response({"message": f"Статус электива успешно изменён на '{admin_status.name}'."}, status=status.HTTP_200_OK)
 
         except Elective.DoesNotExist:
-            return Response({"error": "Электив не найден."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"Электив с id {id} не найден."}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as e:
             return Response({"error": f"Произошла ошибка: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -669,7 +733,7 @@ class TeacherResendElective(APIView):
         
         except StatusByAdmin.DoesNotExist:
             return Response({"error": "Статус не найден."}, status=status.HTTP_404_NOT_FOUND)
-    
+
     def post(self, request, id):
         try:
             elective = Elective.objects.get(id=id)
@@ -680,16 +744,28 @@ class TeacherResendElective(APIView):
             return Response({"message": "статус изменён"}, status=status.HTTP_200_OK)
         
         except StatusByAdmin.DoesNotExist:
-            return Response({"error": "Статус не найден."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Статус ""Ожидает проверки ""не найден."}, status=status.HTTP_404_NOT_FOUND)
         except Elective.DoesNotExist:
-            return Response({"error": "Электив не найден."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"Электив с id {id} не найден."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": f"Произошла ошибка: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class StudentElectiveRequest(APIView):
     def get(self, request, id):
-        elective = Elective.objects.get(id=id)
-        students =  Student.objects.filter(studentelective__elective=elective)
-        serializer = StudentSerializer(students, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            elective = Elective.objects.get(id=id)
+            students =  Student.objects.filter(studentelective__elective=elective)
+            serializer = StudentSerializer(students, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Elective.DoesNotExist:
+            return Response({"error": f"Электив с id {id} не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+class GetElectiveByID(APIView):
+    def get(self, request, id):
+        try:
+            elective = Elective.objects.get(id=id)
+            serializer = ElectiveSerializer(elective)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Elective.DoesNotExist:
+            return Response({"error": f"Электив с id {id} не найден."}, status=status.HTTP_404_NOT_FOUND)

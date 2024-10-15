@@ -231,7 +231,10 @@ class TeacherElective(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, verbose_name='Преподаватель')
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE, null=True, verbose_name='Элективный курс')
     def __str__(self):
-        return f'{self.teacher.last_name} -  {self.elective.name}'
+        if self.teacher:
+            return f'{self.teacher.last_name} -  {self.elective.name}'
+        return self.elective.name
+    
     class Meta:
         db_table = "TeacherElective"
         verbose_name_plural = "Преподаватели в элективе"
@@ -282,6 +285,7 @@ class ElectiveFacultet(models.Model):
 class ElectiveProfile(models.Model):
     elective = models.ForeignKey(Elective, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    someCourses = models.TextField('ЧТО ЭТО)', null=True)
 
     def __str__(self):
         return f'{self.elective.name} -  {self.profile.name}'
@@ -296,7 +300,7 @@ class ElectiveProfile(models.Model):
 class ElectiveProfileCourse(models.Model):
     electiveprofile = models.ForeignKey(ElectiveProfile, on_delete=models.CASCADE, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
-    all_course = models.BooleanField("Назначен ли всем курсам", default=False)
+    
 
     def __str__(self):
         return f'{self.electiveprofile.elective.name} -  {self.semester}'

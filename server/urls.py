@@ -34,7 +34,7 @@ urlpatterns = [
     path('api/electives/choice/', ElectiveAvaliableStudentView.as_view(), name='available_electives'),  # GET:  элективы доступные студенту
     path('api/electives/student/', StudentElectiveView.as_view(), name='student_electives'),  # GET: Элективы, на которые студент записан
  
-    # Элективы у препода
+    # Элективы у преподавателя
     path('api/electives/teacher/', TeacherElectivView.as_view(), name='teacher_electives'),  # GET: Элективы, которые ведет преподаватель
     path('api/electives/created/', ElectivesMadeByTeacher.as_view(), name='teacher_created_electives'),  # GET: Список элективов, созданных преподавателем
  
@@ -54,5 +54,7 @@ urlpatterns = [
     path('api/electives/<int:id>/check/', CheckElectives.as_view(), name='CheckElectives'), #get 
     path('api/electives/<int:id>/resend/', TeacherResendElective.as_view(), name='TeacherResendElective'), #get
     path('api/electives/<int:id>/requests/', StudentElectiveRequest.as_view(), name='StudentElectiveRequest'), #get
+    path('api/electives/status/info/', AdminStatusesInfo.as_view(), name='AdminStatusesInfo') #get админстатусы all
+
 
 ]
