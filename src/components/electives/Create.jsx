@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import SelectProperty from './formComponents/TeachersCourseList';
 
+
 export default function Create() {
   const currentToken = localStorage.getItem('access_token'),
         navigate = useNavigate(),
         [isFacultative, setIsFacultative] = useState(false),
         [createOnSomething, setCreateOnSomething] = useState({}),
         [createdElectives, setCreatedElectives] = useState([]),
+        [selectedTest, setSelectedTest] = useState(null),
+        [tests, setTests] = useState([]),
         [getData, setGetData] = useState(null);
 
   // Метаданные
@@ -80,6 +83,7 @@ export default function Create() {
     })
     .catch(error => console.error(error));
 
+
     // Список созданных элективов
     fetch(`${process.env.REACT_APP_URL}/electives/created/`, {
       method: 'GET',
@@ -90,6 +94,18 @@ export default function Create() {
     })
     .then(response => response.json())
     .then(data => setCreatedElectives(data))
+    .catch(error => console.error(error));
+
+    // Список созданных тестов
+    fetch(`${process.env.REACT_APP_URL}/tests/created/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${currentToken}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {setTests(data); console.log('testiki', data)})
     .catch(error => console.error(error));
   }, []);
   
@@ -141,6 +157,7 @@ export default function Create() {
     const elective = {
       ...formObject,
       form: +formObject.form,
+      testId: selectedTest?.id || null,
       health: +formObject.health,
       place: +formObject.place,
       selectedCourses: getData.selectedCourses.map((course) => +course),
@@ -148,7 +165,7 @@ export default function Create() {
       selectedTeachers: getData.selectedTeachers.map((teacher) => teacher.value),
     };
      
-    console.log(elective);
+    console.log('ELECTIVE TO SEND', elective);
     fetch(`${process.env.REACT_APP_URL}/electives/create/`, {
       method: 'POST',
       body: JSON.stringify(elective),
@@ -158,17 +175,18 @@ export default function Create() {
       },
     });
     
-    navigate('/electives');
+    // navigate('/electives');
   };
 
-  const CloseDetails = () => {
-    document.getElementById('createOnSomething').removeAttribute('open')
+
+  const CloseDetails = (element) => {
+    document.getElementById(element).removeAttribute('open')
   }
   return (
     formInfo &&
     <main>
+      {selectedTest?.name}
       <section className='m-14 mr-56'>
-
         <h1 className='text-4xl mb-5 border-b-2 border-gray-700'>Создание электива</h1>
         <details className='createOnSomething flex-col border-2 z-50 border-black text-xl w-full' id='createOnSomething'>
             <summary className='p-1'>Создать на основании</summary>
@@ -185,6 +203,23 @@ export default function Create() {
               </div>
             ))}
         </details>
+
+        <details className='addTest flex-col border-2 z-50 border-black text-xl w-full' id='addTest'>
+            <summary className='p-1'>Прикрепить тест для электива</summary>
+            {tests && tests.map((test) => (
+              <div key={test.id}>
+                <button 
+                  className='text-white border-b-2 border-black w-full px-10 py-1 text-left bg-ystu-blue' 
+                  onClick={() => {
+                    setSelectedTest(test);
+                    CloseDetails('addTest')
+                    }}>
+                    {test.name}
+                </button>
+              </div>
+            ))}
+        </details>
+
 
         {(<form className = "text-lg" autoCapitalize='on' autoComplete='off' onSubmit={sendElective}>
 

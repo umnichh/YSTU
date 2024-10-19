@@ -23,6 +23,7 @@ export default function Sidebar() {
         {role === 'teacher' && <>
                                <Link to="/profile/teacher">Профиль</Link>
                                <Link to="/elective/create">Создать электив</Link>
+                               <Link to="/tests">Тесты</Link>
                                </>
         }
         {role === 'admin'   && <Link to="/elective/status">Изменить статус электива</Link>}

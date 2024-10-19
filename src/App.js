@@ -6,12 +6,15 @@ import LoginPage from './components/authorization/Login';
 
 // profiles
 import Student from './components/profiles/Student.tsx';
-import Teacher from './components/profiles/Teacher.tsx';
+import Teacher from './components/profiles/Teacher';
 
 // electives
 import Electives from './components/electives/Electives';
 import About from './components/electives/About';
 import Status from './components/electives/Status'
+
+// tests 
+import Tests from './components/tests/Test';
 
 // create elective
 import Form from './components/electives/Create';
@@ -65,6 +68,9 @@ export default function App() {
           <Route path="/electives/" element={<ProtectedRoute element={Electives} allowedRoles={['teacher', 'student']} />} />
           <Route path="/elective/about" element={<ProtectedRoute element={About} allowedRoles={['student', 'teacher', 'admin']} />} />
           <Route path="/elective/status" element={<ProtectedRoute element={Status} allowedRoles={['admin']} />} />
+          {/* electives */}
+          <Route path="/tests" element={<ProtectedRoute element={Tests} allowedRoles={['teacher']} />} />
+
           {/* create electives */}
           <Route path="/elective/create" element={<ProtectedRoute element={Form} allowedRoles={['teacher', 'admin']} />} />
           <Route path="/elective/edit" element={<ProtectedRoute element={Edit} allowedRoles={['teacher', 'admin']} />} />

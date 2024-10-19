@@ -115,3 +115,10 @@ table tbody tr:nth-child(odd){
 table tbody tr:nth-child(even){
 	background: #F7F7F7;
 }
+
+/* tests */
+
+.test-question {
+  margin-bottom: 10px;
+  border: #333 solid 1px;
+}
