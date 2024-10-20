@@ -102,9 +102,9 @@ export default function SelectProperty(props) {
 
       <div className='createMode flex gap-2 mt-4 w-full'>
         <input type="radio" defaultChecked className='hidden' id='allProfiles' name='profileSettings' value='allProfiles' onChange={() => handleIsAll(false)} />
-        <label htmlFor="allProfiles" className='p-1 border-2 w-full'>Создать для всех институтов и направлений</label>
+        <label htmlFor="allProfiles" className='p-2 bg-gray-200 rounded-lg w-full'>Создать для всех институтов и направлений</label>
         <input type="radio" className='hidden' id='someProfiles' name='profileSettings' value='someProfiles' onChange={() => handleIsAll(true)} />
-        <label htmlFor="someProfiles" className='p-1 border-2 w-full'>Выбрать профили обучения</label>
+        <label htmlFor="someProfiles" className='p-2 bg-gray-200 rounded-lg w-full'>Выбрать профили обучения</label>
       </div>
       {isForAll &&
       <>
@@ -125,11 +125,11 @@ export default function SelectProperty(props) {
 
       <div className='createMode flex gap-2 mt-4 w-full'>
         <input type="radio" defaultChecked className='hidden' id='allCourses' name='courseSettings' value='allCourses' onChange={handleIsAdvanced} />
-        <label htmlFor="allCourses"  className='p-1 border-2 w-full'>Создать для всех курсов</label>
+        <label htmlFor="allCourses"  className='p-2 bg-gray-200 rounded-lg w-full'>Создать для всех курсов</label>
         <input type="radio" className='hidden' id='someCourses' name='courseSettings' value='someCourses' onChange={handleIsAdvanced} />
-        <label htmlFor="someCourses" className='p-1 border-2 w-full'>Создать для выбранных курсов</label>
+        <label htmlFor="someCourses" className='p-2 bg-gray-200 rounded-lg w-full'>Создать для выбранных курсов</label>
         <input type="radio" className='hidden' id='manyCourses' name='courseSettings' value='manyCourses' onChange={handleIsAdvanced} />
-        <label htmlFor="manyCourses" className='p-1 border-2 w-full'>Создать для курсов по направлениям</label>
+        <label htmlFor="manyCourses" className='p-2 bg-gray-200 rounded-lg w-full'>Создать для курсов по направлениям</label>
       </div>
       {isAdvanced === 'someCourses' && (
         <>

@@ -57,19 +57,9 @@ dd, dt, dl {
   margin: 0;
 }
 
-details {
-  background-color: #333;
-  color: white;
-  display: flex;
-}
 
-details[open] summary{  
-  background-color: rgb(242, 152, 72);
-}
 
-details p{
-  padding: 0px 0px 10px 10px;
-}
+
 
 summary {
   border-bottom: 1px solid black;
@@ -85,9 +75,7 @@ summary {
 }
 
 .createMode input[type=radio]:checked + label {
-  background-color:rgb(74, 222, 128);
-  border-bottom: none;
-  color: black;
+  background-color:rgb(187, 247, 208);
 }
 
 table{

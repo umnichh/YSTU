@@ -119,14 +119,22 @@ export default function Test() {
       console.error(error);
     });
   }
+
+  const deleteQuestion = (questionIndex) => () => {
+    setQuestions(questions.filter((_, index) => index !== questionIndex));
+    setScores(scores.filter((_, index) => index !== questionIndex));
+    setAnswers(answers.filter((_, index) => index !== questionIndex));
+    setCorrectAnswers(correctAnswers.filter((_, index) => index !== questionIndex));
+    setIsMultipleChoice(isMultipleChoice.filter((_, index) => index !== questionIndex));
+  };
   
 
   return (
     <main>
-      <section className='m-14 mr-56'>
+      <section className='m-14'>
         <h1 className='text-3xl font-bold mb-6 text-gray-800'>Создание теста</h1>
-        <form className='space-y-4' onSubmit={send}>
-          <h2 className='text-2xl text-gray-800'>Название теста:</h2>
+        <form className='w-full' onSubmit={send}>
+          <h2 className='text-xl text-gray-800 '>Название теста:</h2>
           <input 
             type="text" 
             className='border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400'
@@ -137,8 +145,19 @@ export default function Test() {
             required // Название теста обязательно
           />
           {questions.map((question, questionIndex) => (
-            <div key={questionIndex} className='bg-gray-50 border border-gray-300 p-6 rounded-lg shadow-md'>
-              <label className="block text-lg font-semibold text-gray-700 mb-2">Вопрос {questionIndex + 1}</label>
+            <div key={questionIndex} className='bg-gray-50 mt-4 border border-gray-300 p-5 rounded-lg shadow-md'>
+              <div className='flex justify-between mb-2'>
+              <label className="block text-lg font-semibold text-gray-700">Вопрос {questionIndex + 1}</label>
+
+              <button
+                className=" text-lg text-red-500 hover:opacity-70 transition font-semibold"
+                onClick={deleteQuestion(questionIndex)}
+                type="button"
+              >
+                Удалить вопрос 
+              </button>
+              </div>
+
               <TextareaAutosize
                 minRows={2}
                 className="border border-gray-300 p-3 w-full rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
@@ -186,7 +205,7 @@ export default function Test() {
                     <TextareaAutosize 
                       minRows={1}
                       type="text"
-                      className="border border-gray-300 p-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                      className="border border-gray-300 p-2 w-full shadow-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
                       value={answer}
                       onChange={(event) => handleAnswerChange(questionIndex, answerIndex, event)}
                       placeholder={`Введите ответ ${answerIndex + 1}`}
@@ -212,7 +231,7 @@ export default function Test() {
                     )}
                     <label
                       htmlFor={`correctAnswer${questionIndex}-${answerIndex}`}
-                      className={`cursor-pointer px-4 py-2 rounded-lg ${correctAnswers[questionIndex].includes(answerIndex) ? 'bg-green-200' : 'bg-gray-200'} transition duration-200 text-center py-0 px-0 shadow-md`}
+                      className={`cursor-pointer px-4 py-2 rounded-lg ${correctAnswers[questionIndex].includes(answerIndex) ? 'bg-green-200' : 'bg-gray-200'} transition duration-200 text-center py-0 px-0 text-nowrap`}
                     >
                       Верный ответ
                     </label>
@@ -221,7 +240,7 @@ export default function Test() {
                       className="text-red-500 hover:text-red-700 transition"
                       onClick={() => removeAnswer(questionIndex, answerIndex)}
                     >
-                      Удалить
+                      ❌
                     </button>
                   </div>
                 ))}
@@ -262,7 +281,7 @@ export default function Test() {
             type="submit"
             className="w-full border-2 rounded-lg text-xl text-white bg-blue-600 mt-6 py-2 hover:bg-blue-700 transition font-semibold"
           >
-            Отправить тест
+            Создать тест
           </button>
         </form>
 

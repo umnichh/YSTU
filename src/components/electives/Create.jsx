@@ -13,7 +13,8 @@ export default function Create() {
         [selectedTest, setSelectedTest] = useState(null),
         [tests, setTests] = useState([]),
         [getData, setGetData] = useState(null);
-
+        const [selectedElective, setSelectedElective] = useState(null);
+        
   // Метаданные
   const [formInfo, setFormInfo] = useState({
     forms: [],
@@ -182,91 +183,123 @@ export default function Create() {
   const CloseDetails = (element) => {
     document.getElementById(element).removeAttribute('open')
   }
+
+
   return (
     formInfo &&
     <main>
       {selectedTest?.name}
-      <section className='m-14 mr-56'>
-        <h1 className='text-4xl mb-5 border-b-2 border-gray-700'>Создание электива</h1>
-        <details className='createOnSomething flex-col border-2 z-50 border-black text-xl w-full' id='createOnSomething'>
-            <summary className='p-1'>Создать на основании</summary>
-            {createdElectives.map((elective) => (
-              <div key={elective.id}>
-                <button 
-                  className='text-white border-b-2 border-black w-full px-10 py-1 text-left bg-ystu-blue' 
-                  onClick={() => {
-                    CreateOnSomething(elective.id)
-                    CloseDetails('createOnSomething')
-                    }}>
-                    {elective.name}
-                </button>
-              </div>
-            ))}
-        </details>
+      <section className='m-14'>
+        <h1 className='text-3xl font-bold mb-6 text-gray-800'>Создание электива</h1>
+        
+    <div className='flex flex-col gap-4'>
+    <div>
+    <details className='createOnSomething  flex-col border border-gray-200 rounded-lg shadow-lg text-base w-full transition-all duration-300 ease-in-out' id='createOnSomething'>
+      <summary className='p-3 cursor-pointer bg-blue-100 border-b-2 border-b-blue-500 text-blue-700 font-semibold hover:text-blue-800 rounded-t-lg'>
+        Создать на основании
+      </summary>
+      <div className='divide-y divide-gray-200 bg-white'>
+        {createdElectives.map((elective) => (
+          <div key={elective.id}>
+            <button 
+              className='w-full text-left px-4 py-3 text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition duration-200 ease-in-out'
+              onClick={() => {
+                setSelectedElective(elective.name);
+                CreateOnSomething(elective.id);
+                CloseDetails('createOnSomething');
+              }}>
+              {elective.name}
+            </button>
+          </div>
+        ))}
+      </div>
+    </details>
 
-        <details className='addTest flex-col border-2 z-50 border-black text-xl w-full' id='addTest'>
-            <summary className='p-1'>Прикрепить тест для электива</summary>
-            {tests && tests.map((test) => (
-              <div key={test.id}>
-                <button 
-                  className='text-white border-b-2 border-black w-full px-10 py-1 text-left bg-ystu-blue' 
-                  onClick={() => {
-                    setSelectedTest(test);
-                    CloseDetails('addTest')
-                    }}>
-                    {test.name}
-                </button>
-              </div>
-            ))}
-        </details>
+    {/* Отображение выбранного электива */}
+    {selectedElective && (
+      <div className='p-2 text-blue-700 bg-gray-100 rounded-b-lg shadow-inner mb-4'>
+        <strong>Выбранный электив:</strong> {selectedElective}
+      </div>
+    )}
+    </div>
+    <div>
+    <details className='addTest flex-col border border-gray-200 rounded-lg shadow-lg text-base w-full  transition-all duration-300 ease-in-out' id='addTest'>
+      <summary className='p-3 cursor-pointer bg-blue-100 text-blue-700 font-semibold hover:text-blue-800 border-b-2 border-b-blue-500 rounded-t-lg'>
+        Прикрепить тест для электива
+      </summary>
+      <div className='divide-y divide-gray-200 bg-white'>
+        {tests && tests.map((test) => (
+          <div key={test.id}>
+            <button 
+              className='w-full text-left px-4 py-3 text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition duration-200 ease-in-out'
+              onClick={() => {
+                setSelectedTest(test.name);
+                CloseDetails('addTest');
+              }}>
+              {test.name}
+            </button>
+          </div>
+        ))}
+      </div>
+    </details>
+
+    {/* Отображение выбранного теста */}
+    {selectedTest && (
+      <div className='p-2 text-blue-700 bg-gray-100 rounded-b-lg shadow-inner'>
+        <strong>Выбранный тест:</strong> {selectedTest}
+      </div>
+    )}
+    </div>
+    </div>
+   
 
 
-        {(<form className = "text-lg" autoCapitalize='on' autoComplete='off' onSubmit={sendElective}>
+        {(<form autoCapitalize='on' autoComplete='off' onSubmit={sendElective}>
 
           <div className='createMode flex gap-2 mt-4 w-full'>
             <input type="radio" className='hidden' defaultChecked id='Факультативный курс' name='type' value='Факультативный курс' onChange={handleFacultative} />
-            <label htmlFor="Факультативный курс" className='p-1 border-2 w-full'>Создать факультатив</label>
+            <label htmlFor="Факультативный курс" className='p-2 bg-gray-200 rounded-lg w-full'>Создать факультатив</label>
             <input type="radio" className='hidden' id='Элективный курс' name='type' value='Элективный курс' onChange={handleFacultative} />
-            <label htmlFor="Элективный курс" className='p-1 border-2 w-full'>Создать электив</label>
+            <label htmlFor="Элективный курс" className='p-2 bg-gray-200 rounded-lg w-full'>Создать электив</label>
           </div>
 
-          <fieldset className='border-2 border-gray-500 p-4 mt-3 flex flex-col w-full'>
-            <legend>Основная информация</legend>
+          <fieldset className='border-2 mt-2 border-gray-300 rounded-md p-4 mt-3 flex flex-col w-full'>
+            <legend className='text-lg font-semibold'>Основная информация</legend>
             <label>Название электива:</label>
-            <input type="text" className='border-2 p-2' defaultValue={createOnSomething.name}  name="name" />
-            <label className='mt-4'>Количество мест:</label>
-            <input type="number" className='border-2 p-2' min="1" defaultValue={createOnSomething.place} name="place"/>
-            <label className='mt-4'>Форма проведения:</label>
-            <select className='border-2 p-2' name="form" defaultValue={createOnSomething.form}>
+            <input type="text" className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' defaultValue={createOnSomething.name}  name="name" />
+            <label className='mt-3'>Количество мест:</label>
+            <input type="number" className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' min="1" defaultValue={createOnSomething.place} name="place"/>
+            <label className='mt-3'>Форма проведения:</label>
+            <select className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' name="form" defaultValue={createOnSomething.form}>
               {formInfo.forms.map((form) => (
                 <option key={form.id} value={form.id}>{form.name}</option>
               ))}
             </select>
-            <label className='mt-4'>Объем в часах:</label>
-            <input type="number" className='border-2 p-2' defaultValue={createOnSomething.volume}  min="1" name="volume"/>
-            <label className='mt-4'>Дата начала:</label>
-            <input type="date" className='border-2 p-2' defaultValue={createOnSomething.date_start} name="date_start"/>
-            <label className='mt-4'>Дата окончания:</label>
-            <input type="date" className='border-2 p-2' defaultValue={createOnSomething.date_finish} name="date_finish"/>
-            <label className='mt-4'>Минимальный средний балл:</label>
-            <input type="number" className='border-2 p-2' defaultValue={createOnSomething.marks}  min="0" max="5" name="marks"/>
-            <label className='mt-4'>Группа здоровья:</label>
-            <select className='border-2 p-2'  defaultValue={createOnSomething.health} name="health">
+            <label className='mt-3'>Объем в часах:</label>
+            <input type="number" className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' defaultValue={createOnSomething.volume}  min="1" name="volume"/>
+            <label className='mt-3'>Дата начала:</label>
+            <input type="date" className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' defaultValue={createOnSomething.date_start} name="date_start"/>
+            <label className='mt-3'>Дата окончания:</label>
+            <input type="date" className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' defaultValue={createOnSomething.date_finish} name="date_finish"/>
+            <label className='mt-3'>Минимальный средний балл:</label>
+            <input type="number" className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' defaultValue={createOnSomething.marks}  min="0" max="5" name="marks"/>
+            <label className='mt-3'>Группа здоровья:</label>
+            <select className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400'  defaultValue={createOnSomething.health} name="health">
               {formInfo.healths.map((health) => ( 
                 <option key={health.id} value={health.id}>{health.name}</option>
               ))}
             </select>
-            <label className='mt-4'>Описание:</label>
-            <textarea className='border-2 p-2' defaultValue={createOnSomething.describe} name="describe" rows="5" cols="33"></textarea>
-            <label className='mt-4'>Требования преподавателя к оборудованию/материалам/кабинету/расписанию:</label>
-            <textarea className='border-2 p-2' defaultValue={createOnSomething.note} name="note" rows="5" cols="33"></textarea>
+            <label className='mt-3'>Описание:</label>
+            <textarea className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' defaultValue={createOnSomething.describe} name="describe" rows="5" cols="33"></textarea>
+            <label className='mt-3'>Требования преподавателя к оборудованию/материалам/кабинету/расписанию:</label>
+            <textarea className='border-2 mt-0.5 p-1 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' defaultValue={createOnSomething.note} name="note" rows="5" cols="33"></textarea>
           </fieldset>
 
-          <fieldset className='border-2 border-gray-500 p-4 mt-3 flex flex-col w-full'>
-            <legend>Фильтрация электива</legend>
+          <fieldset className='border-2 mt-2 border-gray-300 rounded-lg p-4 mt-3 flex flex-col w-full'>
+            <legend className='text-lg font-semibold'>Фильтрация электива</legend>
               <SelectProperty formInfo={formInfo} selected={selected} expanded={expanded} handleSelect={handleSelect} handleExpand={handleExpand} setSelected={setSelected} setExpanded={setExpanded} sendData={handleGetData}/>
           </fieldset>
-          <button className='p-2 bg-ystu-blue text-white w-full' type="submit">Создать электив</button>
+          <button className='p-2 rounded-lg mt-4 bg-ystu-blue text-white w-full' type="submit">Создать электив</button>
         </form>
         )}
       </section>
