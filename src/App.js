@@ -30,7 +30,7 @@ export default function App() {
   useEffect(() => {
     function refreshTokens() {
       if (localStorage.getItem('refresh_token')) {
-        fetch('http://212.67.13.70:8000/api/auth/token/refresh/', {
+        fetch(`${process.env.REACT_APP_URL}/auth/token/refresh/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

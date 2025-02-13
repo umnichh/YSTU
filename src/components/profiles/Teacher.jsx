@@ -27,16 +27,16 @@ export default function TeacherProfile() {
     middle_name = '',
   } = teacherData || {};
   const [file, setFile] = useState(null);
+
   const sendFile = async (event) => {
     event.preventDefault();
-  
     const formData = new FormData();
     formData.append('document', file);
   
     try {
       const currentToken = localStorage.getItem('access_token');
       // Отправляем запрос на сервер через fetch
-      const response = await fetch('http://212.67.13.70:8000/api/institutes/upload/', {
+      const response = await fetch(`${process.env.REACT_APP_URL}/institutes/upload/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${currentToken}`,
@@ -48,7 +48,8 @@ export default function TeacherProfile() {
         const data = await response.json();
         console.log('Файл успешно загружен:', data);
       } else {
-        console.error('Ошибка при загрузке файла:', response.text());
+        const errorData = await response.json();
+        console.error('Ошибка при загрузке файла:', errorData);
       }
     } catch (error) {
       console.error('Ошибка при загрузке файла:', error);
