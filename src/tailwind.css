@@ -1,0 +1,112 @@
+@import url(https://fonts.googleapis.com/css?family=Nunito:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+#root {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+body {
+  margin: 0px 180px;
+  overflow-y: scroll;
+}
+
+body *{
+  font-family: Nunito;
+}
+
+main{
+  display: flex;
+  flex-direction: column;
+  width: 100% !important;
+  height: 100%;
+  box-shadow: 10px 0px 10px 1px #aaaaaa;  
+}
+
+a:hover, button:hover {
+  opacity: 80%;
+}
+
+dl{
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: 3px;
+}
+
+dt {
+  grid-column-start: 1;
+  background-color: #f1f1f1;
+}
+dd {
+  grid-column-start: 2;
+  background-color: #ecf4ff;
+}
+
+dt, dd{
+  border-radius: 5px;
+  padding: 5px 10px;
+  white-space: wrap;
+  border: 1px solid rgb(212, 212, 212);
+}
+
+dd, dt, dl {
+  font-size: 14px;
+  margin: 0;
+}
+
+
+
+
+
+summary {
+  border-bottom: 1px solid black;
+  background-color: rgb(25, 93, 165);
+  color: white;
+  padding: 10px;
+}
+
+.radioGroup input[type=radio]:checked + label {
+  background-color:white;
+  border-bottom: none;
+  color: black;
+}
+
+.createMode input[type=radio]:checked + label {
+  background-color:rgb(187, 247, 208);
+}
+
+table{
+	border: 1px solid #eee;
+	table-layout: fixed;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+table th {
+	font-weight: bold;
+	padding: 5px;
+	background: #efefef;
+	border: 1px solid #dddddd;
+}
+table td{
+	padding: 5px 10px;
+	border: 1px solid #eee;
+	text-align: center;
+}
+
+table tbody tr:nth-child(odd){
+	background: #fff;
+}
+table tbody tr:nth-child(even){
+	background: #F7F7F7;
+}
+
+/* tests */
+
+.test-question {
+  margin-bottom: 10px;
+  border: #333 solid 1px;
+}
